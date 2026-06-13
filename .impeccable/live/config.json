@@ -1,0 +1,7 @@
+{
+  "framework": "vite",
+  "files": ["car-wash-frontend/index.html"],
+  "insertBefore": "</head>",
+  "commentSyntax": "html",
+  "cspChecked": true
+}

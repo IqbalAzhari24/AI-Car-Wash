@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: car-wash-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: carwashdb
+      POSTGRES_USER: carwashuser
+      POSTGRES_PASSWORD: carwashpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: car-wash-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  spring-backend:
+    build:
+      context: ./car-wash-backend
+      dockerfile: Dockerfile
+    container_name: car-wash-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/carwashdb
+      SPRING_DATASOURCE_USERNAME: carwashuser
+      SPRING_DATASOURCE_PASSWORD: carwashpassword
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  react-frontend:
+    build:
+      context: ./car-wash-frontend
+      dockerfile: Dockerfile
+    container_name: car-wash-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - spring-backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
