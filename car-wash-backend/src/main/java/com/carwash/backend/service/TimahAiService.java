@@ -5,6 +5,7 @@ import com.carwash.backend.dto.CreateBookingRequest;
 import com.carwash.backend.entity.Booking;
 import com.carwash.backend.entity.ShopClosure;
 import com.carwash.backend.entity.SlotCapacity;
+import com.carwash.backend.repository.ServiceRepository;
 import com.carwash.backend.repository.ShopClosureRepository;
 import com.carwash.backend.repository.SlotCapacityRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
@@ -27,7 +29,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
- * Timah AI service — Gemini 1.5 Flash with function/tool-calling.
+ * Timah AI service — Gemini 2.5 Flash with function/tool-calling.
  *
  * Flow:
  *   Turn 1 (non-streaming): send user message + tool declarations to generateContent.
@@ -41,13 +43,14 @@ import java.util.stream.Collectors;
 public class TimahAiService {
 
     private static final Logger log = LoggerFactory.getLogger(TimahAiService.class);
-    private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash";
+    private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash";
     private static final String GENERATE_URL = BASE_URL + ":generateContent";
     private static final String STREAM_URL    = BASE_URL + ":streamGenerateContent";
 
     private final WebClient webClient;
     private final SlotCapacityRepository slotCapacityRepository;
     private final ShopClosureRepository shopClosureRepository;
+    private final ServiceRepository serviceRepository;
     private final BookingService bookingService;
     private final ObjectMapper om = new ObjectMapper();
 
@@ -57,10 +60,12 @@ public class TimahAiService {
     public TimahAiService(WebClient.Builder webClientBuilder,
                           SlotCapacityRepository slotCapacityRepository,
                           ShopClosureRepository shopClosureRepository,
+                          ServiceRepository serviceRepository,
                           BookingService bookingService) {
         this.webClient = webClientBuilder.build();
         this.slotCapacityRepository = slotCapacityRepository;
         this.shopClosureRepository = shopClosureRepository;
+        this.serviceRepository = serviceRepository;
         this.bookingService = bookingService;
     }
 
@@ -137,8 +142,9 @@ public class TimahAiService {
                                               turn1Resp, name, result.responseNode);
 
         return webClient.post()
-                .uri(STREAM_URL + "?key=" + geminiApiKey + "&alt=sse")
+                .uri(STREAM_URL + "?alt=sse")
                 .header("Content-Type", "application/json")
+                .header("x-goog-api-key", geminiApiKey)
                 .bodyValue(turn2Body)
                 .retrieve()
                 .bodyToFlux(String.class)
@@ -232,17 +238,46 @@ public class TimahAiService {
 
         String vehicleModel = args.path("vehicleModel").asText("Unknown").trim();
 
+        // --- Resolve the wash service/package ---
+        List<com.carwash.backend.entity.Service> activeServices = serviceRepository.findActive();
+        if (activeServices.isEmpty()) {
+            return ToolResult.ok(om.createObjectNode()
+                    .put("success", false)
+                    .put("error", "No wash services are currently available."));
+        }
+        String serviceNameStr = args.path("serviceName").asText("");
+        com.carwash.backend.entity.Service service;
+        if (StringUtils.hasText(serviceNameStr)) {
+            service = activeServices.stream()
+                    .filter(s -> s.getName() != null && s.getName().equalsIgnoreCase(serviceNameStr.trim()))
+                    .findFirst()
+                    .orElse(null);
+            if (service == null) {
+                String available = activeServices.stream()
+                        .map(com.carwash.backend.entity.Service::getName)
+                        .collect(Collectors.joining(", "));
+                return ToolResult.ok(om.createObjectNode()
+                        .put("success", false)
+                        .put("error", "Unknown service '" + serviceNameStr + "'. Available services: " + available));
+            }
+        } else {
+            // No service specified — default to the cheapest active service (findActive() orders by price ascending).
+            service = activeServices.get(0);
+        }
+
         // --- Call BookingService ---
         CreateBookingRequest req = new CreateBookingRequest();
         req.setSlotTime(slotTime);
         req.setVehicleClass(vehicleClass);
         req.setVehicleModel(vehicleModel);
+        req.setServiceId(service.getId());
 
         try {
             BookingDto dto = bookingService.createBooking(UUID.fromString(userId), false, req);
             ObjectNode resp = om.createObjectNode()
                     .put("success", true)
                     .put("bookingId", dto.getId().toString())
+                    .put("serviceName", dto.getServiceName())
                     .put("totalPrice", dto.getTotalPrice().toPlainString())
                     .put("slotTime", dto.getSlotTime().toString())
                     .put("status", dto.getStatus());
@@ -275,21 +310,30 @@ public class TimahAiService {
                 .map(c -> "  " + c.getStartTime() + " to " + c.getEndTime() + ": " + c.getReason())
                 .collect(Collectors.joining("\n"));
 
+        List<com.carwash.backend.entity.Service> activeServices = serviceRepository.findActive();
+        String servicesCtx = activeServices.stream()
+                .map(s -> "  " + s.getName() + " — RM " + s.getPrice().toPlainString()
+                        + " (base price for SEDAN; scales with vehicle class and size)")
+                .collect(Collectors.joining("\n"));
+
         return "You are Timah, the friendly AI booking assistant for Timah Car Wash.\n"
                 + "Today is " + today + ". Operating hours: 09:00–18:00, closed on Fridays.\n\n"
                 + "Today's availability:\n" + (capacityCtx.isEmpty() ? "  No slots today." : capacityCtx) + "\n\n"
                 + "Upcoming closures:\n" + (closureCtx.isEmpty() ? "  None — fully operational." : closureCtx) + "\n\n"
-                + "Vehicle classes and pricing (base RM 25 for SEDAN):\n"
-                + "  MOTORCYCLE — RM 15, 1 slot (30 min)\n"
-                + "  COMPACT    — RM 20, 1 slot (30 min)\n"
-                + "  SEDAN      — RM 25, 1 slot (30 min)\n"
-                + "  SUV_LUXURY — RM 40, 2 consecutive slots (60 min)\n"
-                + "  MPV_LARGE  — RM 50, 3 consecutive slots (90 min)\n\n"
+                + "Available wash services/packages:\n"
+                + (servicesCtx.isEmpty() ? "  No services currently available." : servicesCtx) + "\n\n"
+                + "Vehicle class price multipliers (applied on top of the service's base price):\n"
+                + "  MOTORCYCLE — x0.60, 1 slot (30 min)\n"
+                + "  COMPACT    — x0.80, 1 slot (30 min)\n"
+                + "  SEDAN      — x1.00, 1 slot (30 min)\n"
+                + "  SUV_LUXURY — x1.60, 2 consecutive slots (60 min)\n"
+                + "  MPV_LARGE  — x2.00, 3 consecutive slots (90 min)\n\n"
                 + "When a customer asks to book:\n"
                 + "  1. Ask for preferred date/time if not given.\n"
                 + "  2. Call get_available_slots to confirm availability.\n"
-                + "  3. Confirm the exact slot, vehicle class, and vehicle model with the customer.\n"
-                + "  4. Only then call create_booking.\n"
+                + "  3. Confirm the exact slot, vehicle class, vehicle model, and which wash service/package "
+                + "the customer wants (use the exact name from the available services list).\n"
+                + "  4. Only then call create_booking, passing serviceName as the chosen service's exact name.\n"
                 + "Be warm and concise. Respond in the same language the customer uses.";
     }
 
@@ -390,6 +434,12 @@ public class TimahAiService {
         cbProps.putObject("vehicleModel")
                 .put("type", "STRING")
                 .put("description", "Vehicle make and model, e.g. Honda City 2023, Toyota Hilux");
+        cbProps.putObject("serviceName")
+                .put("type", "STRING")
+                .put("description",
+                        "Name of the wash service/package the customer chose, exactly as listed in the "
+                        + "available services (e.g. 'Basic Wash', 'Premium Detailing'). If omitted, the "
+                        + "cheapest active service is used.");
         cbParams.putArray("required")
                 .add("slotTime").add("vehicleClass").add("vehicleModel");
 
@@ -426,6 +476,8 @@ public class TimahAiService {
     }
 
     private static class ToolResult {
+        private static final ObjectMapper MAPPER = new ObjectMapper();
+
         final UUID bookingId;      // non-null only when create_booking succeeded
         final JsonNode responseNode;
 
@@ -436,8 +488,7 @@ public class TimahAiService {
 
         static ToolResult ok(JsonNode node) { return new ToolResult(null, node); }
         static ToolResult error(String msg) {
-            ObjectMapper m = new ObjectMapper();
-            return new ToolResult(null, m.createObjectNode().put("error", msg));
+            return new ToolResult(null, MAPPER.createObjectNode().put("error", msg));
         }
     }
 }

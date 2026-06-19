@@ -33,10 +33,6 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION:7200000}
 
-# Base sedan wash price; per-vehicle-class modifiers are applied by BookingEngineService.
-booking:
-  base-price: ${BOOKING_BASE_PRICE:25.00}
-
 # toyyibPay gateway (sandbox by default). Online checkout is enabled only when
 # secret-key and category-code are set; otherwise cash checkout still works.
 toyyibpay:

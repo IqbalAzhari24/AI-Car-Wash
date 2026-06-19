@@ -1,14 +1,17 @@
 
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { MessageCircle, ShieldAlert } from 'lucide-react';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
 import { Login } from './components/Login';
+import { Landing } from './pages/Landing';
 import { TimahChat } from './pages/customer/TimahChat';
 import { CheckoutPage } from './pages/customer/Checkout';
+import { BookingFlow } from './pages/customer/book/BookingFlow';
 import { UserDirectory } from './pages/admin/UserDirectory';
 import { TransactionHistory } from './pages/admin/TransactionHistory';
+import { OwnerAnalytics } from './pages/admin/OwnerAnalytics';
 
 const Dashboard = () => (
   <div className="flex flex-1 items-center justify-center px-4 py-16">
@@ -18,19 +21,32 @@ const Dashboard = () => (
       </div>
       <h1 className="mt-4 text-xl font-semibold tracking-tight text-ink">Ready for a wash?</h1>
       <p className="mt-2 text-sm text-muted">
-        Your dashboard is on its way. In the meantime, Timah can get your next wash booked in
-        under a minute.
+        Book your next wash in three quick steps, or ask Timah anything.
       </p>
-      <Link
-        to="/chat"
-        className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-primary-strong"
-      >
-        <MessageCircle className="h-4 w-4" />
-        Chat with Timah
-      </Link>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <Link
+          to="/book"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-primary-strong"
+        >
+          Book a wash
+        </Link>
+        <Link
+          to="/chat"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-bg px-4 py-2.5 text-sm font-medium text-ink transition-colors duration-150 hover:bg-surface"
+        >
+          <MessageCircle className="h-4 w-4" />
+          Chat with Timah
+        </Link>
+      </div>
     </div>
   </div>
 );
+
+// Unauthenticated visitors land on the marketing page; everyone else sees their dashboard.
+const Home = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Dashboard /> : <Landing />;
+};
 
 const Unauthorized = () => (
   <div className="flex flex-1 items-center justify-center px-4 py-16">
@@ -63,10 +79,13 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
 
+            {/* Public landing for visitors; dashboard for signed-in users */}
+            <Route path="/" element={<Home />} />
+
             {/* Customer routes */}
-            <Route path="/" element={
-              <ProtectedRoute allowedRoles={['CUSTOMER', 'CLERK', 'WORKER', 'OWNER']}>
-                <Dashboard />
+            <Route path="/book" element={
+              <ProtectedRoute allowedRoles={['CUSTOMER']}>
+                <BookingFlow />
               </ProtectedRoute>
             } />
             <Route path="/chat" element={
@@ -81,7 +100,12 @@ function App() {
             } />
 
             {/* Admin routes (Owner only) */}
-            <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
+            <Route path="/admin" element={<Navigate to="/admin/analytics" replace />} />
+            <Route path="/admin/analytics" element={
+              <ProtectedRoute allowedRoles={['OWNER']}>
+                <OwnerAnalytics />
+              </ProtectedRoute>
+            } />
             <Route path="/admin/users" element={
               <ProtectedRoute allowedRoles={['OWNER']}>
                 <UserDirectory />

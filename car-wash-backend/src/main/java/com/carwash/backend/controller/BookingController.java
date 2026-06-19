@@ -4,13 +4,17 @@ import com.carwash.backend.dto.BookingDto;
 import com.carwash.backend.dto.CheckoutRequest;
 import com.carwash.backend.dto.CheckoutResponse;
 import com.carwash.backend.dto.CreateBookingRequest;
+import com.carwash.backend.dto.SlotAvailabilityDto;
 import com.carwash.backend.service.BookingService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -40,17 +44,31 @@ public class BookingController {
     }
 
     /**
+     * Returns slot availability for the given date so the booking wizard can render the slot grid.
+     * Requires a valid JWT — accessible to all authenticated roles.
+     */
+    @GetMapping("/slots")
+    public List<SlotAvailabilityDto> listSlots(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return bookingService.listSlotsForDate(date);
+    }
+
+    /**
      * Server-to-server callback from toyyibPay (no JWT — permitted in WebSecurityConfig).
      * order_id is the booking id we set as the external reference; status is 1=success, 2=pending, 3=fail.
+     * checksum is MD5(billcode + categoryCode + billPaymentAmount + billPaymentStatus + userSecretKey).
      */
     @PostMapping("/payments/toyyibpay/callback")
     public ResponseEntity<String> toyyibPayCallback(
+            @RequestParam(name = "billcode", required = false) String billCode,
             @RequestParam(name = "order_id", required = false) String orderId,
             @RequestParam(name = "status", required = false) String status,
             @RequestParam(name = "transaction_id", required = false) String transactionId,
-            @RequestParam(name = "refno", required = false) String refno) {
+            @RequestParam(name = "refno", required = false) String refno,
+            @RequestParam(name = "amount", required = false) String amount,
+            @RequestParam(name = "checksum", required = false) String checksum) {
         String txn = transactionId != null ? transactionId : refno;
-        bookingService.applyToyyibPayCallback(orderId, status, txn);
+        bookingService.applyToyyibPayCallback(billCode, orderId, status, txn, amount, checksum);
         return ResponseEntity.ok("OK");
     }
 

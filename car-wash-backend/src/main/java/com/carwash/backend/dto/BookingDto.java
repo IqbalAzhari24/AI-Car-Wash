@@ -10,6 +10,8 @@ public class BookingDto {
     private final UUID id;
     private final UUID customerId;
     private final UUID locationId;
+    private final UUID serviceId;
+    private final String serviceName;
     private final LocalDateTime slotTime;
     private final String vehicleClass;
     private final String vehicleModel;
@@ -17,11 +19,14 @@ public class BookingDto {
     private final BigDecimal totalPrice;
     private final LocalDateTime createdAt;
 
-    public BookingDto(UUID id, UUID customerId, UUID locationId, LocalDateTime slotTime, String vehicleClass,
-                      String vehicleModel, String status, BigDecimal totalPrice, LocalDateTime createdAt) {
+    public BookingDto(UUID id, UUID customerId, UUID locationId, UUID serviceId, String serviceName,
+                      LocalDateTime slotTime, String vehicleClass, String vehicleModel, String status,
+                      BigDecimal totalPrice, LocalDateTime createdAt) {
         this.id = id;
         this.customerId = customerId;
         this.locationId = locationId;
+        this.serviceId = serviceId;
+        this.serviceName = serviceName;
         this.slotTime = slotTime;
         this.vehicleClass = vehicleClass;
         this.vehicleModel = vehicleModel;
@@ -35,6 +40,8 @@ public class BookingDto {
                 b.getId(),
                 b.getCustomer() != null ? b.getCustomer().getId() : null,
                 b.getLocation() != null ? b.getLocation().getId() : null,
+                b.getService() != null ? b.getService().getId() : null,
+                b.getService() != null ? b.getService().getName() : null,
                 b.getSlotTime(),
                 b.getVClass() != null ? b.getVClass().name() : null,
                 b.getVehicleModel(),
@@ -46,6 +53,8 @@ public class BookingDto {
     public UUID getId() { return id; }
     public UUID getCustomerId() { return customerId; }
     public UUID getLocationId() { return locationId; }
+    public UUID getServiceId() { return serviceId; }
+    public String getServiceName() { return serviceName; }
     public LocalDateTime getSlotTime() { return slotTime; }
     public String getVehicleClass() { return vehicleClass; }
     public String getVehicleModel() { return vehicleModel; }

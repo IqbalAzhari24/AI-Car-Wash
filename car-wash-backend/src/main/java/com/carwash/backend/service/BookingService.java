@@ -4,6 +4,7 @@ import com.carwash.backend.dto.BookingDto;
 import com.carwash.backend.dto.CheckoutRequest;
 import com.carwash.backend.dto.CheckoutResponse;
 import com.carwash.backend.dto.CreateBookingRequest;
+import com.carwash.backend.dto.SlotAvailabilityDto;
 import com.carwash.backend.entity.Booking;
 import com.carwash.backend.entity.Location;
 import com.carwash.backend.entity.Payment;
@@ -11,11 +12,11 @@ import com.carwash.backend.entity.User;
 import com.carwash.backend.repository.BookingRepository;
 import com.carwash.backend.repository.LocationRepository;
 import com.carwash.backend.repository.PaymentRepository;
+import com.carwash.backend.repository.ServiceRepository;
 import com.carwash.backend.repository.SlotCapacityRepository;
 import com.carwash.backend.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +24,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BookingService {
@@ -35,17 +39,16 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final LocationRepository locationRepository;
+    private final ServiceRepository serviceRepository;
     private final SlotCapacityRepository slotCapacityRepository;
     private final PaymentRepository paymentRepository;
     private final BookingEngineService bookingEngine;
     private final ToyyibPayService toyyibPayService;
 
-    @Value("${booking.base-price:25.00}")
-    private BigDecimal basePrice;
-
     public BookingService(BookingRepository bookingRepository,
                           UserRepository userRepository,
                           LocationRepository locationRepository,
+                          ServiceRepository serviceRepository,
                           SlotCapacityRepository slotCapacityRepository,
                           PaymentRepository paymentRepository,
                           BookingEngineService bookingEngine,
@@ -53,6 +56,7 @@ public class BookingService {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.locationRepository = locationRepository;
+        this.serviceRepository = serviceRepository;
         this.slotCapacityRepository = slotCapacityRepository;
         this.paymentRepository = paymentRepository;
         this.bookingEngine = bookingEngine;
@@ -68,14 +72,21 @@ public class BookingService {
      */
     @Transactional
     public BookingDto createBooking(UUID actingUserId, boolean actingIsStaff, CreateBookingRequest req) {
-        if (req.getSlotTime() == null || req.getVehicleClass() == null || !StringUtils.hasText(req.getVehicleModel())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "slotTime, vehicleClass and vehicleModel are required.");
+        if (req.getSlotTime() == null || req.getVehicleClass() == null || !StringUtils.hasText(req.getVehicleModel())
+                || req.getServiceId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "slotTime, vehicleClass, vehicleModel and serviceId are required.");
         }
 
         // Customers may only book for themselves; staff may book on behalf of a customer.
         UUID customerId = (actingIsStaff && req.getCustomerId() != null) ? req.getCustomerId() : actingUserId;
         User customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found."));
+
+        com.carwash.backend.entity.Service service = serviceRepository.findById(req.getServiceId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Service not found."));
+        if (!Boolean.TRUE.equals(service.getActive())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected service is no longer available.");
+        }
 
         Location location = resolveLocation(req.getLocationId());
 
@@ -100,12 +111,13 @@ public class BookingService {
         Booking booking = new Booking();
         booking.setCustomer(customer);
         booking.setLocation(location);
+        booking.setService(service);
         booking.setSlotTime(slotTime);
         booking.setVClass(req.getVehicleClass());
         booking.setVehicleModel(req.getVehicleModel().trim());
         booking.setStatus(Booking.BookingStatus.PENDING);
         booking.setOverride(actingIsStaff && req.getCustomerId() != null);
-        booking.setTotalPrice(bookingEngine.calculatePrice(basePrice, req.getVehicleClass()));
+        booking.setTotalPrice(bookingEngine.calculatePrice(service, req.getVehicleClass()));
 
         Booking saved = bookingRepository.save(booking);
         log.info("Created booking {} for customer {} at {} ({} block(s))", saved.getId(), customerId, slotTime, requiredBlocks);
@@ -182,9 +194,20 @@ public class BookingService {
     /**
      * Applies a toyyibPay callback. {@code orderId} is the booking id we passed as the
      * external reference; {@code status} is 1=success, 2=pending, 3=fail.
+     *
+     * Two guards before any state change:
+     *   1. HMAC checksum — rejects forged callbacks when toyyibPay is configured.
+     *   2. Idempotency — silently ignores replays for already-completed payments.
      */
     @Transactional
-    public void applyToyyibPayCallback(String orderId, String status, String transactionId) {
+    public void applyToyyibPayCallback(String billCode, String orderId, String status,
+                                       String transactionId, String amountCents, String checksum) {
+        if (toyyibPayService.isConfigured()
+                && !toyyibPayService.verifyChecksum(billCode, amountCents, status, checksum)) {
+            log.warn("toyyibPay callback rejected — invalid checksum for order {}", orderId);
+            return;
+        }
+
         UUID bookingId;
         try {
             bookingId = UUID.fromString(orderId);
@@ -192,11 +215,19 @@ public class BookingService {
             log.warn("toyyibPay callback with unparseable order id: {}", orderId);
             return;
         }
+
         Payment payment = paymentRepository.findByBooking_Id(bookingId).orElse(null);
         if (payment == null) {
             log.warn("toyyibPay callback for unknown booking {}", bookingId);
             return;
         }
+
+        // Idempotency guard — reject replays for already-completed payments.
+        if ("COMPLETED".equals(payment.getPaymentStatus())) {
+            log.info("toyyibPay callback ignored — booking {} already confirmed", bookingId);
+            return;
+        }
+
         if ("1".equals(status)) {
             payment.setPaymentStatus("COMPLETED");
             if (StringUtils.hasText(transactionId)) {
@@ -214,6 +245,23 @@ public class BookingService {
             log.info("toyyibPay payment failed for booking {}", bookingId);
         }
         // status 2 (pending): leave as-is.
+    }
+
+    /**
+     * Returns slot availability for the given date, sorted by time.
+     * Used by the booking wizard to render the slot grid with available/full indicators.
+     *
+     * @param date the calendar date to query (Malaysia local time)
+     * @return ordered list of {@link SlotAvailabilityDto} for each configured slot on that day
+     */
+    public List<SlotAvailabilityDto> listSlotsForDate(LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end   = date.plusDays(1).atStartOfDay();
+        return slotCapacityRepository.findBySlotTimeBetween(start, end)
+                .stream()
+                .sorted(Comparator.comparing(sc -> sc.getSlotTime()))
+                .map(SlotAvailabilityDto::from)
+                .collect(Collectors.toList());
     }
 
     private Booking loadAuthorized(UUID bookingId, UUID actingUserId, boolean actingIsStaff) {

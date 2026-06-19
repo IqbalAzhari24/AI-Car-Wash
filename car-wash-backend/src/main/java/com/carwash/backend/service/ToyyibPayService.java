@@ -14,6 +14,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Thin client for the toyyibPay payment gateway (https://toyyibpay.com).
@@ -107,6 +110,33 @@ public class ToyyibPayService {
             throw new IllegalStateException("Unexpected toyyibPay response.", e);
         }
         throw new IllegalStateException("toyyibPay rejected the bill: " + response);
+    }
+
+    /**
+     * Verifies the HMAC checksum included in toyyibPay server-to-server callbacks.
+     * Formula: MD5(billCode + categoryCode + billPaymentAmount + billPaymentStatus + userSecretKey)
+     *
+     * @param billCode    the bill code echoed back by toyyibPay
+     * @param amountCents payment amount in cents as a string (e.g. "2500" for RM 25.00)
+     * @param status      payment status from the callback (1/2/3)
+     * @param checksum    the checksum value from the callback request
+     */
+    public boolean verifyChecksum(String billCode, String amountCents, String status, String checksum) {
+        if (!StringUtils.hasText(checksum) || !StringUtils.hasText(billCode)) {
+            return false;
+        }
+        String raw = billCode + categoryCode + amountCents + status + secretKey;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(raw.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder(32);
+            for (byte b : digest) {
+                sb.append(String.format("%02x", b));
+            }
+            return checksum.equalsIgnoreCase(sb.toString());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("MD5 not available", e);
+        }
     }
 
     /** toyyibPay restricts bill name/description to alphanumeric, space and underscore. */

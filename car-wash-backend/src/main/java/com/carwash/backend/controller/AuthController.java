@@ -1,10 +1,15 @@
 package com.carwash.backend.controller;
 
 import com.carwash.backend.config.JwtService;
+import com.carwash.backend.dto.ForgotPasswordRequest;
 import com.carwash.backend.dto.LoginRequest;
 import com.carwash.backend.dto.LoginResponse;
+import com.carwash.backend.dto.ResetPasswordRequest;
 import com.carwash.backend.entity.User;
 import com.carwash.backend.repository.UserRepository;
+import com.carwash.backend.service.PasswordResetService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,7 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
+import java.time.Instant;
 import java.util.Map;
 
 @RestController
@@ -23,13 +28,16 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final PasswordResetService passwordResetService;
 
     public AuthController(AuthenticationManager authenticationManager,
                           JwtService jwtService,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          PasswordResetService passwordResetService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.passwordResetService = passwordResetService;
     }
 
     @PostMapping("/login")
@@ -60,5 +68,40 @@ public class AuthController {
         String jwtToken = jwtService.generateToken(userId, role);
 
         return ResponseEntity.ok(new LoginResponse(jwtToken, role, userId));
+    }
+
+    /**
+     * POST /api/v1/auth/forgot-password
+     *
+     * Always returns 200 regardless of whether the email is registered (prevents enumeration).
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, Object>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request
+    ) {
+        passwordResetService.initiateReset(request.email());
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "If that email is registered, a reset link has been sent.",
+                "timestamp", Instant.now().toString()
+        ));
+    }
+
+    /**
+     * POST /api/v1/auth/reset-password
+     *
+     * Validates the token and updates the password. Returns 400 if the token is
+     * invalid, expired, or already used.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, Object>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request
+    ) {
+        passwordResetService.confirmReset(request.token(), request.newPassword());
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Password reset successfully. Please log in with your new password.",
+                "timestamp", Instant.now().toString()
+        ));
     }
 }

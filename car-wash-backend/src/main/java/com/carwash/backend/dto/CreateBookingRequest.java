@@ -12,6 +12,7 @@ import java.util.UUID;
 public class CreateBookingRequest {
     private UUID customerId;
     private UUID locationId;
+    private UUID serviceId;
     private LocalDateTime slotTime;
     private Booking.VehicleClass vehicleClass;
     private String vehicleModel;
@@ -20,6 +21,8 @@ public class CreateBookingRequest {
     public void setCustomerId(UUID customerId) { this.customerId = customerId; }
     public UUID getLocationId() { return locationId; }
     public void setLocationId(UUID locationId) { this.locationId = locationId; }
+    public UUID getServiceId() { return serviceId; }
+    public void setServiceId(UUID serviceId) { this.serviceId = serviceId; }
     public LocalDateTime getSlotTime() { return slotTime; }
     public void setSlotTime(LocalDateTime slotTime) { this.slotTime = slotTime; }
     public Booking.VehicleClass getVehicleClass() { return vehicleClass; }

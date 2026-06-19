@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Banknote, CreditCard, CheckCircle, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Banknote, CreditCard, CheckCircle, ExternalLink, Star } from 'lucide-react';
 import api from '../../api/api';
 
 interface BookingDetail {
@@ -19,6 +19,12 @@ interface CheckoutResponse {
   paymentStatus: string;
   amount: number;
   paymentUrl: string | null;
+}
+
+interface ReviewData {
+  id: string;
+  rating: number;
+  comment: string | null;
 }
 
 const VEHICLE_LABELS: Record<string, string> = {
@@ -49,10 +55,28 @@ export const CheckoutPage: React.FC = () => {
   const [payErr, setPayErr] = useState('');
   const [confirmed, setConfirmed] = useState(false);
 
+  // Review state — only shown when booking.status === 'COMPLETED'
+  const [review, setReview] = useState<ReviewData | null | 'none'>('none');
+  const [hoverStar, setHoverStar] = useState(0);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [reviewErr, setReviewErr] = useState('');
+
   useEffect(() => {
     let active = true;
     api.get<BookingDetail>(`/v1/bookings/${bookingId}`)
-      .then(res => { if (active) { setBooking(res.data); setConfirmed(res.data.status === 'CONFIRMED'); } })
+      .then(res => {
+        if (!active) return;
+        setBooking(res.data);
+        setConfirmed(res.data.status === 'CONFIRMED');
+        // Fetch existing review only when wash is done
+        if (res.data.status === 'COMPLETED') {
+          api.get<ReviewData>(`/v1/bookings/${bookingId}/review`)
+            .then(r => { if (active) setReview(r.data); })
+            .catch(err => { if (active) setReview(err?.response?.status === 204 ? null : null); });
+        }
+      })
       .catch(err => { if (active) setLoadErr(err?.response?.status === 404 ? 'Booking not found.' : 'Failed to load booking.'); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
@@ -65,6 +89,10 @@ export const CheckoutPage: React.FC = () => {
     try {
       const res = await api.post<CheckoutResponse>(`/v1/bookings/${bookingId}/checkout`, { method });
       if (method === 'TOYYIBPAY' && res.data.paymentUrl) {
+        if (!res.data.paymentUrl.startsWith('https://')) {
+          setPayErr('Payment URL is invalid. Please contact support.');
+          return;
+        }
         window.location.href = res.data.paymentUrl;
         return;
       }
@@ -77,6 +105,25 @@ export const CheckoutPage: React.FC = () => {
       else setPayErr('Payment failed. Please try again or pay at the counter.');
     } finally {
       setPaying(null);
+    }
+  };
+
+  const submitReview = async () => {
+    if (rating === 0) { setReviewErr('Please select a star rating.'); return; }
+    setSubmitting(true);
+    setReviewErr('');
+    try {
+      const res = await api.post<ReviewData>(`/v1/bookings/${bookingId}/review`, {
+        rating,
+        comment: comment.trim() || null,
+      });
+      setReview(res.data);
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 409) setReview({ id: '', rating, comment: comment.trim() || null }); // already reviewed
+      else setReviewErr('Could not submit review. Please try again.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -103,6 +150,9 @@ export const CheckoutPage: React.FC = () => {
     );
   }
 
+  const isCompleted = booking.status === 'COMPLETED';
+  const reviewSubmitted = review !== 'none' && review !== null;
+
   return (
     <div className="mx-auto w-full max-w-lg px-4 py-10">
       <Link
@@ -117,7 +167,7 @@ export const CheckoutPage: React.FC = () => {
       <div className="overflow-hidden rounded-xl border border-border bg-bg">
         <div className="border-b border-border bg-surface px-5 py-4">
           <h1 className="text-lg font-semibold tracking-tight text-ink">
-            {confirmed ? 'Booking confirmed' : 'Complete your booking'}
+            {isCompleted ? 'Wash completed' : confirmed ? 'Booking confirmed' : 'Complete your booking'}
           </h1>
           <p className="mt-0.5 font-mono text-xs text-muted">{bookingId}</p>
         </div>
@@ -152,8 +202,81 @@ export const CheckoutPage: React.FC = () => {
         </div>
       )}
 
-      {/* Confirmed state */}
-      {confirmed ? (
+      {/* COMPLETED — review section */}
+      {isCompleted && (
+        <div className="mt-6 rounded-xl border border-border bg-bg overflow-hidden">
+          <div className="border-b border-border bg-surface px-5 py-3">
+            <h2 className="text-sm font-semibold text-ink">How was your wash?</h2>
+          </div>
+          <div className="px-5 py-5">
+            {reviewSubmitted ? (
+              <div className="text-center">
+                <div className="flex justify-center gap-1 mb-2">
+                  {[1, 2, 3, 4, 5].map(s => (
+                    <Star
+                      key={s}
+                      className={`h-6 w-6 ${s <= (review as ReviewData).rating ? 'fill-amber-400 text-amber-400' : 'text-border'}`}
+                    />
+                  ))}
+                </div>
+                <p className="text-sm font-medium text-ink">Thanks for your feedback!</p>
+                {(review as ReviewData).comment && (
+                  <p className="mt-1 text-xs text-muted italic">"{(review as ReviewData).comment}"</p>
+                )}
+              </div>
+            ) : (
+              <>
+                {/* Star picker */}
+                <div className="flex justify-center gap-2 mb-4">
+                  {[1, 2, 3, 4, 5].map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setRating(s)}
+                      onMouseEnter={() => setHoverStar(s)}
+                      onMouseLeave={() => setHoverStar(0)}
+                      className="p-1 transition-transform hover:scale-110"
+                      aria-label={`${s} star${s > 1 ? 's' : ''}`}
+                    >
+                      <Star
+                        className={`h-8 w-8 transition-colors ${
+                          s <= (hoverStar || rating)
+                            ? 'fill-amber-400 text-amber-400'
+                            : 'text-border'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+
+                {/* Comment */}
+                <textarea
+                  value={comment}
+                  onChange={e => setComment(e.target.value)}
+                  placeholder="Tell us more (optional)"
+                  rows={3}
+                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                />
+
+                {reviewErr && (
+                  <p role="alert" className="mt-2 text-xs text-danger-soft-ink">{reviewErr}</p>
+                )}
+
+                <button
+                  onClick={submitReview}
+                  disabled={submitting || rating === 0}
+                  className="mt-3 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {submitting ? 'Submitting…' : 'Submit review'}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* CONFIRMED — success banner */}
+      {!isCompleted && confirmed && (
         <div className="mt-6 rounded-xl border border-success/20 bg-success-soft px-5 py-6 text-center">
           <CheckCircle className="mx-auto h-8 w-8 text-success-soft-ink" />
           <p className="mt-2 font-semibold text-success-soft-ink">Payment complete — you're all set!</p>
@@ -161,8 +284,10 @@ export const CheckoutPage: React.FC = () => {
             Your car wash is confirmed. We'll see you at the shop.
           </p>
         </div>
-      ) : (
-        /* Payment options */
+      )}
+
+      {/* PENDING — payment options */}
+      {!isCompleted && !confirmed && (
         <div className="mt-6 space-y-3">
           <p className="text-sm font-medium text-ink">Choose how to pay</p>
 

@@ -26,8 +26,10 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Dashboard' },
+  { to: '/book', label: 'Book a Wash', roles: ['CUSTOMER'] },
   { to: '/chat', label: 'Chat with Timah', roles: ['CUSTOMER'] },
-  { to: '/admin/users', label: 'Admin', roles: ['OWNER'] },
+  { to: '/admin/analytics', label: 'Analytics', roles: ['OWNER'] },
+  { to: '/admin/users', label: 'Users', roles: ['OWNER'] },
 ];
 
 const desktopLinkClass = ({ isActive }: { isActive: boolean }): string =>

@@ -39,17 +39,17 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors().and()
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .antMatchers("/api/v1/auth/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/payments/toyyibpay/callback").permitAll() // gateway server-to-server
-                .antMatchers("/ws/**").permitAll() // Open for initial handshake only
-                .antMatchers("/api/v1/owner/**").hasRole("OWNER")
+            .cors(cors -> {})
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/payments/toyyibpay/callback").permitAll() // gateway server-to-server
+                .requestMatchers("/ws/**").permitAll() // Open for initial handshake only
+                .requestMatchers("/api/v1/owner/**").hasRole("OWNER")
                 .anyRequest().authenticated()
-            .and()
+            )
             // 1. Enforce Rate Limiting FIRST before anything else processes
             .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
             // 2. Extract JWT parameters next

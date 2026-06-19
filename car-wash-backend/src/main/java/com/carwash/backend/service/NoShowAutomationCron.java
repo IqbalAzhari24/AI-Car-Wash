@@ -43,8 +43,7 @@ public class NoShowAutomationCron {
         
         for (Booking booking : overdueBookings) {
             booking.setStatus(Booking.BookingStatus.NO_SHOW);
-            bookingRepository.save(booking);
-            
+
             int blocks = bookingEngineService.calculateRequiredBlocks(booking.getVClass());
             LocalDateTime currentTime = booking.getSlotTime();
             for (int i = 0; i < blocks; i++) {
@@ -52,6 +51,9 @@ public class NoShowAutomationCron {
                 currentTime = currentTime.plusMinutes(30);
             }
             log.info("Marked booking {} as NO_SHOW and freed {} slots", booking.getId(), blocks);
+        }
+        if (!overdueBookings.isEmpty()) {
+            bookingRepository.saveAll(overdueBookings);
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.carwash.backend.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -17,7 +17,7 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "phone_number", unique = true, nullable = false, length = 20)
+    @Column(name = "phone_number", nullable = true, length = 20)
     private String phoneNumber;
 
     @Column(nullable = false, length = 20)

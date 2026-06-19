@@ -1,6 +1,6 @@
 package com.carwash.backend.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,6 +26,10 @@ public class Booking {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", nullable = false)
     private Location location;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_id")
+    private Service service;
 
     @Column(name = "slot_time", nullable = false)
     private LocalDateTime slotTime;
@@ -69,6 +73,8 @@ public class Booking {
     public void setWorker(User worker) { this.worker = worker; }
     public Location getLocation() { return location; }
     public void setLocation(Location location) { this.location = location; }
+    public Service getService() { return service; }
+    public void setService(Service service) { this.service = service; }
     public LocalDateTime getSlotTime() { return slotTime; }
     public void setSlotTime(LocalDateTime slotTime) { this.slotTime = slotTime; }
     public VehicleClass getVClass() { return vClass; }
