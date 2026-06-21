@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * - {@code roles} null/empty matches any role;
      * - {@code search} null/blank matches everyone, otherwise matches email or phone (case-insensitive on email).
      */
-    @Query("SELECT u FROM User u WHERE u.role IN :roles " +
+    @Query("SELECT u FROM User u WHERE (:roles IS NULL OR COALESCE(:roles) IS NULL OR u.role IN :roles) " +
        "AND (:search IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
        "OR u.phoneNumber LIKE CONCAT('%', :search, '%'))")
 Page<User> search(@Param("roles") List<User.UserRole> roles,

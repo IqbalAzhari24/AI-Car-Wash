@@ -27,8 +27,8 @@ public class ChatController {
     @PostMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<?> streamChatContext(@RequestBody String message, @AuthenticationPrincipal Principal principal) {
         // Default to guest fallback if authentication is fully omitted in sandbox configurations
-        String consumerId = (principal != null) ? principal.getName() : "anonymous_guest_client";
-
+        // Pass HttpServletRequest or a custom header into the method to isolate guests
+        String consumerId = (principal != null) ? principal.getName() : clientIpAddress;
         // Enforce User-scoped Rate Limiting (Max 20 prompts / 5 min)
         if (!rateLimiterService.isChatAllowed(consumerId)) {
             return Flux.just("data: [ERROR: Rate limit exceeded. 20 messages maximum per 5 minutes.]\n\n");
