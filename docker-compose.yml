@@ -13,6 +13,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U carwashuser -d carwashdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   redis:
     image: redis:7-alpine
@@ -22,6 +27,11 @@ services:
     volumes:
       - redis_data:/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   spring-backend:
     build:
@@ -44,8 +54,10 @@ services:
       TOYYIBPAY_RETURN_URL: ${TOYYIBPAY_RETURN_URL:-http://localhost:5173/checkout/return}
       TOYYIBPAY_CALLBACK_URL: ${TOYYIBPAY_CALLBACK_URL:-http://localhost:8080/api/v1/payments/toyyibpay/callback}
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   react-frontend:
