@@ -1,7 +1,7 @@
-# CLAUDE.md — AzureWash Project Master Guide
+# CLAUDE.md — AI Car Wash Project Master Guide
 > **Scope:** This file is the single source of truth for all AI-assisted work on the AzureWash project.
 > **Target:** Claude Code, Claude.ai Projects, Claude API
-> **Version:** 1.0.0 | Author: Ahmad Iqball bin Azhari | Updated: 2026-06-18
+> **Version:** 1.0.0 | Author: Ahmad Iqbal bin Azhari | Updated: 2026-06-18
 
 ---
 
@@ -22,7 +22,7 @@ These rules override everything else. NEVER violate them.
 
 | Field | Value |
 |---|---|
-| **Project Name** | AzureWash |
+| **Project Name** | AI Car Wash |
 | **Type** | Full-Stack AI-Powered Car Wash Booking & Management System |
 | **Purpose** | Final Year Project (FYP) — Universiti Malaysia Terengganu (UMT) |
 | **Student** | Ahmad Iqball bin Azhari |
@@ -69,7 +69,7 @@ MUST use these exact versions. Do NOT upgrade, suggest alternatives, or assume n
 
 ## 👥 System Roles
 
-AzureWash has exactly **four roles**. Do not add, merge, or rename roles without explicit instruction.
+AI Car Wash has exactly **four roles**. Do not add, merge, or rename roles without explicit instruction.
 
 | Role | Description |
 |---|---|
