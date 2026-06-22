@@ -3,11 +3,12 @@ package com.carwash.backend;
 import com.carwash.backend.config.JwtService;
 import com.carwash.backend.entity.User;
 import com.carwash.backend.repository.UserRepository;
+import com.carwash.backend.service.RateLimiterService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,11 +25,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-// ponytail: @SpringBootTest + MockMvc — heavier than @WebMvcTest but skips
-// fighting the security filter chain config. Switch to @WebMvcTest if startup time matters.
-@SpringBootTest
 @AutoConfigureMockMvc
-class AuthControllerTest {
+class AuthControllerTest extends AbstractIntegrationTest {
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -36,6 +34,13 @@ class AuthControllerTest {
     @MockBean AuthenticationManager authenticationManager;
     @MockBean JwtService jwtService;
     @MockBean UserRepository userRepository;
+    @MockBean RateLimiterService rateLimiterService;
+
+    @BeforeEach
+    void setUp() {
+        when(rateLimiterService.isLoginAllowed(any())).thenReturn(true);
+        when(rateLimiterService.isChatAllowed(any())).thenReturn(true);
+    }
 
     @Test
     void login_returns_400_when_email_is_blank() throws Exception {
@@ -68,7 +73,7 @@ class AuthControllerTest {
     void login_returns_200_and_token_on_valid_credentials() throws Exception {
         User user = new User();
         user.setId(UUID.randomUUID());
-        user.setRole(User.Role.CUSTOMER);
+        user.setRole(User.UserRole.CUSTOMER);
 
         when(authenticationManager.authenticate(any())).thenReturn(null);
         when(userRepository.findByEmail("user@test.com")).thenReturn(Optional.of(user));

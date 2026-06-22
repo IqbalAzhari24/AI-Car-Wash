@@ -1,0 +1,29 @@
+# ── Production profile ────────────────────────────────────────────────────────
+# Activated by: SPRING_PROFILES_ACTIVE=prod
+# Override any application.yml defaults that are unsafe or noisy in production.
+
+spring:
+  jpa:
+    show-sql: false               # Never log SQL in production
+    properties:
+      hibernate:
+        format_sql: false
+
+  # Tighten Flyway for production: do NOT allow baseline-on-migrate
+  flyway:
+    baseline-on-migrate: false
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never     # Ensure stack traces never leak to clients
+    include-message: always
+    include-binding-errors: never
+
+# Production logging: INFO level only, no DEBUG/TRACE noise
+logging:
+  level:
+    root: INFO
+    com.carwash: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN

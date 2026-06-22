@@ -72,8 +72,9 @@ public class BookingService {
      */
     @Transactional
     public BookingDto createBooking(UUID actingUserId, boolean actingIsStaff, CreateBookingRequest req) {
+        UUID serviceId = req.getServiceId();
         if (req.getSlotTime() == null || req.getVehicleClass() == null || !StringUtils.hasText(req.getVehicleModel())
-                || req.getServiceId() == null) {
+                || serviceId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "slotTime, vehicleClass, vehicleModel and serviceId are required.");
         }
 
@@ -82,7 +83,7 @@ public class BookingService {
         User customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found."));
 
-        com.carwash.backend.entity.Service service = serviceRepository.findById(req.getServiceId())
+        com.carwash.backend.entity.Service service = serviceRepository.findById(serviceId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Service not found."));
         if (!Boolean.TRUE.equals(service.getActive())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected service is no longer available.");
