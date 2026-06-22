@@ -1,13 +1,31 @@
 # Build stage
 FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
+
+# Cache deps separately from source — only re-runs when pom.xml changes
 COPY pom.xml .
+RUN mvn dependency:go-offline -q
+
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -q
 
 # Run stage
-FROM eclipse-temurin:21-jre-focal
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
+
+RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+
 COPY --from=build /app/target/*.jar app.jar
+
+RUN chown appuser:appgroup app.jar
+USER appuser
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8080/actuator/health || exit 1
+
+ENTRYPOINT ["java", \
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=75.0", \
+  "-jar", "app.jar"]
