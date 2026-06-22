@@ -24,8 +24,8 @@ spring:
 
   data:
     redis:
-      host: ${SPRING_REDIS_HOST:localhost}
-      port: ${SPRING_REDIS_PORT:6379}
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
 
 # JWT_SECRET must be a base64-encoded value of at least 256 bits (32 bytes).
 # Generate one with: openssl rand -base64 48

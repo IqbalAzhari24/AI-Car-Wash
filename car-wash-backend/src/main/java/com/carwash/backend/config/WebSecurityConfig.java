@@ -46,6 +46,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/payments/toyyibpay/callback").permitAll() // gateway server-to-server
+                .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/ws/**").permitAll() // Open for initial handshake only
                 .requestMatchers("/api/v1/owner/**").hasRole("OWNER")
                 .anyRequest().authenticated()

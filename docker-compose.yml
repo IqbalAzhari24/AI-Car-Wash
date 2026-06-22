@@ -59,9 +59,9 @@ services:
       TOYYIBPAY_SECRET_KEY: ${TOYYIBPAY_SECRET_KEY:-}
       TOYYIBPAY_CATEGORY_CODE: ${TOYYIBPAY_CATEGORY_CODE:-}
       TOYYIBPAY_BASE_URL: ${TOYYIBPAY_BASE_URL:-https://dev.toyyibpay.com}
-      TOYYIBPAY_RETURN_URL: ${TOYYIBPAY_RETURN_URL}
-      TOYYIBPAY_CALLBACK_URL: ${TOYYIBPAY_CALLBACK_URL}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      TOYYIBPAY_RETURN_URL: ${TOYYIBPAY_RETURN_URL:-http://localhost:5173/checkout/return}
+      TOYYIBPAY_CALLBACK_URL: ${TOYYIBPAY_CALLBACK_URL:-http://localhost:8080/api/v1/payments/toyyibpay/callback}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
     depends_on:
       postgres:
         condition: service_healthy
