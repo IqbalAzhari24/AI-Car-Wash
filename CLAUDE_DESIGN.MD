@@ -1,4 +1,4 @@
-# CLAUDE_DESIGN.MD — AzureWash Visual Design System
+# CLAUDE_DESIGN.MD — AI CarWash Visual Design System
 > **Scope:** Visual design authority for all UI work on AzureWash.
 > **Load order:** Load `CLAUDE.md` first, then this file. Both MUST be active for any frontend task.
 > **Target:** Claude Code, Claude.ai Projects — React 19 + Tailwind CSS (mobile-first)
@@ -24,7 +24,7 @@ These rules override any default Tailwind choices or Claude aesthetic preference
 
 ## 🏗️ Design Philosophy
 
-AzureWash is a **car wash booking and management platform** serving Malaysian customers, clerks, workers, and owners. The aesthetic is **Cyber-Organic** — precision dark surfaces with neon cyan highlights, honeycomb geometry, and clean data hierarchy. The product serves two UX contexts:
+AI CarWash is a **car wash booking and management platform** serving Malaysian customers, clerks, workers, and owners. The aesthetic is **Cyber-Organic** — precision dark surfaces with neon cyan highlights, honeycomb geometry, and clean data hierarchy. The product serves two UX contexts:
 
 | Context | Primary Users | Device | Priority |
 |---|---|---|---|
