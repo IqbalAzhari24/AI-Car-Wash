@@ -7,34 +7,8 @@ on:
     branches: [main, develop]
 
 jobs:
-  
   test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: carwashdb
-          POSTGRES_USER: carwashuser
-          POSTGRES_PASSWORD: carwashpassword
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -45,14 +19,8 @@ jobs:
           distribution: temurin
           cache: maven
 
+      # Integration tests self-provision Postgres/Redis via Testcontainers;
+      # ubuntu-latest has Docker preinstalled, so no service containers needed.
       - name: Run tests
         working-directory: car-wash-backend
-        env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/carwashdb
-          SPRING_DATASOURCE_USERNAME: carwashuser
-          SPRING_DATASOURCE_PASSWORD: carwashpassword
-          SPRING_REDIS_HOST: localhost
-          SPRING_REDIS_PORT: 6379
-          # ponytail: dummy secret — replace with a real GitHub Secret (${{ secrets.JWT_SECRET }}) if auth tests are added
-          JWT_SECRET: ${{ secrets.JWT_SECRET || 'dGVzdC1zZWNyZXQtdGhhdC1pcy1sb25nLWVub3VnaC1mb3ItaG1hYzI1Ng==' }}
         run: mvn test --no-transfer-progress
