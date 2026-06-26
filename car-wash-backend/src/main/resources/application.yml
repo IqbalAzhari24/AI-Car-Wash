@@ -11,11 +11,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    open-in-view: false
     show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
     enabled: true
@@ -26,6 +26,20 @@ spring:
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
       port: ${SPRING_DATA_REDIS_PORT:6379}
+
+  # SMTP. JavaMailSender bean is created ONLY when MAIL_HOST is set; leave it
+  # empty and the app still boots (password-reset emails are skipped).
+  mail:
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 # JWT_SECRET must be a base64-encoded value of at least 256 bits (32 bytes).
 # Generate one with: openssl rand -base64 48
@@ -50,6 +64,10 @@ gemini:
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
 
+azurewash:
+  mail:
+    from: ${MAIL_FROM:noreply@azurewash.my}
+
 management:
   endpoints:
     web:
@@ -58,6 +76,11 @@ management:
   endpoint:
     health:
       show-details: never
+  health:
+    # Don't let SMTP reachability affect app health — a mail outage must not
+    # flap the container's healthcheck.
+    mail:
+      enabled: false
 
 server:
   port: 8080

@@ -2,6 +2,7 @@ package com.carwash.backend.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -35,10 +36,13 @@ public class EmailService {
     @Value("${azurewash.mail.from:noreply@azurewash.my}")
     private String fromAddress;
 
+    // Optional: present only when spring.mail.host is configured. Without SMTP
+    // config the app still boots — password-reset emails are skipped, matching
+    // the codebase's degrade-gracefully pattern for unconfigured integrations.
     private final JavaMailSender mailSender;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailService(ObjectProvider<JavaMailSender> mailSenderProvider) {
+        this.mailSender = mailSenderProvider.getIfAvailable();
     }
 
     /**
@@ -49,6 +53,10 @@ public class EmailService {
      * @param expiryMinutes how many minutes the link remains valid
      */
     public void sendPasswordResetEmail(String toEmail, String resetLink, int expiryMinutes) {
+        if (mailSender == null) {
+            log.warn("JavaMailSender not configured (spring.mail.host unset) — skipping password reset email to {}", toEmail);
+            return;
+        }
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromAddress);
