@@ -19,6 +19,14 @@ public class Location {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
+    /** Shop latitude — used by the Haversine geofencing check for valet requests. */
+    @Column(nullable = true)
+    private Double latitude;
+
+    /** Shop longitude — used by the Haversine geofencing check for valet requests. */
+    @Column(nullable = true)
+    private Double longitude;
+
     // Getters and Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
@@ -28,4 +36,8 @@ public class Location {
     public void setAddress(String address) { this.address = address; }
     public Boolean getActive() { return isActive; }
     public void setActive(Boolean active) { isActive = active; }
+    public Double getLatitude() { return latitude; }
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    public Double getLongitude() { return longitude; }
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
 }
