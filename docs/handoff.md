@@ -1,6 +1,6 @@
 # Handoff — AI Car Wash Backend
 
-> Machine-readable status handoff. Generated 2026-06-27.
+> Machine-readable status handoff. Updated 2026-06-27.
 > Scope: `car-wash-backend` (Spring Boot 3.4.1 / Java 21 / Maven).
 > Stack locked per `CLAUDE.md` — do NOT bump versions without instruction.
 
@@ -10,73 +10,56 @@
 
 | Field | Value |
 |---|---|
-| Build | Compiles. `mvn -DskipTests package` OK. |
-| Unit/non-Docker tests | **35 / 35 pass** (0 failures). |
-| Integration tests | **6 ERROR** — blocked by Docker env, not code. |
-| Total suite | 41 tests, 0 failures, 6 errors. |
-| Blocker | Testcontainers cannot reach this machine's Docker Desktop. |
-| Schema head | Flyway `V10` (adds `slot_capacities.booked_count`). |
-| pom.xml | Clean/original. No uncommitted dep changes. |
+| **CI (GitHub Actions, Linux)** | ✅ **GREEN — 56 tests, 0 failures, 0 errors.** |
+| Local non-Docker tests (Windows) | 35 / 35 pass. |
+| Local integration tests (Windows) | 6 ERROR — Docker Desktop gateway defect (env, not code). |
+| Schema head | Flyway `V10` (`slot_capacities.booked_count`) — committed. |
+| Source of truth for "all green" | CI on `ubuntu-latest`, where Testcontainers works. |
+
+Run all tests reliably via CI (push to `main`/`develop`). Locally on this
+Windows box, only the 35 non-Docker tests can pass — see §3.
 
 ---
 
 ## 2. Test Status
 
-### Passing (35)
-All service-layer + non-`@SpringBootTest` unit tests (JUnit 5 + Mockito).
-Run them isolated (skips the 6 Docker tests):
+### CI — all green (56)
+`.github/workflows/test.yml` runs `mvn test` on `ubuntu-latest`. The 6
+integration tests self-provision Postgres/Redis via Testcontainers (native
+Docker on the runner). Latest run: **56 run, 0 failures, 0 errors.**
+(56 > local 41 because the `@Test` methods inside the 6 IT classes actually
+execute on Linux; on Windows those classes error at startup and count as 6.)
 
+### Local Windows — 35/35 (+6 env-blocked)
+The 6 IT extending `src/test/java/com/carwash/backend/AbstractIntegrationTest.java`
+cannot run on this machine (Docker Desktop defect, §3):
+`AuthControllerTest`, `BookingControllerTest`, `BookingServiceIntegrationTest`,
+`CarWashBackendApplicationTests`, `OwnerAnalyticsControllerTest`,
+`SlotCapacityRepositoryTest`.
+
+Run the 35 that pass locally:
 ```bash
 mvn test -Dtest='!AuthControllerTest,!BookingControllerTest,!BookingServiceIntegrationTest,!CarWashBackendApplicationTests,!OwnerAnalyticsControllerTest,!SlotCapacityRepositoryTest'
 ```
 
-### Erroring (6) — Docker-dependent
-All extend `src/test/java/com/carwash/backend/AbstractIntegrationTest.java`,
-which spins `postgres:15-alpine` + `redis:7-alpine` via Testcontainers:
-
-1. `AuthControllerTest`
-2. `BookingControllerTest`
-3. `BookingServiceIntegrationTest`
-4. `CarWashBackendApplicationTests`
-5. `OwnerAnalyticsControllerTest`
-6. `SlotCapacityRepositoryTest`
-
-Error (all 6, identical):
-```
-Could not find a valid Docker environment.
-```
-
 ---
 
-## 3. Docker Blocker — Root Cause (diagnosed)
+## 3. Local Docker Blocker (Windows only — NOT a code issue)
 
-**NOT** Java version. **NOT** Testcontainers/docker-java version.
-It is **this Docker Desktop install** mis-routing the docker-java client.
+**Root cause (proven):** Docker Desktop's Windows pipe gateway returns a stub
+`/info` (HTTP 400, label `com.docker.desktop.address=npipe://\\.\pipe\docker_cli`)
+to the **docker-java** client used by Testcontainers, while the `docker` CLI +
+`curl` get HTTP 200 real data on the *same* endpoints. The gateway discriminates
+by client request shape; CLI passes, docker-java gets the stub.
 
-### Evidence
-- `docker` CLI + `curl` → HTTP **200** with real `/info` on every endpoint.
-- docker-java (used by Testcontainers) → HTTP **400** stub `/info` (empty `Info`,
-  label `com.docker.desktop.address=npipe://\\.\pipe\docker_cli`) on EVERY transport:
-  npipe `docker_engine`, npipe `dockerDesktopLinuxEngine`, tcp 2375, tcp 2376 relay.
-- CLI/curl escape via docker context `desktop-linux`; docker-java hits the
-  internal `docker_cli` admin proxy → 400.
-- Engine 29.5.3, API 1.54.
+**Confirmed NOT the cause:** Java version, Testcontainers/docker-java version
+(latest 1.21.3 also fails), pipe choice (`docker_engine` /
+`dockerDesktopLinuxEngine` / tcp 2375 all route through the same gateway →
+same stub), `DOCKER_HOST`, `DOCKER_API_VERSION`, factory reset.
 
-### Tried — ALL FAILED
-`~/.testcontainers.properties` `docker.host` (npipe linux engine / tcp localhost / tcp 127.0.0.1);
-`DOCKER_HOST` env; `DOCKER_API_VERSION=1.40`; surefire `argLine` system prop;
-WSL python tcp→unixsocket relay; containerd image-store toggle (driver flipped
-overlayfs→overlay2, tests still failed); Docker Desktop update (engine stayed 29.5.3);
-Testcontainers bump to 1.21.3 / latest docker-java (still 400, **reverted** per stack lock).
-
-### Cleanup done
-- pom.xml reverted to clean state.
-- `~/.testcontainers.properties` removed.
-- WSL relay killed + deleted.
-
-### Next candidate fix (UNTRIED)
-Docker Desktop **factory reset** — see §6. Likely fixes the proxy mis-route.
-After reset, re-run full suite (§7).
+**Resolution:** Run integration tests on Linux (CI) — done, green. Local
+Windows runs the 35 non-Docker tests. Optional local-IT paths if ever needed:
+WSL2 with native docker + JDK21 + Maven, or Rancher Desktop.
 
 ---
 
@@ -95,64 +78,57 @@ Flyway only (`db/migration/`). `ddl-auto=validate`. snake_case, UUID PKs.
 | V7 | `V7__add_soft_delete.sql` | `deleted_at` soft-delete cols. |
 | V8 | `V8__seed_catalog.sql` | Catalog seed data. |
 | V9 | `V9__fix_token_hash_type.sql` | Token hash column type fix. |
-| **V10** | **`V10__add_booked_count_to_slot_capacities.sql`** | **NEW — staged. See below.** |
+| **V10** | `V10__add_booked_count_to_slot_capacities.sql` | `booked_count INTEGER NOT NULL DEFAULT 0`. **Committed `fbb563c`.** |
 
-### V10 (current head, git-staged `A`)
+### V10 — booked_count
 ```sql
 ALTER TABLE slot_capacities
     ADD COLUMN IF NOT EXISTS booked_count INTEGER NOT NULL DEFAULT 0;
 ```
-- Adds running booked counter to `slot_capacities` (was max_limit only).
-- Entity: `entity/SlotCapacity.java` → field `bookedCount` (default 0).
+- Running booked counter on `slot_capacities`. Entity field
+  `SlotCapacity.bookedCount` (default 0).
 - Consumers: `BookingEngineService`, `BookingService`, `SlotReplenishmentCron`,
   `SlotCapacityRepository`, `SlotAvailabilityDto`, `CatalogSeeder`.
-- Enables availability = `max_limit - booked_count` instead of row-counting bookings.
+- Availability = `max_limit - booked_count`.
+- **Was the CI blocker:** entity expected the column but the migration was
+  never committed → `ddl-auto=validate` failed on a clean DB. Fixed by
+  committing V10.
 
 ---
 
-## 5. Immediate Next Tasks
+## 5. Fixes Landed This Session
 
-1. **Unblock Docker** (priority). Factory reset Docker Desktop (§6), then
-   re-run full suite (§7). Target: 41/41 green.
-2. **Verify V10 path under real Postgres.** The 6 IT classes (esp.
-   `SlotCapacityRepositoryTest`, `BookingServiceIntegrationTest`) exercise
-   `booked_count` concurrency — only meaningful once Docker tests run.
-3. **Commit V10 + related code** once IT green. Currently V10 staged, code may
-   be unstaged — check `git status` before commit.
-4. **Confirm coverage ≥70% service layer** (CLAUDE.md target) after IT runs.
+| Commit | Fix | Why |
+|---|---|---|
+| `92d38f2` | CI workflow trimmed to Testcontainers-only; `.gitignore` guards `.env.production`, `db-backups/`; this handoff. | Make CI exercise the IT on Linux. |
+| `fbb563c` | Commit **V10** migration. | Schema-validation mismatch (`missing column booked_count`). |
+| `545430c` | **401 entry point** in `WebSecurityConfig` (`HttpStatusEntryPoint(UNAUTHORIZED)`). | Unauthenticated returned 403; tests/contract expect 401. Authn-but-forbidden still 403. |
+| `545430c` | **`@Transactional`** on `SlotCapacityRepository.{increment,decrement}BookedCount`. | `@Modifying` queries threw `TransactionRequiredException` when called directly from the repo test. |
 
----
-
-## 6. Docker Factory Reset — Impact (pre-reset checklist)
-
-Reset wipes ALL containers/volumes/images. Inventory at last check:
-
-### Safe to lose (Docker Desktop internals, auto re-pulled)
-- Container `xenodochial_einstein` (docker/lsp).
-- Images: kindest/node, desktop-cloud-provider-kind, envoy, registry-mirror,
-  mcp/docker, docker/lsp(+treesitter).
-- Volumes: `maven-cache`, `docker-lsp`, anonymous hash volumes, `aicarwash_redis_data` (cache only).
-
-### ⚠️ BACK UP FIRST (may hold dev data)
-- `aicarwash_postgres_data` — dev Postgres DB.
-- `theah_database` — unknown DB, verify before wiping.
-
-Backup volume → tarball:
-```bash
-docker run --rm -v aicarwash_postgres_data:/data -v "/a/AI Car Wash":/backup alpine \
-  tar czf /backup/aicarwash_postgres_data.tgz -C /data .
-```
-> Tests do NOT need this data — they use throwaway containers. Back up only if dev DB matters.
+🚩 **Security note:** unauthenticated responses changed 403 → 401. If the
+frontend keyed on 403-for-not-logged-in, update it.
 
 ---
 
-## 7. Re-run Full Suite (after Docker fixed)
+## 6. Open Items
 
-```bash
-cd "A:/AI Car Wash/car-wash-backend"
-mvn clean test
-```
-Expect: `Tests run: 41, Failures: 0, Errors: 0`.
+1. **`target/` cleanup uncommitted** — ~8400 staged deletions of tracked build
+   artifacts (`car-wash-backend/target/**`) sit in the index, unrelated to the
+   above surgical commits. Commit separately when ready (`target/` is already
+   gitignored).
+2. **`.env.production`** — now gitignored. If it was committed in any past
+   commit, rotate those secrets.
+3. **Service-layer coverage ≥70%** (CLAUDE.md target) — verify against the
+   green CI run.
+4. **Node 20 deprecation warning** in CI (actions/checkout, setup-java) —
+   cosmetic; bump action majors when convenient.
+
+---
+
+## 7. Re-run
+
+- **CI:** push to `main`/`develop`, or `gh run watch <id> --exit-status`.
+- **Local (35 only):** see §2 command.
 
 ---
 
