@@ -1,6 +1,6 @@
 # Design
 
-Visual system for Timah Wash (`car-wash-frontend/`). Tokens are CSS custom properties in `src/index.css` (OKLCH components), mapped to Tailwind utilities in `tailwind.config.js`.
+Visual system for AI CarWash (`car-wash-frontend/`). Tokens are CSS custom properties in `src/index.css` (OKLCH components), mapped to Tailwind utilities in `tailwind.config.js`.
 
 ## Theme
 
