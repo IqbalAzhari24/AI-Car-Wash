@@ -3,6 +3,7 @@ package com.carwash.backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -11,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -51,6 +53,9 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v1/owner/**").hasRole("OWNER")
                 .anyRequest().authenticated()
             )
+            // Unauthenticated requests -> 401 (default would be 403); access denied for
+            // authenticated-but-unauthorized requests still returns 403 via the default handler.
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
             // 1. Enforce Rate Limiting FIRST before anything else processes
             .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
             // 2. Extract JWT parameters next
