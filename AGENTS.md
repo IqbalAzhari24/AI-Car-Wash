@@ -1,4 +1,4 @@
-# AGENTS.md — AzureWash Project Master Guide
+# AGENTS.md — AI CarWash Project Master Guide
 > **Scope:** This file is the single source of truth for all AI-assisted work on the AzureWash project.
 > **Target:** Codex, Codex.ai Projects, Codex API
 > **Version:** 1.0.0 | Author: Ahmad Iqball bin Azhari | Updated: 2026-06-18
