@@ -78,8 +78,20 @@ public class BookingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "slotTime, vehicleClass, vehicleModel and serviceId are required.");
         }
 
-        // Customers may only book for themselves; staff may book on behalf of a customer.
-        UUID customerId = (actingIsStaff && req.getCustomerId() != null) ? req.getCustomerId() : actingUserId;
+        // Customers may only book for themselves; staff may book on behalf of a customer,
+        // identifying them by id or (walk-in convenience) by email.
+        boolean staffOnBehalf = actingIsStaff
+                && (req.getCustomerId() != null || StringUtils.hasText(req.getCustomerEmail()));
+        UUID customerId;
+        if (actingIsStaff && req.getCustomerId() != null) {
+            customerId = req.getCustomerId();
+        } else if (actingIsStaff && StringUtils.hasText(req.getCustomerEmail())) {
+            customerId = userRepository.findByEmail(req.getCustomerEmail().trim())
+                    .map(User::getId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No customer found with that email."));
+        } else {
+            customerId = actingUserId;
+        }
         User customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found."));
 
@@ -117,7 +129,7 @@ public class BookingService {
         booking.setVClass(req.getVehicleClass());
         booking.setVehicleModel(req.getVehicleModel().trim());
         booking.setStatus(Booking.BookingStatus.PENDING);
-        booking.setOverride(actingIsStaff && req.getCustomerId() != null);
+        booking.setOverride(staffOnBehalf);
         booking.setTotalPrice(bookingEngine.calculatePrice(service, req.getVehicleClass()));
 
         Booking saved = bookingRepository.save(booking);
@@ -128,6 +140,118 @@ public class BookingService {
     @Transactional(readOnly = true)
     public BookingDto getBooking(UUID bookingId, UUID actingUserId, boolean actingIsStaff) {
         return BookingDto.from(loadAuthorized(bookingId, actingUserId, actingIsStaff));
+    }
+
+    /**
+     * Lists the acting customer's own bookings, newest first, so the customer
+     * can track each booking's status and pay or cancel where allowed.
+     *
+     * @param customerId the authenticated customer's id
+     * @return their bookings as DTOs, newest first
+     */
+    @Transactional(readOnly = true)
+    public List<BookingDto> getMyBookings(UUID customerId) {
+        return bookingRepository.findByCustomer_IdOrderByCreatedAtDesc(customerId)
+                .stream()
+                .map(BookingDto::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the active operator job queue — every booking that is CONFIRMED (ready to start)
+     * or IN_PROGRESS (being washed), earliest slot first. Workers pick jobs off this list and
+     * advance them via {@link #advanceStatus}.
+     *
+     * @return active jobs as DTOs, earliest slot first
+     */
+    @Transactional(readOnly = true)
+    public List<BookingDto> getActiveJobs() {
+        return bookingRepository.findByStatusInOrderBySlotTimeAsc(
+                        List.of(Booking.BookingStatus.CONFIRMED, Booking.BookingStatus.IN_PROGRESS))
+                .stream()
+                .map(BookingDto::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the clerk management queue — every booking awaiting attention: PENDING
+     * (needs payment confirmation), CONFIRMED (ready to wash) and IN_PROGRESS, earliest
+     * slot first. Clerks confirm cash payment, advance, or cancel from this list.
+     *
+     * @return manageable bookings as DTOs, earliest slot first
+     */
+    @Transactional(readOnly = true)
+    public List<BookingDto> getManageQueue() {
+        return bookingRepository.findByStatusInOrderBySlotTimeAsc(
+                        List.of(Booking.BookingStatus.PENDING,
+                                Booking.BookingStatus.CONFIRMED,
+                                Booking.BookingStatus.IN_PROGRESS))
+                .stream()
+                .map(BookingDto::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Advances a booking along the operational state machine. Only the two manual
+     * forward transitions are permitted here: {@code CONFIRMED → IN_PROGRESS} (the wash
+     * starts) and {@code IN_PROGRESS → COMPLETED} (the wash finishes). Any other target
+     * is rejected with 409. Restricted to operators (worker/clerk/owner) at the controller.
+     *
+     * @param bookingId the booking to advance
+     * @param target    the requested next status
+     * @return the updated booking
+     */
+    @Transactional
+    public BookingDto advanceStatus(UUID bookingId, Booking.BookingStatus target) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Booking not found."));
+        Booking.BookingStatus current = booking.getStatus();
+
+        boolean valid =
+                (current == Booking.BookingStatus.CONFIRMED && target == Booking.BookingStatus.IN_PROGRESS)
+                || (current == Booking.BookingStatus.IN_PROGRESS && target == Booking.BookingStatus.COMPLETED);
+        if (!valid) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Invalid status transition: " + current + " → " + target + ".");
+        }
+
+        booking.setStatus(target);
+        bookingRepository.save(booking);
+        log.info("Booking {} advanced {} -> {}", bookingId, current, target);
+        return BookingDto.from(booking);
+    }
+
+    /**
+     * Cancels a booking and frees the slot inventory it reserved. Only {@code PENDING}
+     * or {@code CONFIRMED} bookings may be cancelled; once a wash is in progress or done
+     * it cannot be undone here. The owning customer or any staff member may cancel.
+     *
+     * @param bookingId     the booking to cancel
+     * @param actingUserId  the caller's user id
+     * @param actingIsStaff whether the caller is staff (owner/clerk)
+     * @return the cancelled booking
+     */
+    @Transactional
+    public BookingDto cancelBooking(UUID bookingId, UUID actingUserId, boolean actingIsStaff) {
+        Booking booking = loadAuthorized(bookingId, actingUserId, actingIsStaff);
+        Booking.BookingStatus current = booking.getStatus();
+        if (current != Booking.BookingStatus.PENDING && current != Booking.BookingStatus.CONFIRMED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Only pending or confirmed bookings can be cancelled (current: " + current + ").");
+        }
+
+        // Release every 30-minute block this booking reserved so the slot frees up.
+        int blocks = bookingEngine.calculateRequiredBlocks(booking.getVClass());
+        LocalDateTime blockTime = booking.getSlotTime();
+        for (int i = 0; i < blocks; i++) {
+            slotCapacityRepository.decrementBookedCount(booking.getLocation().getId(), blockTime);
+            blockTime = blockTime.plusMinutes(30);
+        }
+
+        booking.setStatus(Booking.BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+        log.info("Booking {} cancelled by {} (was {}), freed {} block(s)", bookingId, actingUserId, current, blocks);
+        return BookingDto.from(booking);
     }
 
     /**

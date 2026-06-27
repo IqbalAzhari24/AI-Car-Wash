@@ -32,25 +32,25 @@ export const TimahChat: React.FC = () => {
 
   return (
     // Fills the height the Layout reserves for it (h-dvh minus the nav).
-    <div className="flex min-h-0 flex-1 flex-col bg-bg">
+    <div className="flex min-h-0 flex-1 flex-col bg-[#0D0D11]">
       {/* Header */}
-      <div className="border-b border-border bg-surface">
+      <div className="hex-grid-subtle border-b border-[#1E1E2D]">
         <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-4 py-3 sm:px-6">
           <div className="relative flex-shrink-0">
             <img
               src={timahAvatar}
               alt=""
-              className="h-11 w-11 rounded-full object-cover ring-2 ring-accent"
+              className="h-11 w-11 rounded-full object-cover ring-2 ring-[#00F0FF]"
             />
             <span
-              className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-surface ${
-                isConnected ? 'bg-success' : 'bg-muted'
+              className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#13131A] ${
+                isConnected ? 'bg-[#00E5A0]' : 'bg-[#5A5A72]'
               }`}
             />
           </div>
           <div>
-            <h1 className="text-base font-semibold tracking-tight text-ink">Timah</h1>
-            <p className="text-xs text-muted">
+            <h1 className="font-display text-base font-semibold tracking-tight text-[#E8E8F0]">Timah</h1>
+            <p className="font-mono text-xs text-[#9090A8]">
               {isConnected ? 'Online · AI Receptionist' : 'Connecting…'}
             </p>
           </div>
@@ -68,7 +68,7 @@ export const TimahChat: React.FC = () => {
                 alt=""
                 className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
               />
-              <div className="rounded-2xl rounded-bl-sm border border-border bg-surface px-4 py-3 text-sm text-ink">
+              <div className="hex-border rounded-2xl rounded-bl-sm bg-[#1A1A24] px-4 py-3 text-sm text-[#E8E8F0]">
                 <p>
                   👋 Hi there! I'm <strong>Timah</strong>, your personal car wash booking
                   assistant.
@@ -96,15 +96,15 @@ export const TimahChat: React.FC = () => {
               <div
                 className={`max-w-xs px-4 py-3 text-sm sm:max-w-md lg:max-w-lg rounded-2xl
                   ${msg.role === 'user'
-                    ? 'rounded-br-sm bg-primary text-white'
-                    : 'rounded-bl-sm border border-border bg-surface text-ink'
+                    ? 'rounded-br-sm bg-[#00F0FF] text-[#0D0D11]'
+                    : 'hex-border rounded-bl-sm bg-[#1A1A24] text-[#E8E8F0]'
                   }
                 `}
               >
                 <p className="whitespace-pre-wrap break-words">
                   {msg.content}
                   {msg.isStreaming && (
-                    <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse rounded-sm bg-accent align-middle motion-reduce:animate-none" />
+                    <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse rounded-sm bg-[#00F0FF] align-middle motion-reduce:animate-none" />
                   )}
                 </p>
               </div>
@@ -119,10 +119,10 @@ export const TimahChat: React.FC = () => {
                 alt=""
                 className="h-8 w-8 flex-shrink-0 rounded-full object-cover"
               />
-              <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm border border-border bg-surface px-4 py-3">
-                <span className="h-2 w-2 animate-bounce rounded-full bg-muted [animation-delay:-0.3s] motion-reduce:animate-none" />
-                <span className="h-2 w-2 animate-bounce rounded-full bg-muted [animation-delay:-0.15s] motion-reduce:animate-none" />
-                <span className="h-2 w-2 animate-bounce rounded-full bg-muted motion-reduce:animate-none" />
+              <div className="hex-border flex items-center gap-1 rounded-2xl rounded-bl-sm bg-[#1A1A24] px-4 py-3">
+                <span className="h-2 w-2 animate-bounce rounded-full bg-[#00F0FF] [animation-delay:-0.3s] motion-reduce:animate-none" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-[#00F0FF] [animation-delay:-0.15s] motion-reduce:animate-none" />
+                <span className="h-2 w-2 animate-bounce rounded-full bg-[#00F0FF] motion-reduce:animate-none" />
               </div>
             </div>
           )}
@@ -132,16 +132,16 @@ export const TimahChat: React.FC = () => {
       </div>
 
       {/* Input Bar */}
-      <div className="border-t border-border bg-bg">
+      <div className="border-t border-[#1E1E2D] bg-[#0D0D11]">
         <div className="mx-auto w-full max-w-3xl px-4 pb-4 pt-3 sm:px-6">
-          <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface px-4 py-2 transition-colors duration-150 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+          <div className="flex items-center gap-2 rounded-2xl border border-[#2A2A3D] bg-[#13131A] px-4 py-2 transition-colors duration-150 focus-within:border-[#00F0FF] focus-within:ring-1 focus-within:ring-[#00F0FF]">
             <label htmlFor="timah-chat-input" className="sr-only">
               Message Timah
             </label>
             <textarea
               id="timah-chat-input"
               rows={1}
-              className="max-h-24 flex-1 resize-none bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+              className="max-h-24 flex-1 resize-none bg-transparent text-sm text-[#E8E8F0] outline-none placeholder:text-[#5A5A72]"
               placeholder="Ask Timah to book a slot…"
               value={input}
               onChange={e => setInput(e.target.value)}
@@ -152,12 +152,12 @@ export const TimahChat: React.FC = () => {
               id="timah-send-btn"
               onClick={handleSend}
               disabled={!isConnected || !input.trim()}
-              className="flex-shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[44px] flex-shrink-0 items-center rounded-xl bg-[#00F0FF] px-4 py-2 text-sm font-semibold text-[#0D0D11] shadow-cyan-glow transition-colors duration-150 hover:bg-[#00B8C4] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Send
             </button>
           </div>
-          <p className="mt-2 text-center text-xs text-muted">
+          <p className="mt-2 text-center font-mono text-xs text-[#5A5A72]">
             Timah operates Mon–Thu, 09:00–17:00. Closed Fridays.
           </p>
         </div>

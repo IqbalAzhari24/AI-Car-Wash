@@ -11,6 +11,8 @@ import java.util.UUID;
  */
 public class CreateBookingRequest {
     private UUID customerId;
+    /** Walk-in convenience: staff may identify the customer by email instead of id. */
+    private String customerEmail;
     private UUID locationId;
     private UUID serviceId;
     private LocalDateTime slotTime;
@@ -19,6 +21,8 @@ public class CreateBookingRequest {
 
     public UUID getCustomerId() { return customerId; }
     public void setCustomerId(UUID customerId) { this.customerId = customerId; }
+    public String getCustomerEmail() { return customerEmail; }
+    public void setCustomerEmail(String customerEmail) { this.customerEmail = customerEmail; }
     public UUID getLocationId() { return locationId; }
     public void setLocationId(UUID locationId) { this.locationId = locationId; }
     public UUID getServiceId() { return serviceId; }

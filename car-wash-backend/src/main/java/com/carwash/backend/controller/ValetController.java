@@ -5,8 +5,7 @@ import com.carwash.backend.dto.ValetRequestDto;
 import com.carwash.backend.service.ValetService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -50,10 +49,10 @@ public class ValetController {
     @PostMapping("/requests")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Map<String, Object>> submitRequest(
-            @AuthenticationPrincipal UserDetails userDetails,
+            Authentication authentication,
             @RequestBody CreateValetRequestDto dto) {
 
-        ValetRequestDto result = valetService.submitRequest(userDetails.getUsername(), dto);
+        ValetRequestDto result = valetService.submitRequest(authentication.getName(), dto);
 
         return ResponseEntity.ok(Map.of(
                 "status", "success",
@@ -74,9 +73,9 @@ public class ValetController {
     @GetMapping("/requests/mine")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Map<String, Object>> getMyRequests(
-            @AuthenticationPrincipal UserDetails userDetails) {
+            Authentication authentication) {
 
-        List<ValetRequestDto> requests = valetService.getMyRequests(userDetails.getUsername());
+        List<ValetRequestDto> requests = valetService.getMyRequests(authentication.getName());
 
         return ResponseEntity.ok(Map.of(
                 "status", "success",

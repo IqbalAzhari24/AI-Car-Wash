@@ -63,15 +63,15 @@ public class ValetService {
     /**
      * Submits a valet pick-up request and performs the Haversine geofencing check.
      *
-     * @param customerEmail email of the authenticated customer
-     * @param dto           request body containing customer GPS coordinates
+     * @param customerId id of the authenticated customer (JWT subject)
+     * @param dto        request body containing customer GPS coordinates
      * @return the persisted valet request as a DTO (status ACCEPTED or REJECTED)
      * @throws IllegalArgumentException if the location is not found or has no coordinates set
      */
     @Transactional
-    public ValetRequestDto submitRequest(String customerEmail, CreateValetRequestDto dto) {
-        User customer = userRepository.findByEmail(customerEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerEmail));
+    public ValetRequestDto submitRequest(String customerId, CreateValetRequestDto dto) {
+        User customer = userRepository.findById(UUID.fromString(customerId))
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId));
 
         Location location = locationRepository.findById(UUID.fromString(dto.getLocationId()))
                 .orElseThrow(() -> new IllegalArgumentException("Location not found: " + dto.getLocationId()));
@@ -91,7 +91,7 @@ public class ValetService {
         boolean withinRadius = distanceKm <= radiusKm;
 
         log.info("Valet request from customer={} to branch={}: distance={:.2f}km, radius={:.2f}km, withinRadius={}",
-                customerEmail, location.getName(), distanceKm, radiusKm, withinRadius);
+                customerId, location.getName(), distanceKm, radiusKm, withinRadius);
 
         // --- Persist ---
         ValetRequest request = new ValetRequest();
@@ -120,13 +120,13 @@ public class ValetService {
     /**
      * Returns all valet requests submitted by the authenticated customer.
      *
-     * @param customerEmail email of the authenticated customer
+     * @param customerId id of the authenticated customer (JWT subject)
      * @return list of valet request DTOs, newest first
      */
     @Transactional(readOnly = true)
-    public List<ValetRequestDto> getMyRequests(String customerEmail) {
-        User customer = userRepository.findByEmail(customerEmail)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerEmail));
+    public List<ValetRequestDto> getMyRequests(String customerId) {
+        User customer = userRepository.findById(UUID.fromString(customerId))
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId));
 
         return valetRepository.findByCustomer_IdOrderByCreatedAtDesc(customer.getId())
                 .stream()

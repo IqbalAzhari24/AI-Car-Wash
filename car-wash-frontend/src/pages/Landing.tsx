@@ -1,97 +1,167 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Car, Droplet, Sparkles, MessageCircle, CalendarCheck, Wallet, ArrowRight } from 'lucide-react';
+import {
+  ArrowRight, Car, Droplets, Sparkles, Check, Bot, Activity, Wallet, RefreshCw,
+  Terminal, MapPin, Building2, Clock, Zap,
+} from 'lucide-react';
 
-const STEPS = [
+// Ported from the Stitch "AI Car Wash" landing design. Header + bottom nav live in
+// Layout, so only the page body is here. Icons use lucide (project dep); colours and
+// texture reuse the Cyber-Honeycomb tokens in index.css / ui.ts. Visitors aren't
+// authenticated, so every CTA routes to /login.
+//
+// All figures are real and sourced from the backend:
+//   prices/durations/descriptions → V8__seed_catalog.sql
+//   3 cars / 30-min slot, 14-day window → CatalogSeeder
+//   no-show auto-release 15 min → NoShowAutomationCron
+//   location + hours → V8 seed + CatalogSeeder (Fri closed, 09:00–17:30)
+
+const SERVICES = [
   {
-    icon: MessageCircle,
-    title: 'Tell Timah what you need',
-    description:
-      "Open the chat and say what you're bringing in and when you'd like to come. No forms, no menus.",
+    duration: '30 min',
+    name: 'Standard Wash',
+    icon: Car,
+    accent: '#00F0FF',
+    price: 'RM 25',
+    blurb: 'Exterior wash and dry.',
+    features: ['Exterior wash', 'Hand dry'],
+    recommended: false,
   },
   {
-    icon: CalendarCheck,
-    title: 'Get your slot confirmed',
-    description: 'Timah checks availability and locks in your time on the spot — done in under a minute.',
+    duration: '45 min',
+    name: 'Premium Wash',
+    icon: Droplets,
+    accent: '#00F0FF',
+    price: 'RM 45',
+    blurb: 'Exterior plus interior vacuum and wipe-down.',
+    features: ['Everything in Standard', 'Interior vacuum', 'Interior wipe-down'],
+    recommended: true,
   },
   {
-    icon: Wallet,
-    title: 'Pull up and pay',
-    description: 'Show up at your time, get washed, and settle up in RM. That’s the whole visit.',
+    duration: '90 min',
+    name: 'Full Detailing',
+    icon: Sparkles,
+    accent: '#00E5A0',
+    price: 'RM 120',
+    blurb: 'Deep clean, polish and wax.',
+    features: ['Everything in Premium', 'Deep clean', 'Polish & wax'],
+    recommended: false,
   },
+] as const;
+
+const FEATURES = [
+  { icon: Bot, title: 'Book with Timah', desc: 'Chat naturally with our AI assistant — it checks availability and locks your slot.' },
+  { icon: Activity, title: 'Real-Time Slots', desc: 'Live availability across a 14-day window, 3 vehicles per 30-minute slot.' },
+  { icon: Wallet, title: 'Cashless Payment', desc: 'Pay online via ToyyibPay FPX, confirmed by secure server callback.' },
+  { icon: RefreshCw, title: 'No-Show Auto-Release', desc: 'Unclaimed slots free up automatically 15 minutes past their start time.' },
 ] as const;
 
 export const Landing: React.FC = () => {
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col bg-[#0D0D11]">
       {/* Hero */}
-      <section className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-24">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div className="max-w-xl">
-            <h1 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:text-5xl" style={{ textWrap: 'balance' }}>
-              Book your wash by chatting with Timah
+      <section className="hex-radial-core relative px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
+          <div className="flex flex-col gap-6">
+            <span className="inline-flex w-max items-center gap-2 rounded-full border border-[#2A2A3D] bg-[#1A1A24] px-3 py-1 font-mono text-xs uppercase tracking-wider text-[#00F0FF]">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-[#00F0FF] motion-reduce:animate-none" />
+              System Online
+            </span>
+            <h1 className="font-display text-3xl font-bold tracking-tight text-[#E8E8F0] sm:text-4xl lg:text-5xl">
+              Precision cleaning meets <span className="text-[#00F0FF]">cybernetic efficiency</span>.
             </h1>
-            <p className="mt-4 text-base leading-relaxed text-muted sm:text-lg">
-              Timah is your car wash's AI receptionist. Tell her what you're driving and when
-              you'd like to come in, and she'll get your slot booked — right from your phone,
-              no app to download.
+            <p className="max-w-lg text-base leading-relaxed text-[#9090A8] sm:text-lg">
+              Book your wash by chatting with Timah, our AI assistant. Real-time slot availability,
+              cashless payment, and a no-show auto-release that keeps the schedule moving.
             </p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="mt-2 flex flex-col gap-4 sm:flex-row">
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-primary-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                className="inline-flex min-h-[48px] items-center justify-center gap-2 bg-[#0D0D11] px-8 font-mono text-sm font-medium uppercase tracking-wider text-[#00F0FF] transition-colors hover:bg-[#1F1F2E] hex-border-active active:scale-95"
               >
-                Sign in
+                Book Now
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <p className="text-sm text-muted">
-                Already a regular? Your shop sets you up with an account.
-              </p>
+              <Link
+                to="/login"
+                className="inline-flex min-h-[48px] items-center justify-center bg-[#1A1A24] px-8 font-mono text-sm font-medium uppercase tracking-wider text-[#E8E8F0] transition-colors hover:bg-[#1F1F2E] border border-[#2A2A3D] active:scale-95"
+              >
+                Sign In
+              </Link>
             </div>
           </div>
 
-          {/* Illustration */}
-          <div className="flex justify-center lg:justify-end">
-            <div
-              className="relative flex h-64 w-64 items-center justify-center rounded-3xl bg-primary-soft sm:h-80 sm:w-80"
-              aria-hidden="true"
-            >
-              <Car className="h-24 w-24 text-primary-soft-ink sm:h-32 sm:w-32" strokeWidth={1.5} />
-              <Droplet
-                className="absolute right-9 top-9 h-9 w-9 text-accent sm:right-12 sm:top-12 sm:h-11 sm:w-11"
-                fill="currentColor"
-                strokeWidth={1}
-              />
-              <Droplet
-                className="absolute bottom-12 left-10 h-6 w-6 text-accent-soft-ink/70 sm:bottom-16 sm:left-14 sm:h-7 sm:w-7"
-                fill="currentColor"
-                strokeWidth={1}
-              />
-              <Sparkles className="absolute left-10 top-14 h-5 w-5 text-primary sm:left-14 sm:top-16 sm:h-6 sm:w-6" />
+          {/* Capacity panel — texture + focal icon, with real slot facts. */}
+          <div className="hex-grid hex-border hex-corner relative h-[360px] w-full overflow-hidden rounded-lg sm:h-[400px]">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Car className="h-28 w-28 text-[#00F0FF]/80 sm:h-36 sm:w-36" strokeWidth={1} />
+            </div>
+            <div className="absolute inset-x-4 bottom-4 z-20 flex items-center justify-between border border-[#2A2A3D] bg-[#0D0D11]/80 p-4 backdrop-blur-md">
+              <div>
+                <p className="font-mono text-xs uppercase tracking-wider text-[#9090A8]">Booking Window</p>
+                <p className="text-[#00F0FF]">14 days ahead</p>
+              </div>
+              <div className="text-right">
+                <p className="font-mono text-xs uppercase tracking-wider text-[#9090A8]">Per 30-min Slot</p>
+                <p className="font-bold text-[#E8E8F0]">3 vehicles</p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="border-t border-border bg-surface">
-        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-          <h2 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">How it works</h2>
-          <div className="mt-8 grid gap-10 sm:grid-cols-3 sm:gap-8">
-            {STEPS.map((step, index) => {
-              const Icon = step.icon;
+      {/* Wash packages */}
+      <section className="border-y border-[#1E1E2D] bg-[#151d1e] px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center md:text-left">
+            <h2 className="mb-2 font-display text-2xl font-semibold tracking-tight text-[#E8E8F0] sm:text-3xl">
+              Wash Packages
+            </h2>
+            <p className="text-[#9090A8]">Pick the level of detailing your vehicle needs.</p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {SERVICES.map((s) => {
+              const Icon = s.icon;
               return (
-                <div key={step.title} className="flex flex-col gap-3">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary text-sm font-semibold text-white">
-                      {index + 1}
-                    </span>
-                    <Icon className="h-5 w-5 text-muted" />
+                <div
+                  key={s.name}
+                  className={`hex-corner relative flex h-full flex-col p-6 ${
+                    s.recommended
+                      ? 'hex-border bg-[#1A1A24]'
+                      : 'border border-[#2A2A3D] bg-[#13131A] transition-colors hover:border-[#3b494b]'
+                  }`}
+                >
+                  {s.recommended && (
+                    <div className="absolute -top-3 right-6 bg-[#0D0D11] px-3 py-1 hex-border-active">
+                      <span className="font-mono text-xs uppercase tracking-wider text-[#00F0FF]">
+                        Most Popular
+                      </span>
+                    </div>
+                  )}
+                  <div className={`mb-6 flex items-start justify-between ${s.recommended ? 'mt-2' : ''}`}>
+                    <Icon className="h-8 w-8" style={{ color: s.accent }} strokeWidth={1.5} />
+                    <span className="font-mono text-xs uppercase tracking-wider text-[#9090A8]">{s.duration}</span>
                   </div>
-                  <h3 className="text-base font-semibold text-ink">{step.title}</h3>
-                  <p className="text-sm leading-relaxed text-muted" style={{ textWrap: 'pretty' }}>
-                    {step.description}
-                  </p>
+                  <h3 className="mb-2 font-display text-xl font-semibold text-[#E8E8F0]">{s.name}</h3>
+                  <p className="mb-6 flex-grow text-sm leading-relaxed text-[#9090A8]">{s.blurb}</p>
+                  <div className="mb-6 space-y-2">
+                    {s.features.map((f) => (
+                      <div key={f} className="flex items-center gap-2">
+                        <Check className="h-4 w-4 flex-shrink-0" style={{ color: s.accent }} />
+                        <span className="text-sm text-[#9090A8]">{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-auto flex items-end justify-between">
+                    <p className="font-display text-xl font-semibold text-[#E8E8F0]">{s.price}</p>
+                    <Link
+                      to="/login"
+                      className="inline-flex min-h-[44px] items-center font-mono text-sm uppercase tracking-wider transition-colors hover:text-[#00F0FF]"
+                      style={{ color: s.accent }}
+                    >
+                      Book
+                    </Link>
+                  </div>
                 </div>
               );
             })}
@@ -99,48 +169,103 @@ export const Landing: React.FC = () => {
         </div>
       </section>
 
-      {/* For staff */}
-      <section className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-16">
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-              Running the shop?
-            </h2>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-muted sm:text-base">
-              Owners, clerks, and workers sign in from the same page. Owners get a directory of
-              customers and staff plus each customer's transaction history; clerks and workers
-              get the dashboard for the day's bookings.
-            </p>
+      {/* Driven by Technology */}
+      <section className="hex-grid px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl items-center gap-16 lg:grid-cols-2">
+          <div className="relative order-2 mx-auto aspect-square w-full max-w-md border border-[#2A2A3D] bg-[#1A1A24] p-4 lg:order-1">
+            <div className="flex h-full w-full items-center justify-center border border-[#1E1E2D] bg-[#0D0D11]">
+              <Bot className="h-24 w-24 text-[#00E5A0]/70" strokeWidth={1} />
+            </div>
+            {/* Live capacity widget */}
+            <div className="absolute -right-4 top-8 w-48 bg-[#0D0D11] p-4 shadow-lg hex-border md:-right-8">
+              <p className="mb-1 font-mono text-xs uppercase tracking-wider text-[#9090A8]">Live Capacity</p>
+              <p className="font-display text-2xl font-semibold text-[#00E5A0]">3 / slot</p>
+              <p className="mt-1 font-mono text-xs text-[#5A5A72]">every 30 min · 14-day window</p>
+            </div>
           </div>
-          <div className="rounded-2xl border border-border bg-surface p-6">
-            <p className="text-sm font-medium text-ink">One account, one sign-in</p>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted">
-              Whether you're booking a wash or managing the floor, everything lives behind the
-              same sign-in — your role decides what you see next.
-            </p>
+          <div className="order-1 flex flex-col gap-8 lg:order-2">
+            <div>
+              <h2 className="mb-4 font-display text-2xl font-semibold tracking-tight text-[#E8E8F0] sm:text-3xl">
+                Driven by Technology. Powered by Timah.
+              </h2>
+              <p className="text-base leading-relaxed text-[#9090A8] sm:text-lg">
+                Timah is your car wash's AI receptionist. Tell her what you're driving and when you'd
+                like to come in, and she'll get your slot booked — no app to download.
+              </p>
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {FEATURES.map((f) => {
+                const Icon = f.icon;
+                return (
+                  <div key={f.title} className="flex flex-col gap-2">
+                    <Icon className="h-6 w-6 text-[#00F0FF]" />
+                    <h4 className="font-mono text-sm font-medium uppercase tracking-wider text-[#E8E8F0]">
+                      {f.title}
+                    </h4>
+                    <p className="text-sm leading-relaxed text-[#9090A8]">{f.desc}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="border-t border-border">
-        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-          <div className="flex flex-col items-start justify-between gap-6 rounded-2xl bg-primary-soft px-6 py-10 sm:flex-row sm:items-center sm:px-10">
-            <div>
-              <h2 className="text-xl font-semibold tracking-tight text-primary-soft-ink sm:text-2xl">
-                Ready when you are
-              </h2>
-              <p className="mt-2 max-w-md text-sm leading-relaxed text-primary-soft-ink/80">
-                Sign in and Timah will take it from there.
-              </p>
+      {/* Location / Contact */}
+      <section className="hex-grid border-t border-[#1E1E2D] bg-[#151d1e] px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center md:text-left">
+            <h2 className="mb-2 font-display text-2xl font-semibold tracking-tight text-[#E8E8F0] sm:text-3xl">
+              Find Us
+            </h2>
+            <p className="text-[#9090A8]">Drop by our branch or book ahead from your phone.</p>
+          </div>
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            {/* Stylized map panel with the branch marker */}
+            <div className="hex-grid-dense hex-border hex-corner relative h-[360px] w-full overflow-hidden rounded-lg sm:h-[400px]">
+              <span className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-[#00F0FF] shadow-[0_0_15px_#00F0FF] motion-reduce:animate-none" />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-6 font-mono text-xs uppercase tracking-wider text-[#9090A8]">
+                Timah Wash · Main
+              </span>
             </div>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-medium text-white transition-colors duration-150 hover:bg-primary-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
-              Sign in
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+
+            {/* Contact terminal */}
+            <div className="hex-corner border border-[#2A2A3D] bg-[#1A1A24] p-8">
+              <div className="mb-8 flex items-center gap-3">
+                <Terminal className="h-8 w-8 text-[#00F0FF]" />
+                <h3 className="font-display text-xl font-semibold text-[#E8E8F0]">Contact</h3>
+              </div>
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <Building2 className="mt-1 h-5 w-5 flex-shrink-0 text-[#00B8C4]" />
+                  <div>
+                    <p className="mb-1 font-mono text-xs uppercase tracking-wider text-[#9090A8]">Branch</p>
+                    <p className="text-[#E8E8F0]">Timah Wash - Main</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <MapPin className="mt-1 h-5 w-5 flex-shrink-0 text-[#00B8C4]" />
+                  <div>
+                    <p className="mb-1 font-mono text-xs uppercase tracking-wider text-[#9090A8]">Location</p>
+                    <p className="text-[#E8E8F0]">Jalan Utama, Kuala Lumpur</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Clock className="mt-1 h-5 w-5 flex-shrink-0 text-[#00B8C4]" />
+                  <div>
+                    <p className="mb-1 font-mono text-xs uppercase tracking-wider text-[#9090A8]">Operating Hours</p>
+                    <p className="text-[#E8E8F0]">Mon–Thu · 09:00–17:30 · Closed Fridays</p>
+                  </div>
+                </div>
+              </div>
+              <Link
+                to="/login"
+                className="mt-10 inline-flex min-h-[48px] w-full items-center justify-center gap-2 bg-[#0D0D11] font-mono text-sm font-medium uppercase tracking-wider text-[#00F0FF] transition-colors hover:bg-[#1F1F2E] hex-border-active active:scale-95"
+              >
+                Book a Wash
+                <Zap className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

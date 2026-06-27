@@ -39,7 +39,7 @@ function SkeletonRows({ columnCount, rowCount }: { columnCount: number; rowCount
         <tr key={i}>
           {Array.from({ length: columnCount }, (_, j) => (
             <td key={j} className="px-4 py-3.5">
-              <div className="h-4 animate-pulse rounded bg-surface-2 motion-reduce:animate-none" />
+              <div className="h-4 animate-pulse rounded bg-[#1A1A24] motion-reduce:animate-none" />
             </td>
           ))}
         </tr>
@@ -49,7 +49,7 @@ function SkeletonRows({ columnCount, rowCount }: { columnCount: number; rowCount
 }
 
 const pagerButtonClass =
-  'rounded-lg border border-border bg-bg px-3 py-1.5 text-sm font-medium text-ink transition-colors duration-150 hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50';
+  'rounded-lg border border-[#2A2A3D] bg-[#13131A] px-3 py-1.5 text-sm font-medium text-[#E8E8F0] transition-colors duration-150 hover:bg-[#1F1F2E] disabled:cursor-not-allowed disabled:opacity-50';
 
 export function DataTable<T>({
   columns,
@@ -75,10 +75,10 @@ export function DataTable<T>({
   const toRow = Math.min(page * size + rows.length, totalElements);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-bg">
+    <div className="hex-border overflow-hidden rounded-xl bg-[#13131A]">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-border">
-          <thead className="bg-surface">
+        <table className="min-w-full divide-y divide-[#1E1E2D]">
+          <thead className="bg-[#1A1A24]">
             <tr>
               {columns.map((col) => {
                 const active = sort.field === col.key;
@@ -94,13 +94,17 @@ export function DataTable<T>({
                     key={col.key}
                     scope="col"
                     aria-sort={ariaSort}
-                    className={`px-4 py-3 text-left text-xs font-semibold text-muted ${col.className ?? ''}`}
+                    className={`px-4 py-3 text-left font-mono text-xs font-semibold uppercase tracking-wider ${
+                      active ? 'text-[#00F0FF]' : 'text-[#9090A8]'
+                    } ${col.className ?? ''}`}
                   >
                     {col.sortable ? (
                       <button
                         type="button"
                         onClick={() => handleSort(col)}
-                        className="inline-flex items-center gap-1 rounded hover:text-ink"
+                        className={`inline-flex items-center gap-1 rounded transition-colors ${
+                          active ? 'text-[#00F0FF]' : 'hover:text-[#E8E8F0]'
+                        }`}
                       >
                         {col.header}
                         {active ? (
@@ -121,20 +125,20 @@ export function DataTable<T>({
               })}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border bg-bg">
+          <tbody className="divide-y divide-[#1E1E2D] bg-[#13131A]">
             {loading ? (
               <SkeletonRows columnCount={columns.length} rowCount={Math.min(size, 10)} />
             ) : rows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-12 text-center text-sm text-muted">
+                <td colSpan={columns.length} className="px-4 py-12 text-center text-sm text-[#5A5A72]">
                   {emptyMessage}
                 </td>
               </tr>
             ) : (
               rows.map((row) => (
-                <tr key={rowKey(row)} className="transition-colors duration-150 hover:bg-surface">
+                <tr key={rowKey(row)} className="transition-colors duration-150 hover:bg-[#1F1F2E]">
                   {columns.map((col) => (
-                    <td key={col.key} className={`px-4 py-3 text-sm text-ink ${col.className ?? ''}`}>
+                    <td key={col.key} className={`px-4 py-3 text-sm text-[#E8E8F0] ${col.className ?? ''}`}>
                       {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
                     </td>
                   ))}
@@ -146,15 +150,15 @@ export function DataTable<T>({
       </div>
 
       {/* Pagination footer */}
-      <div className="flex items-center justify-between border-t border-border bg-bg px-4 py-3">
-        <p className="text-sm tabular-nums text-muted">
+      <div className="flex items-center justify-between border-t border-[#1E1E2D] bg-[#13131A] px-4 py-3">
+        <p className="font-mono text-sm tabular-nums text-[#9090A8]">
           {totalElements === 0 ? (
             'No results'
           ) : (
             <>
-              Showing <span className="font-medium text-ink">{fromRow}</span>–
-              <span className="font-medium text-ink">{toRow}</span> of{' '}
-              <span className="font-medium text-ink">{totalElements}</span>
+              Showing <span className="font-medium text-[#E8E8F0]">{fromRow}</span>–
+              <span className="font-medium text-[#E8E8F0]">{toRow}</span> of{' '}
+              <span className="font-medium text-[#E8E8F0]">{totalElements}</span>
             </>
           )}
         </p>
@@ -167,7 +171,7 @@ export function DataTable<T>({
           >
             Previous
           </button>
-          <span className="text-sm tabular-nums text-muted">
+          <span className="font-mono text-sm tabular-nums text-[#9090A8]">
             Page {totalPages === 0 ? 0 : page + 1} of {totalPages}
           </span>
           <button

@@ -4,17 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
 import type { Role } from '../types';
 
-// ─── Dev quick-login accounts (loaded from .env.local only in dev mode) ──────
-const DEV_ACCOUNTS: { label: string; email: string; password: string; role: string }[] =
-  import.meta.env.DEV
-    ? [
-        { label: 'Owner',    role: 'OWNER',    email: import.meta.env.VITE_DEV_OWNER_EMAIL    ?? '', password: import.meta.env.VITE_DEV_OWNER_PASSWORD    ?? '' },
-        { label: 'Clerk',    role: 'CLERK',    email: import.meta.env.VITE_DEV_CLERK_EMAIL     ?? '', password: import.meta.env.VITE_DEV_CLERK_PASSWORD     ?? '' },
-        { label: 'Worker',   role: 'WORKER',   email: import.meta.env.VITE_DEV_WORKER_EMAIL    ?? '', password: import.meta.env.VITE_DEV_WORKER_PASSWORD    ?? '' },
-        { label: 'Customer', role: 'CUSTOMER', email: import.meta.env.VITE_DEV_CUSTOMER_EMAIL ?? '', password: import.meta.env.VITE_DEV_CUSTOMER_PASSWORD  ?? '' },
-      ]
-    : [];
-
 // ─── Role → destination map (all 4 roles from CLAUDE.md) ────────────────────
 const ROLE_DESTINATION: Record<Role, string> = {
   OWNER:    '/admin/users',
@@ -51,9 +40,9 @@ const Spinner: React.FC = () => (
   </svg>
 );
 
-// ─── AzureWash wordmark ───────────────────────────────────────────────────────
+// ─── AI Car Wash wordmark ─────────────────────────────────────────────────────
 const Wordmark: React.FC = () => (
-  <div className="flex items-center gap-2.5" aria-label="AzureWash">
+  <div className="flex items-center gap-2.5" aria-label="AI Car Wash">
     {/* Hex logo mark */}
     <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
       <polygon
@@ -79,7 +68,7 @@ const Wordmark: React.FC = () => (
     </svg>
     <span className="font-display font-bold text-xl tracking-tight"
       style={{ color: '#E8E8F0' }}>
-      Azure<span style={{ color: '#00F0FF' }}>Wash</span>
+      AI Car <span style={{ color: '#00F0FF' }}>Wash</span>
     </span>
   </div>
 );
@@ -114,12 +103,6 @@ export const Login: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const fillDevAccount = (acct: (typeof DEV_ACCOUNTS)[number]) => {
-    setEmail(acct.email);
-    setPassword(acct.password);
-    setError('');
   };
 
   return (
@@ -325,71 +308,9 @@ export const Login: React.FC = () => {
           </form>
         </div>
 
-        {/* ── Dev quick-login panel (development mode only) ───────────────── */}
-        {import.meta.env.DEV && DEV_ACCOUNTS.some((a) => a.email) && (
-          <div
-            className="rounded-2xl p-5"
-            style={{
-              border: '1px dashed rgba(61,74,107,0.7)',
-              backgroundColor: 'rgba(19,19,26,0.6)',
-            }}
-          >
-            <p
-              className="text-xs font-medium uppercase tracking-wide mb-3"
-              style={{ color: '#5A5A72' }}
-            >
-              Dev quick login
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {DEV_ACCOUNTS.map((acct) => (
-                <button
-                  key={acct.label}
-                  type="button"
-                  onClick={() => fillDevAccount(acct)}
-                  className="
-                    min-h-[44px] rounded-lg px-3 py-2
-                    text-xs font-medium text-left
-                    border transition-all duration-150 active:scale-[0.97]
-                    focus-visible:outline-none focus-visible:ring-2
-                  "
-                  style={{
-                    borderColor:     '#2A2A3D',
-                    backgroundColor: '#13131A',
-                    color:           '#9090A8',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor     = 'rgba(0,240,255,0.25)';
-                    e.currentTarget.style.color           = '#E8E8F0';
-                    e.currentTarget.style.backgroundColor = '#1A1A24';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor     = '#2A2A3D';
-                    e.currentTarget.style.color           = '#9090A8';
-                    e.currentTarget.style.backgroundColor = '#13131A';
-                  }}
-                >
-                  <span
-                    className="block font-semibold text-xs"
-                    style={{ color: '#00F0FF' }}
-                  >
-                    {acct.label}
-                  </span>
-                  <span className="block truncate text-[11px] font-mono mt-0.5"
-                    style={{ color: '#5A5A72' }}>
-                    {acct.email || '—'}
-                  </span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-3 text-[11px]" style={{ color: '#5A5A72' }}>
-              Sets credentials — still requires clicking Sign in.
-            </p>
-          </div>
-        )}
-
         {/* ── Footer ─────────────────────────────────────────────────────── */}
         <p className="text-center text-xs" style={{ color: '#5A5A72' }}>
-          AzureWash · Final Year Project · UMT
+          AI Car Wash · Final Year Project · UMT
         </p>
       </div>
     </div>

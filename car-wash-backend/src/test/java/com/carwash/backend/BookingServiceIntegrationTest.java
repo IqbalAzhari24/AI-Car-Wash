@@ -174,6 +174,82 @@ class BookingServiceIntegrationTest extends AbstractIntegrationTest {
         assertThat(conflicts.get()).isEqualTo(threads - capacity);
     }
 
+    @Test
+    void advanceStatus_walks_confirmed_to_in_progress_to_completed() {
+        User customer = savedCustomer("advance@test.local");
+        LocalDateTime futureSlot = LocalDateTime.now().plusHours(6).withMinute(0).withSecond(0).withNano(0);
+        savedSlot(futureSlot, 5, 0);
+
+        BookingDto created = bookingService.createBooking(customer.getId(), false,
+                req(service.getId(), futureSlot, Booking.VehicleClass.SEDAN, "Toyota Vios"));
+
+        // Confirm it first (cash/online normally does this).
+        Booking b = bookingRepository.findById(created.getId()).orElseThrow();
+        b.setStatus(Booking.BookingStatus.CONFIRMED);
+        bookingRepository.save(b);
+
+        BookingDto inProgress = bookingService.advanceStatus(created.getId(), Booking.BookingStatus.IN_PROGRESS);
+        assertThat(inProgress.getStatus()).isEqualTo("IN_PROGRESS");
+
+        BookingDto completed = bookingService.advanceStatus(created.getId(), Booking.BookingStatus.COMPLETED);
+        assertThat(completed.getStatus()).isEqualTo("COMPLETED");
+    }
+
+    @Test
+    void advanceStatus_rejects_illegal_transition_with_409() {
+        User customer = savedCustomer("illegal@test.local");
+        LocalDateTime futureSlot = LocalDateTime.now().plusHours(7).withMinute(0).withSecond(0).withNano(0);
+        savedSlot(futureSlot, 5, 0);
+
+        BookingDto created = bookingService.createBooking(customer.getId(), false,
+                req(service.getId(), futureSlot, Booking.VehicleClass.SEDAN, "Toyota Vios"));
+
+        // PENDING → IN_PROGRESS is not a legal manual transition.
+        assertThatThrownBy(() ->
+                bookingService.advanceStatus(created.getId(), Booking.BookingStatus.IN_PROGRESS))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting("statusCode")
+                .hasToString("409 CONFLICT");
+    }
+
+    @Test
+    void cancelBooking_frees_the_reserved_slot() {
+        User customer = savedCustomer("cancel@test.local");
+        LocalDateTime futureSlot = LocalDateTime.now().plusHours(8).withMinute(0).withSecond(0).withNano(0);
+        savedSlot(futureSlot, 5, 0);
+
+        BookingDto created = bookingService.createBooking(customer.getId(), false,
+                req(service.getId(), futureSlot, Booking.VehicleClass.SEDAN, "Toyota Vios"));
+        // One SEDAN block reserved.
+        assertThat(slotCapacityRepository.findByLocationIdAndSlotTime(location.getId(), futureSlot).getBookedCount())
+                .isEqualTo(1);
+
+        BookingDto cancelled = bookingService.cancelBooking(created.getId(), customer.getId(), false);
+
+        assertThat(cancelled.getStatus()).isEqualTo("CANCELLED");
+        assertThat(slotCapacityRepository.findByLocationIdAndSlotTime(location.getId(), futureSlot).getBookedCount())
+                .isEqualTo(0);
+    }
+
+    @Test
+    void cancelBooking_rejects_when_not_pending_or_confirmed() {
+        User customer = savedCustomer("nocancel@test.local");
+        LocalDateTime futureSlot = LocalDateTime.now().plusHours(9).withMinute(0).withSecond(0).withNano(0);
+        savedSlot(futureSlot, 5, 0);
+
+        BookingDto created = bookingService.createBooking(customer.getId(), false,
+                req(service.getId(), futureSlot, Booking.VehicleClass.SEDAN, "Toyota Vios"));
+        Booking b = bookingRepository.findById(created.getId()).orElseThrow();
+        b.setStatus(Booking.BookingStatus.COMPLETED);
+        bookingRepository.save(b);
+
+        assertThatThrownBy(() ->
+                bookingService.cancelBooking(created.getId(), customer.getId(), false))
+                .isInstanceOf(ResponseStatusException.class)
+                .extracting("statusCode")
+                .hasToString("409 CONFLICT");
+    }
+
     // --- helpers ---
 
     private User savedCustomer(String email) {
