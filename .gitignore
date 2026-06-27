@@ -22,3 +22,9 @@ node_modules/
 
 # Local DB volume backups (pre Docker factory-reset)
 /db-backups/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
