@@ -49,10 +49,8 @@ interface KpiCardProps {
 
 const KpiCard: React.FC<KpiCardProps> = ({ label, value, sub, accent }) => (
   <div
-    className={`relative overflow-hidden rounded-2xl border p-5 ${
-      accent
-        ? 'border-cyan-500/40 bg-cyan-950/30'
-        : 'border-white/10 bg-white/5'
+    className={`hex-corner relative overflow-hidden rounded-2xl p-5 ${
+      accent ? 'hex-border-active bg-[#13131A]' : 'hex-border bg-[#13131A]'
     }`}
   >
     {/* subtle hex grid texture */}
@@ -65,15 +63,15 @@ const KpiCard: React.FC<KpiCardProps> = ({ label, value, sub, accent }) => (
         backgroundSize: '28px 49px',
       }}
     />
-    <p className="text-xs font-medium uppercase tracking-widest text-white/40">{label}</p>
+    <p className="font-mono text-xs font-medium uppercase tracking-widest text-[#5A5A72]">{label}</p>
     <p
       className={`mt-1.5 font-mono text-2xl font-semibold tabular-nums tracking-tight ${
-        accent ? 'text-cyan-300' : 'text-white'
+        accent ? 'text-[#00F0FF]' : 'text-[#E8E8F0]'
       }`}
     >
       {value}
     </p>
-    {sub && <p className="mt-1 text-xs text-white/40">{sub}</p>}
+    {sub && <p className="mt-1 text-xs text-[#5A5A72]">{sub}</p>}
   </div>
 );
 
@@ -86,8 +84,8 @@ interface StatusRow {
 }
 
 const StatusBreakdown: React.FC<{ rows: StatusRow[]; total: number }> = ({ rows, total }) => (
-  <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-    <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white/50">
+  <div className="hex-border rounded-2xl bg-[#13131A] p-5">
+    <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-widest text-[#9090A8]">
       Booking Status
     </h3>
     <div className="space-y-3">
@@ -96,12 +94,12 @@ const StatusBreakdown: React.FC<{ rows: StatusRow[]; total: number }> = ({ rows,
         return (
           <div key={r.label}>
             <div className="mb-1 flex items-center justify-between text-xs">
-              <span className="text-white/70">{r.label}</span>
-              <span className="font-mono text-white/50">
-                {r.count} <span className="text-white/30">({pct}%)</span>
+              <span className="text-[#9090A8]">{r.label}</span>
+              <span className="font-mono text-[#9090A8]">
+                {r.count} <span className="text-[#5A5A72]">({pct}%)</span>
               </span>
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1A1A24]">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${pct}%`, backgroundColor: r.color }}
@@ -134,7 +132,7 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
 
   if (data.length === 0) {
     return (
-      <div className="flex h-48 items-center justify-center text-sm text-white/30">
+      <div className="flex h-48 items-center justify-center text-sm text-[#5A5A72]">
         No data yet
       </div>
     );
@@ -170,14 +168,14 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
             onClick={() => onDaysChange(d)}
             className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
               days === d
-                ? 'bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-500/40'
-                : 'text-white/40 hover:text-white/70'
+                ? 'bg-[#00F0FF]/10 text-[#00F0FF] ring-1 ring-[#00F0FF]/40'
+                : 'text-[#9090A8] hover:text-[#E8E8F0]'
             }`}
           >
             {d}D
           </button>
         ))}
-        <span className="ml-auto text-xs text-white/30">Revenue (MYR)</span>
+        <span className="ml-auto font-mono text-xs text-[#5A5A72]">Revenue (MYR)</span>
       </div>
 
       {/* SVG chart */}
@@ -276,11 +274,11 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
         {hovered && (
           <div
             aria-live="polite"
-            className="pointer-events-none absolute right-0 top-0 rounded-xl border border-cyan-500/30 bg-gray-900/90 px-3 py-2 text-xs shadow-xl backdrop-blur-sm"
+            className="pointer-events-none absolute right-0 top-0 rounded-xl border border-[#00F0FF]/30 bg-[#0D0D11]/90 px-3 py-2 text-xs shadow-xl backdrop-blur-sm"
           >
-            <p className="font-medium text-white/80">{shortDay(hovered.date)}</p>
-            <p className="mt-0.5 font-mono text-cyan-300">{fmtMyr(hovered.revenue)}</p>
-            <p className="text-white/40">{hovered.bookingCount} bookings</p>
+            <p className="font-medium text-[#E8E8F0]">{shortDay(hovered.date)}</p>
+            <p className="mt-0.5 font-mono text-[#00F0FF]">{fmtMyr(hovered.revenue)}</p>
+            <p className="text-[#9090A8]">{hovered.bookingCount} bookings</p>
           </div>
         )}
       </div>
@@ -291,7 +289,7 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 
 const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse rounded-lg bg-white/10 ${className}`} />
+  <div className={`animate-pulse rounded-lg bg-[#1A1A24] ${className}`} />
 );
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
@@ -341,11 +339,11 @@ export const OwnerAnalytics: React.FC = () => {
 
   const statusRows = summary
     ? [
-        { label: 'Completed',  count: summary.completedBookings,  color: '#22c55e' },
+        { label: 'Completed',  count: summary.completedBookings,  color: '#00E5A0' },
         { label: 'Confirmed',  count: summary.confirmedBookings,  color: '#00F0FF' },
-        { label: 'Pending',    count: summary.pendingBookings,    color: '#f59e0b' },
-        { label: 'Cancelled',  count: summary.cancelledBookings,  color: '#ef4444' },
-        { label: 'No-show',    count: summary.noShowBookings,     color: '#6b7280' },
+        { label: 'Pending',    count: summary.pendingBookings,    color: '#FFB800' },
+        { label: 'Cancelled',  count: summary.cancelledBookings,  color: '#FF4466' },
+        { label: 'No-show',    count: summary.noShowBookings,     color: '#5A5A72' },
       ]
     : [];
 
@@ -355,8 +353,8 @@ export const OwnerAnalytics: React.FC = () => {
       {/* ── Page header ── */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-white">Analytics</h1>
-          <p className="mt-1 text-sm text-white/40">Revenue and booking performance</p>
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-[#E8E8F0]">Analytics</h1>
+          <p className="mt-1 text-sm text-[#9090A8]">Revenue and booking performance</p>
         </div>
         <div className="flex items-center gap-2">
           <label htmlFor="analytics-date" className="sr-only">Select date</label>
@@ -366,12 +364,13 @@ export const OwnerAnalytics: React.FC = () => {
             value={date}
             max={todayStr()}
             onChange={(e) => setDate(e.target.value)}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/80 focus:outline-none focus:ring-2 focus:ring-cyan-500/50"
+            style={{ colorScheme: 'dark' }}
+            className="rounded-lg border border-[#2A2A3D] bg-[#13131A] px-3 py-2 text-sm text-[#E8E8F0] focus:border-[#00F0FF] focus:outline-none focus:ring-1 focus:ring-[#00F0FF]"
           />
           <button
             type="button"
             onClick={() => setDate(todayStr())}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-white/50 transition-colors hover:text-white"
+            className="rounded-lg border border-[#2A2A3D] bg-[#13131A] px-3 py-2 text-xs text-[#9090A8] transition-colors hover:bg-[#1F1F2E] hover:text-[#E8E8F0]"
           >
             Today
           </button>
@@ -380,7 +379,7 @@ export const OwnerAnalytics: React.FC = () => {
 
       {/* ── Daily summary error ── */}
       {errorS && (
-        <div role="alert" className="rounded-xl border border-red-500/30 bg-red-950/30 px-4 py-3 text-sm text-red-300">
+        <div role="alert" className="hex-border-danger rounded-xl px-4 py-3 text-sm text-[#FF4466]">
           {errorS}
         </div>
       )}
@@ -428,8 +427,8 @@ export const OwnerAnalytics: React.FC = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
           {/* Chart — takes 2/3 */}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 lg:col-span-2">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white/50">
+          <div className="hex-border rounded-2xl bg-[#13131A] p-5 lg:col-span-2">
+            <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-widest text-[#9090A8]">
               Revenue Trend
             </h3>
             {loadingT ? (
@@ -438,7 +437,7 @@ export const OwnerAnalytics: React.FC = () => {
                 <Skeleton className="h-3 w-1/2" />
               </div>
             ) : errorT ? (
-              <p role="alert" className="text-sm text-red-400">{errorT}</p>
+              <p role="alert" className="text-sm text-[#FF4466]">{errorT}</p>
             ) : (
               <RevenueBarChart
                 data={trend}
@@ -451,7 +450,7 @@ export const OwnerAnalytics: React.FC = () => {
           {/* Status breakdown — takes 1/3 */}
           <div>
             {loadingS ? (
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-3">
+              <div className="hex-border space-y-3 rounded-2xl bg-[#13131A] p-5">
                 <Skeleton className="h-4 w-1/2" />
                 {[1,2,3,4,5].map((k) => <Skeleton key={k} className="h-6 w-full" />)}
               </div>
@@ -468,13 +467,13 @@ export const OwnerAnalytics: React.FC = () => {
       {/* ── Payment method split ── */}
       {!loadingS && summary && (
         <section aria-label="Payment method split">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white/50">
+          <div className="hex-border rounded-2xl bg-[#13131A] p-5">
+            <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-widest text-[#9090A8]">
               Payment Method Split
             </h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {[
-                { label: 'Cash',       value: summary.cashRevenue,   color: '#22c55e' },
+                { label: 'Cash',       value: summary.cashRevenue,   color: '#00E5A0' },
                 { label: 'Online FPX', value: summary.onlineRevenue, color: '#00F0FF' },
               ].map(({ label, value, color }) => {
                 const total = summary.totalRevenue;
@@ -487,10 +486,10 @@ export const OwnerAnalytics: React.FC = () => {
                     />
                     <div className="flex-1">
                       <div className="flex items-baseline justify-between">
-                        <span className="text-sm text-white/70">{label}</span>
-                        <span className="font-mono text-sm text-white/50">{pct}%</span>
+                        <span className="text-sm text-[#9090A8]">{label}</span>
+                        <span className="font-mono text-sm text-[#9090A8]">{pct}%</span>
                       </div>
-                      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[#1A1A24]">
                         <div
                           className="h-full rounded-full transition-all duration-700"
                           style={{ width: `${pct}%`, backgroundColor: color }}

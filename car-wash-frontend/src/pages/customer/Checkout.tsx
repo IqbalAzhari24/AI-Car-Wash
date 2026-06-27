@@ -132,7 +132,7 @@ export const CheckoutPage: React.FC = () => {
     return (
       <div className="mx-auto w-full max-w-lg px-4 py-12 space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-10 animate-pulse rounded-lg bg-surface-2 motion-reduce:animate-none" />
+          <div key={i} className="h-10 animate-pulse rounded-lg bg-[#1A1A24] motion-reduce:animate-none" />
         ))}
       </div>
     );
@@ -142,8 +142,8 @@ export const CheckoutPage: React.FC = () => {
   if (!booking) {
     return (
       <div className="mx-auto w-full max-w-lg px-4 py-16 text-center">
-        <p className="text-sm text-danger-soft-ink">{loadErr || 'Booking not found.'}</p>
-        <Link to="/" className="mt-4 inline-block text-sm text-primary hover:text-primary-strong">
+        <p className="text-sm text-[#FF4466]">{loadErr || 'Booking not found.'}</p>
+        <Link to="/" className="mt-4 inline-block text-sm font-medium text-[#00F0FF] hover:text-[#00B8C4]">
           Back to home
         </Link>
       </div>
@@ -157,35 +157,35 @@ export const CheckoutPage: React.FC = () => {
     <div className="mx-auto w-full max-w-lg px-4 py-10">
       <Link
         to="/"
-        className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary-strong"
+        className="mb-6 inline-flex items-center gap-1 text-sm font-medium text-[#00F0FF] hover:text-[#00B8C4]"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to home
       </Link>
 
       {/* Booking summary */}
-      <div className="overflow-hidden rounded-xl border border-border bg-bg">
-        <div className="border-b border-border bg-surface px-5 py-4">
-          <h1 className="text-lg font-semibold tracking-tight text-ink">
+      <div className="hex-border hex-corner overflow-hidden rounded-xl bg-[#13131A]">
+        <div className="border-b border-[#1E1E2D] bg-[#1A1A24] px-5 py-4">
+          <h1 className="font-display text-lg font-semibold tracking-tight text-[#E8E8F0]">
             {isCompleted ? 'Wash completed' : confirmed ? 'Booking confirmed' : 'Complete your booking'}
           </h1>
-          <p className="mt-0.5 font-mono text-xs text-muted">{bookingId}</p>
+          <p className="mt-0.5 font-mono text-xs text-[#5A5A72]">{bookingId}</p>
         </div>
 
-        <dl className="divide-y divide-border">
+        <dl className="divide-y divide-[#1E1E2D]">
           <div className="flex items-center justify-between px-5 py-3.5">
-            <dt className="text-sm text-muted">Date &amp; time</dt>
-            <dd className="text-sm font-medium text-ink">{formatDateTime(booking.slotTime)}</dd>
+            <dt className="text-sm text-[#9090A8]">Date &amp; time</dt>
+            <dd className="text-sm font-medium text-[#E8E8F0]">{formatDateTime(booking.slotTime)}</dd>
           </div>
           <div className="flex items-center justify-between px-5 py-3.5">
-            <dt className="text-sm text-muted">Vehicle</dt>
-            <dd className="text-sm font-medium text-ink">
+            <dt className="text-sm text-[#9090A8]">Vehicle</dt>
+            <dd className="text-sm font-medium text-[#E8E8F0]">
               {VEHICLE_LABELS[booking.vehicleClass ?? ''] ?? booking.vehicleClass} — {booking.vehicleModel}
             </dd>
           </div>
-          <div className="flex items-center justify-between bg-surface/50 px-5 py-4">
-            <dt className="text-sm font-semibold text-ink">Total</dt>
-            <dd className="text-lg font-bold tabular-nums text-ink">
+          <div className="flex items-center justify-between bg-[#1A1A24]/50 px-5 py-4">
+            <dt className="text-sm font-semibold text-[#E8E8F0]">Total</dt>
+            <dd className="font-mono text-lg font-bold tabular-nums text-[#00F0FF]">
               RM {Number(booking.totalPrice).toFixed(2)}
             </dd>
           </div>
@@ -196,7 +196,7 @@ export const CheckoutPage: React.FC = () => {
       {payErr && (
         <div
           role="alert"
-          className="mt-4 rounded-lg border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger-soft-ink"
+          className="hex-border-danger mt-4 rounded-lg px-4 py-3 text-sm text-[#FF4466]"
         >
           {payErr}
         </div>
@@ -204,9 +204,9 @@ export const CheckoutPage: React.FC = () => {
 
       {/* COMPLETED — review section */}
       {isCompleted && (
-        <div className="mt-6 rounded-xl border border-border bg-bg overflow-hidden">
-          <div className="border-b border-border bg-surface px-5 py-3">
-            <h2 className="text-sm font-semibold text-ink">How was your wash?</h2>
+        <div className="hex-border mt-6 overflow-hidden rounded-xl bg-[#13131A]">
+          <div className="border-b border-[#1E1E2D] bg-[#1A1A24] px-5 py-3">
+            <h2 className="font-display text-sm font-semibold text-[#E8E8F0]">How was your wash?</h2>
           </div>
           <div className="px-5 py-5">
             {reviewSubmitted ? (
@@ -215,13 +215,13 @@ export const CheckoutPage: React.FC = () => {
                   {[1, 2, 3, 4, 5].map(s => (
                     <Star
                       key={s}
-                      className={`h-6 w-6 ${s <= (review as ReviewData).rating ? 'fill-amber-400 text-amber-400' : 'text-border'}`}
+                      className={`h-6 w-6 ${s <= (review as ReviewData).rating ? 'fill-[#FFB800] text-[#FFB800]' : 'text-[#2A2A3D]'}`}
                     />
                   ))}
                 </div>
-                <p className="text-sm font-medium text-ink">Thanks for your feedback!</p>
+                <p className="text-sm font-medium text-[#E8E8F0]">Thanks for your feedback!</p>
                 {(review as ReviewData).comment && (
-                  <p className="mt-1 text-xs text-muted italic">"{(review as ReviewData).comment}"</p>
+                  <p className="mt-1 text-xs italic text-[#9090A8]">"{(review as ReviewData).comment}"</p>
                 )}
               </div>
             ) : (
@@ -241,8 +241,8 @@ export const CheckoutPage: React.FC = () => {
                       <Star
                         className={`h-8 w-8 transition-colors ${
                           s <= (hoverStar || rating)
-                            ? 'fill-amber-400 text-amber-400'
-                            : 'text-border'
+                            ? 'fill-[#FFB800] text-[#FFB800]'
+                            : 'text-[#2A2A3D]'
                         }`}
                       />
                     </button>
@@ -255,17 +255,17 @@ export const CheckoutPage: React.FC = () => {
                   onChange={e => setComment(e.target.value)}
                   placeholder="Tell us more (optional)"
                   rows={3}
-                  className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                  className="w-full resize-none rounded-lg border border-[#2A2A3D] bg-[#13131A] px-3 py-2 text-sm text-[#E8E8F0] placeholder:text-[#5A5A72] focus:border-[#00F0FF] focus:outline-none focus:ring-1 focus:ring-[#00F0FF]"
                 />
 
                 {reviewErr && (
-                  <p role="alert" className="mt-2 text-xs text-danger-soft-ink">{reviewErr}</p>
+                  <p role="alert" className="mt-2 text-xs text-[#FF4466]">{reviewErr}</p>
                 )}
 
                 <button
                   onClick={submitReview}
                   disabled={submitting || rating === 0}
-                  className="mt-3 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-strong disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-3 w-full rounded-lg bg-[#00F0FF] px-4 py-2.5 text-sm font-semibold text-[#0D0D11] shadow-cyan-glow transition-colors hover:bg-[#00B8C4] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {submitting ? 'Submitting…' : 'Submit review'}
                 </button>
@@ -277,10 +277,10 @@ export const CheckoutPage: React.FC = () => {
 
       {/* CONFIRMED — success banner */}
       {!isCompleted && confirmed && (
-        <div className="mt-6 rounded-xl border border-success/20 bg-success-soft px-5 py-6 text-center">
-          <CheckCircle className="mx-auto h-8 w-8 text-success-soft-ink" />
-          <p className="mt-2 font-semibold text-success-soft-ink">Payment complete — you're all set!</p>
-          <p className="mt-1 text-sm text-success-soft-ink/80">
+        <div className="hex-border-success mt-6 rounded-xl bg-[#13131A] px-5 py-6 text-center">
+          <CheckCircle className="mx-auto h-8 w-8 text-[#00E5A0]" />
+          <p className="mt-2 font-semibold text-[#00E5A0]">Payment complete — you're all set!</p>
+          <p className="mt-1 text-sm text-[#9090A8]">
             Your car wash is confirmed. We'll see you at the shop.
           </p>
         </div>
@@ -289,41 +289,41 @@ export const CheckoutPage: React.FC = () => {
       {/* PENDING — payment options */}
       {!isCompleted && !confirmed && (
         <div className="mt-6 space-y-3">
-          <p className="text-sm font-medium text-ink">Choose how to pay</p>
+          <p className="text-sm font-medium text-[#E8E8F0]">Choose how to pay</p>
 
           <button
             onClick={() => pay('CASH')}
             disabled={!!paying}
-            className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg px-5 py-4 text-left transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+            className="hex-border flex w-full items-center gap-3 rounded-xl bg-[#13131A] px-5 py-4 text-left transition-colors hover:bg-[#1F1F2E] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft">
-              <Banknote className="h-5 w-5 text-accent-soft-ink" />
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#00E5A0]/30 bg-[#00E5A0]/10">
+              <Banknote className="h-5 w-5 text-[#00E5A0]" />
             </span>
             <span className="flex-1">
-              <span className="block text-sm font-semibold text-ink">Pay at counter</span>
-              <span className="block text-xs text-muted">Cash when you arrive</span>
+              <span className="block text-sm font-semibold text-[#E8E8F0]">Pay at counter</span>
+              <span className="block text-xs text-[#9090A8]">Cash when you arrive</span>
             </span>
             {paying === 'CASH' && (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#2A2A3D] border-t-[#00F0FF]" />
             )}
           </button>
 
           <button
             onClick={() => pay('TOYYIBPAY')}
             disabled={!!paying}
-            className="flex w-full items-center gap-3 rounded-xl border border-border bg-bg px-5 py-4 text-left transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+            className="hex-border flex w-full items-center gap-3 rounded-xl bg-[#13131A] px-5 py-4 text-left transition-colors hover:bg-[#1F1F2E] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft">
-              <CreditCard className="h-5 w-5 text-primary-soft-ink" />
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#00F0FF]/30 bg-[#00F0FF]/10">
+              <CreditCard className="h-5 w-5 text-[#00F0FF]" />
             </span>
             <span className="flex-1">
-              <span className="block text-sm font-semibold text-ink">Pay online</span>
-              <span className="block text-xs text-muted">Card or FPX via toyyibPay</span>
+              <span className="block text-sm font-semibold text-[#E8E8F0]">Pay online</span>
+              <span className="block text-xs text-[#9090A8]">Card or FPX via toyyibPay</span>
             </span>
             {paying === 'TOYYIBPAY' ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-primary" />
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#2A2A3D] border-t-[#00F0FF]" />
             ) : (
-              <ExternalLink className="h-4 w-4 text-muted" />
+              <ExternalLink className="h-4 w-4 text-[#9090A8]" />
             )}
           </button>
         </div>

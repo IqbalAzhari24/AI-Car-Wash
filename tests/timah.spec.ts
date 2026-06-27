@@ -23,7 +23,11 @@ test.describe('Timah chat widget', () => {
     await expect(page.locator('body')).not.toContainText('Sign in', { timeout: 5_000 });
   });
 
-  test('rate limit error message appears on 429 response', async ({ page, context }) => {
+  // Obsolete: Timah chat moved to a WebSocket transport (ws://.../ws/timah).
+  // This test mocks a REST /api/v1/chat endpoint the app no longer calls, and the
+  // input stays disabled until the WS connects (no backend in CI). Re-enable with a
+  // WS-level rate-limit simulation if/when one exists.
+  test.skip('rate limit error message appears on 429 response', async ({ page, context }) => {
     const fakeToken = [
       Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url'),
       Buffer.from(JSON.stringify({ sub: '00000000-0000-0000-0000-000000000001', role: 'CUSTOMER', exp: 9999999999 })).toString('base64url'),

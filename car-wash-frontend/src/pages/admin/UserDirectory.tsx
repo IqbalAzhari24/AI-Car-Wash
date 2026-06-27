@@ -12,10 +12,10 @@ const PAGE_SIZE = 10;
 const STAFF_ROLES: Role[] = ['OWNER', 'CLERK', 'WORKER'];
 
 const roleBadgeClass: Record<Role, string> = {
-  OWNER: 'bg-primary-soft text-primary-soft-ink',
-  CLERK: 'bg-accent-soft text-accent-soft-ink',
-  WORKER: 'bg-warning-soft text-warning-soft-ink',
-  CUSTOMER: 'bg-surface-2 text-muted',
+  OWNER: 'border border-[#00F0FF]/40 bg-[#00F0FF]/10 text-[#00F0FF]',
+  CLERK: 'border border-[#7B8CDE]/40 bg-[#7B8CDE]/10 text-[#7B8CDE]',
+  WORKER: 'border border-[#FFB800]/40 bg-[#FFB800]/10 text-[#FFB800]',
+  CUSTOMER: 'border border-[#2A2A3D] bg-[#1A1A24] text-[#9090A8]',
 };
 
 const formatDate = (iso: string): string => {
@@ -114,7 +114,7 @@ export const UserDirectory: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate(`/admin/users/${row.id}/transactions`)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary-soft px-3 py-1.5 text-xs font-medium text-primary-soft-ink transition-colors duration-150 hover:bg-primary-soft/70"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#00F0FF]/30 bg-[#00F0FF]/10 px-3 py-1.5 text-xs font-medium text-[#00F0FF] transition-colors duration-150 hover:bg-[#00F0FF]/20"
           >
             <Receipt className="h-3.5 w-3.5" />
             View Transactions
@@ -129,12 +129,12 @@ export const UserDirectory: React.FC = () => {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">User directory</h1>
-        <p className="mt-1 text-sm text-muted">Browse and search all customer and staff accounts.</p>
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-[#E8E8F0]">User directory</h1>
+        <p className="mt-1 text-sm text-[#9090A8]">Browse and search all customer and staff accounts.</p>
       </div>
 
       {/* Tabs */}
-      <div className="mb-4 border-b border-border">
+      <div className="mb-4 border-b border-[#1E1E2D]">
         <nav className="-mb-px flex gap-6">
           {(['customers', 'staff'] as Tab[]).map((t) => (
             <button
@@ -143,8 +143,8 @@ export const UserDirectory: React.FC = () => {
               onClick={() => switchTab(t)}
               className={`whitespace-nowrap border-b-2 px-1 py-3 text-sm font-medium capitalize transition-colors duration-150 ${
                 tab === t
-                  ? 'border-primary text-ink'
-                  : 'border-transparent text-muted hover:border-border hover:text-ink'
+                  ? 'border-[#00F0FF] text-[#00F0FF]'
+                  : 'border-transparent text-[#9090A8] hover:border-[#2A2A3D] hover:text-[#E8E8F0]'
               }`}
             >
               {t}
@@ -156,7 +156,7 @@ export const UserDirectory: React.FC = () => {
       {/* Toolbar: search + (staff) role sub-filter */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative max-w-sm flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#5A5A72]" />
           <label htmlFor="user-search" className="sr-only">
             Search by email or phone
           </label>
@@ -166,7 +166,7 @@ export const UserDirectory: React.FC = () => {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Search by email or phone…"
-            className="w-full rounded-lg border border-border bg-bg py-2 pl-9 pr-3 text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="w-full rounded-lg border border-[#2A2A3D] bg-[#13131A] py-2 pl-9 pr-3 text-sm text-[#E8E8F0] placeholder:text-[#5A5A72] focus:border-[#00F0FF] focus:outline-none focus:ring-1 focus:ring-[#00F0FF]"
           />
         </div>
 
@@ -178,7 +178,7 @@ export const UserDirectory: React.FC = () => {
               setPage(0);
             }}
             aria-label="Filter staff by role"
-            className="rounded-lg border border-border bg-bg px-3 py-2 text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="rounded-lg border border-[#2A2A3D] bg-[#13131A] px-3 py-2 text-sm text-[#E8E8F0] focus:border-[#00F0FF] focus:outline-none focus:ring-1 focus:ring-[#00F0FF]"
           >
             <option value="ALL">All staff</option>
             <option value="OWNER">Owner</option>
@@ -189,7 +189,7 @@ export const UserDirectory: React.FC = () => {
       </div>
 
       {error && (
-        <div className="mb-4 rounded-lg border border-danger/20 bg-danger-soft p-3 text-sm text-danger-soft-ink" role="alert">
+        <div className="hex-border-danger mb-4 rounded-lg p-3 text-sm text-[#FF4466]" role="alert">
           {error}
         </div>
       )}

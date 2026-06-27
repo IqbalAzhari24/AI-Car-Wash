@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from '../../api/api';
+import { statusBadge } from '../../components/ui';
 import type { Transaction } from '../../types';
 
 const COLUMN_HEADERS = ['Slot Time', 'Vehicle', 'Booking', 'Amount', 'Payment', 'Txn ID'];
@@ -13,21 +14,6 @@ const formatDateTime = (iso: string): string => {
 
 const formatAmount = (amount: number | null): string =>
   amount == null ? '—' : `RM ${Number(amount).toFixed(2)}`;
-
-const statusBadge = (status: string | null): string => {
-  switch (status) {
-    case 'COMPLETED':
-      return 'bg-success-soft text-success-soft-ink';
-    case 'PENDING':
-      return 'bg-warning-soft text-warning-soft-ink';
-    case 'FAILED':
-      return 'bg-danger-soft text-danger-soft-ink';
-    case 'REFUNDED':
-      return 'bg-accent-soft text-accent-soft-ink';
-    default:
-      return 'bg-surface-2 text-muted';
-  }
-};
 
 export const TransactionHistory: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -65,67 +51,63 @@ export const TransactionHistory: React.FC = () => {
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Link
         to="/admin/users"
-        className="mb-4 inline-flex items-center gap-1 rounded text-sm font-medium text-primary hover:text-primary-strong"
+        className="mb-4 inline-flex items-center gap-1 rounded text-sm font-medium text-[#00F0FF] hover:text-[#00B8C4]"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to directory
       </Link>
 
-      <h1 className="mb-1 text-2xl font-semibold tracking-tight text-ink">Transaction history</h1>
-      <p className="mb-6 text-sm text-muted">Customer ID: {id}</p>
+      <h1 className="mb-1 font-display text-2xl font-semibold tracking-tight text-[#E8E8F0]">Transaction history</h1>
+      <p className="mb-6 font-mono text-sm text-[#9090A8]">Customer ID: {id}</p>
 
       {error && (
-        <div className="mb-4 rounded-lg border border-danger/20 bg-danger-soft p-3 text-sm text-danger-soft-ink" role="alert">
+        <div className="hex-border-danger mb-4 rounded-lg p-3 text-sm text-[#FF4466]" role="alert">
           {error}
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-border bg-bg">
+      <div className="hex-border overflow-hidden rounded-xl bg-[#13131A]">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-border">
-            <thead className="bg-surface">
+          <table className="min-w-full divide-y divide-[#1E1E2D]">
+            <thead className="bg-[#1A1A24]">
               <tr>
                 {COLUMN_HEADERS.map((h) => (
-                  <th key={h} scope="col" className="px-4 py-3 text-left text-xs font-semibold text-muted">
+                  <th key={h} scope="col" className="px-4 py-3 text-left font-mono text-xs font-semibold uppercase tracking-wider text-[#9090A8]">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-border bg-bg">
+            <tbody className="divide-y divide-[#1E1E2D] bg-[#13131A]">
               {loading ? (
                 Array.from({ length: 5 }, (_, i) => (
                   <tr key={i}>
                     {COLUMN_HEADERS.map((h) => (
                       <td key={h} className="px-4 py-3.5">
-                        <div className="h-4 animate-pulse rounded bg-surface-2 motion-reduce:animate-none" />
+                        <div className="h-4 animate-pulse rounded bg-[#1A1A24] motion-reduce:animate-none" />
                       </td>
                     ))}
                   </tr>
                 ))
               ) : transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-muted">
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-[#5A5A72]">
                     No transactions yet — this customer hasn't completed a booking.
                   </td>
                 </tr>
               ) : (
                 transactions.map((tx) => (
-                  <tr key={tx.bookingId} className="transition-colors duration-150 hover:bg-surface">
-                    <td className="px-4 py-3 text-sm text-ink">{formatDateTime(tx.slotTime)}</td>
-                    <td className="px-4 py-3 text-sm text-ink">{tx.vehicleClass ?? '—'}</td>
-                    <td className="px-4 py-3 text-sm text-ink">{tx.bookingStatus ?? '—'}</td>
-                    <td className="px-4 py-3 text-sm font-medium tabular-nums text-ink">{formatAmount(tx.amount)}</td>
+                  <tr key={tx.bookingId} className="transition-colors duration-150 hover:bg-[#1F1F2E]">
+                    <td className="px-4 py-3 text-sm text-[#E8E8F0]">{formatDateTime(tx.slotTime)}</td>
+                    <td className="px-4 py-3 text-sm text-[#E8E8F0]">{tx.vehicleClass ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm text-[#E8E8F0]">{tx.bookingStatus ?? '—'}</td>
+                    <td className="px-4 py-3 font-mono text-sm font-medium tabular-nums text-[#E8E8F0]">{formatAmount(tx.amount)}</td>
                     <td className="px-4 py-3 text-sm">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge(
-                          tx.paymentStatus
-                        )}`}
-                      >
+                      <span className={statusBadge(tx.paymentStatus)}>
                         {tx.paymentStatus ?? 'N/A'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono text-sm text-muted">{tx.transactionId ?? '—'}</td>
+                    <td className="px-4 py-3 font-mono text-sm text-[#5A5A72]">{tx.transactionId ?? '—'}</td>
                   </tr>
                 ))
               )}
