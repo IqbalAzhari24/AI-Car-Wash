@@ -7,9 +7,19 @@ test.describe('Authentication', () => {
   });
 
   test('invalid credentials shows error message', async ({ page }) => {
+    // CI has no backend — stub the real 401 rejection path (same route-mock
+    // pattern the other specs use) so this stays deterministic.
+    await page.route('**/v1/auth/login', (route) =>
+      route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Invalid email or password.' }),
+      })
+    );
     await page.goto('/login');
     await page.getByLabel(/email/i).fill('nobody@example.com');
-    await page.getByLabel(/password/i).fill('wrongpassword');
+    // exact: the show/hide toggle's aria-label ("Show password") also matches /password/i
+    await page.getByLabel('Password', { exact: true }).fill('wrongpassword');
     await page.getByRole('button', { name: /sign in/i }).click();
     await expect(page.getByText(/invalid email or password/i)).toBeVisible({ timeout: 8_000 });
   });
