@@ -2,81 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
- * AI Car Wash design tokens.
- * Bare OKLCH components (L C H) so Tailwind can compose alpha:
- *   oklch(var(--color-primary) / <alpha-value>)
- * See DESIGN.md at the repo root for roles and contrast requirements.
- */
-:root {
-  /* CLAUDE_DESIGN.MD v2 dark palette — repointed so legacy utility names
-     (bg-bg, bg-surface, text-ink, text-muted, border-border, text-primary…)
-     resolve to the dark Cyber-Honeycomb system. Bare OKLCH (L C H) of the
-     design-doc hex tokens; kept for <body> default + any straggler classes. */
-  --color-bg: 0.158 0.008 286;             /* #0D0D11 base */
-  --color-surface: 0.196 0.012 286;        /* #13131A surface */
-  --color-surface-2: 0.236 0.016 287;      /* #1A1A24 surface-raised */
-  --color-border: 0.318 0.030 287;         /* #2A2A3D border */
-  --color-ink: 0.925 0.006 286;            /* #E8E8F0 text-primary */
-  --color-muted: 0.643 0.030 286;          /* #9090A8 text-secondary */
-
-  --color-primary: 0.865 0.152 195;        /* #00F0FF cyan — action only */
-  --color-primary-strong: 0.745 0.110 196; /* #00B8C4 cyan-dim (hover) */
-  --color-primary-soft: 0.30 0.040 200;    /* dark cyan-tint surface */
-  --color-primary-soft-ink: 0.865 0.152 195;
-
-  --color-accent: 0.635 0.090 280;         /* #7B8CDE info */
-  --color-accent-strong: 0.745 0.110 196;
-  --color-accent-soft: 0.30 0.030 280;
-  --color-accent-soft-ink: 0.635 0.090 280;
-
-  --color-success: 0.828 0.158 165;        /* #00E5A0 */
-  --color-success-soft: 0.30 0.050 165;
-  --color-success-soft-ink: 0.828 0.158 165;
-
-  --color-warning: 0.812 0.168 80;         /* #FFB800 */
-  --color-warning-soft: 0.32 0.050 80;
-  --color-warning-soft-ink: 0.812 0.168 80;
-
-  --color-danger: 0.652 0.220 16;          /* #FF4466 */
-  --color-danger-soft: 0.30 0.080 16;
-  --color-danger-soft-ink: 0.745 0.180 16;
-
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background-color: #0D0D11;
+  color: #E8E8F0;
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
-  font-weight: 400;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  min-height: 100dvh;
-  background-color: oklch(var(--color-bg));
-  color: oklch(var(--color-ink));
-}
-
-h1,
-h2,
-h3 {
-  text-wrap: balance;
-}
-
 @layer base {
-  /* Single focus vocabulary across every interactive element. */
   :focus-visible {
-    outline: 2px solid oklch(var(--color-primary));
+    outline: 2px solid #00F0FF;
     outline-offset: 2px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
@@ -84,7 +29,7 @@ h3 {
   }
 }
 
-/* ─── CLAUDE_DESIGN.MD v2 — Cyber-Honeycomb texture system ──────────────── */
+/* ─── Cyber-Honeycomb texture system (CLAUDE_DESIGN.MD v2) ──── */
 
 .hex-grid {
   background-color: #13131A;
@@ -107,6 +52,8 @@ h3 {
   background-size: 22px 22px;
 }
 
+/* ─── Border states ─────────────────────────────────────────── */
+
 .hex-border {
   border: 1px solid rgba(0, 240, 255, 0.18);
   box-shadow: 0 0 12px rgba(0, 240, 255, 0.10), inset 0 1px 0 rgba(255,255,255,0.03);
@@ -117,15 +64,17 @@ h3 {
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.25), inset 0 1px 0 rgba(0, 240, 255, 0.05);
 }
 
+.hex-border-success {
+  border: 1px solid rgba(0, 229, 160, 0.40);
+  box-shadow: 0 0 12px rgba(0, 229, 160, 0.15);
+}
+
 .hex-border-danger {
   border: 1px solid rgba(255, 68, 102, 0.40);
   box-shadow: 0 0 12px rgba(255, 68, 102, 0.15);
 }
 
-.hex-border-success {
-  border: 1px solid rgba(0, 229, 160, 0.40);
-  box-shadow: 0 0 12px rgba(0, 229, 160, 0.15);
-}
+/* ─── Radial glow overlays ──────────────────────────────────── */
 
 .hex-radial-core {
   background:
@@ -139,6 +88,8 @@ h3 {
     #13131A;
 }
 
+/* ─── Corner accent marker ──────────────────────────────────── */
+
 .hex-corner {
   position: relative;
   overflow: hidden;
@@ -147,14 +98,14 @@ h3 {
 .hex-corner::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 32px;
-  height: 32px;
+  top: 0; left: 0;
+  width: 32px; height: 32px;
   background: linear-gradient(135deg, rgba(0, 240, 255, 0.25) 0%, transparent 60%);
   clip-path: polygon(0 0, 100% 0, 0 100%);
   pointer-events: none;
 }
 
+/* ─── Safe area utilities ───────────────────────────────────── */
+
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-.safe-top    { padding-top: env(safe-area-inset-top); }
+.safe-top    { padding-top:    env(safe-area-inset-top);    }

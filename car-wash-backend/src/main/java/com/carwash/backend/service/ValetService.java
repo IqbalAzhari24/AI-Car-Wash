@@ -110,7 +110,7 @@ public class ValetService {
                                        : ValetRequest.ValetStatus.REJECTED);
 
         ValetRequest saved = valetRepository.save(request);
-        return toDto(saved, withinRadius);
+        return toDto(saved, saved.getStatus() == ValetRequest.ValetStatus.ACCEPTED);
     }
 
     // -------------------------------------------------------------------------
@@ -130,7 +130,7 @@ public class ValetService {
 
         return valetRepository.findByCustomer_IdOrderByCreatedAtDesc(customer.getId())
                 .stream()
-                .map(r -> toDto(r, r.getDistanceKm() <= r.getRadiusKm()))
+                .map(r -> toDto(r, r.getStatus() == ValetRequest.ValetStatus.ACCEPTED))
                 .collect(Collectors.toList());
     }
 
@@ -148,7 +148,7 @@ public class ValetService {
     public List<ValetRequestDto> getRequestsForLocation(UUID locationId) {
         return valetRepository.findByLocation_IdOrderByCreatedAtDesc(locationId)
                 .stream()
-                .map(r -> toDto(r, r.getDistanceKm() <= r.getRadiusKm()))
+                .map(r -> toDto(r, r.getStatus() == ValetRequest.ValetStatus.ACCEPTED))
                 .collect(Collectors.toList());
     }
 

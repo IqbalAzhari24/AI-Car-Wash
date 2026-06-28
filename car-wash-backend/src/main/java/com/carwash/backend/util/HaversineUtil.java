@@ -39,21 +39,5 @@ public final class HaversineUtil {
 
         return EARTH_RADIUS_KM * c;
     }
-
-    /**
-     * Returns {@code true} if the distance between the two points is within
-     * the given radius (inclusive).
-     *
-     * @param lat1       latitude of point 1 in decimal degrees
-     * @param lon1       longitude of point 1 in decimal degrees
-     * @param lat2       latitude of point 2 in decimal degrees
-     * @param lon2       longitude of point 2 in decimal degrees
-     * @param radiusKm   maximum allowed distance in kilometres
-     * @return true if within radius
-     */
-    public static boolean isWithinRadius(double lat1, double lon1,
-                                         double lat2, double lon2,
-                                         double radiusKm) {
-        return distanceKm(lat1, lon1, lat2, lon2) <= radiusKm;
-    }
 }
+

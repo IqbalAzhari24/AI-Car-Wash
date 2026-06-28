@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
 interface SalesSummary {
   date: string;
   totalRevenue: number;
@@ -20,25 +18,22 @@ interface SalesSummary {
 }
 
 interface TrendPoint {
-  date: string;          // YYYY-MM-DD
+  date: string;
   revenue: number;
   bookingCount: number;
 }
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const todayStr = (): string => new Date().toISOString().slice(0, 10);
 
 const fmtMyr = (v: number): string =>
   `RM ${Number(v).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-/** "2024-06-19" → "Wed 19" */
 const shortDay = (iso: string): string => {
   const d = new Date(iso + 'T00:00:00');
   return d.toLocaleDateString('en-MY', { weekday: 'short', day: 'numeric' });
 };
 
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
+// ─── KPI Card ─────────────────────────────────────────────────
 
 interface KpiCardProps {
   label: string;
@@ -48,44 +43,26 @@ interface KpiCardProps {
 }
 
 const KpiCard: React.FC<KpiCardProps> = ({ label, value, sub, accent }) => (
-  <div
-    className={`hex-corner relative overflow-hidden rounded-2xl p-5 ${
-      accent ? 'hex-border-active bg-[#13131A]' : 'hex-border bg-[#13131A]'
-    }`}
-  >
-    {/* subtle hex grid texture */}
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-0 opacity-[0.04]"
-      style={{
-        backgroundImage:
-          'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'28\' height=\'49\'%3E%3Cpath d=\'M14 0l14 8v16l-14 8L0 24V8z\' fill=\'none\' stroke=\'%2300F0FF\' stroke-width=\'1\'/%3E%3C/svg%3E")',
-        backgroundSize: '28px 49px',
-      }}
-    />
-    <p className="font-mono text-xs font-medium uppercase tracking-widest text-[#5A5A72]">{label}</p>
-    <p
-      className={`mt-1.5 font-mono text-2xl font-semibold tabular-nums tracking-tight ${
-        accent ? 'text-[#00F0FF]' : 'text-[#E8E8F0]'
-      }`}
-    >
+  <div className={`relative hex-corner overflow-hidden rounded-2xl p-5 ${
+    accent ? 'hex-radial-core hex-border-active' : 'hex-grid hex-border'
+  }`}>
+    <p className="text-xs font-medium uppercase tracking-widest text-muted">{label}</p>
+    <p className={`mt-1.5 font-display text-2xl font-bold tabular-nums tracking-tight ${
+      accent ? 'text-cyan' : 'text-primary'
+    }`}>
       {value}
     </p>
-    {sub && <p className="mt-1 text-xs text-[#5A5A72]">{sub}</p>}
+    {sub && <p className="mt-1 text-xs text-secondary">{sub}</p>}
   </div>
 );
 
-// ─── Booking Status Bar ───────────────────────────────────────────────────────
+// ─── Booking Status Breakdown ─────────────────────────────────
 
-interface StatusRow {
-  label: string;
-  count: number;
-  color: string;
-}
+interface StatusRow { label: string; count: number; color: string; }
 
 const StatusBreakdown: React.FC<{ rows: StatusRow[]; total: number }> = ({ rows, total }) => (
-  <div className="hex-border rounded-2xl bg-[#13131A] p-5">
-    <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-widest text-[#9090A8]">
+  <div className="hex-grid hex-border hex-corner rounded-2xl p-5 overflow-hidden">
+    <h3 className="mb-4 text-xs font-medium uppercase tracking-widest text-muted">
       Booking Status
     </h3>
     <div className="space-y-3">
@@ -94,12 +71,12 @@ const StatusBreakdown: React.FC<{ rows: StatusRow[]; total: number }> = ({ rows,
         return (
           <div key={r.label}>
             <div className="mb-1 flex items-center justify-between text-xs">
-              <span className="text-[#9090A8]">{r.label}</span>
-              <span className="font-mono text-[#9090A8]">
-                {r.count} <span className="text-[#5A5A72]">({pct}%)</span>
+              <span className="text-secondary">{r.label}</span>
+              <span className="font-mono text-muted">
+                {r.count} <span className="opacity-50">({pct}%)</span>
               </span>
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1A1A24]">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
               <div
                 className="h-full rounded-full transition-all duration-500"
                 style={{ width: `${pct}%`, backgroundColor: r.color }}
@@ -112,7 +89,7 @@ const StatusBreakdown: React.FC<{ rows: StatusRow[]; total: number }> = ({ rows,
   </div>
 );
 
-// ─── SVG Bar Chart ────────────────────────────────────────────────────────────
+// ─── SVG Bar Chart ────────────────────────────────────────────
 
 const CHART_W = 560;
 const CHART_H = 200;
@@ -120,35 +97,33 @@ const PAD_L   = 56;
 const PAD_R   = 16;
 const PAD_T   = 16;
 const PAD_B   = 36;
-const PLOT_W  = CHART_W - PAD_L - PAD_R;  // 488
-const PLOT_H  = CHART_H - PAD_T - PAD_B;  // 148
+const PLOT_W  = CHART_W - PAD_L - PAD_R;
+const PLOT_H  = CHART_H - PAD_T - PAD_B;
 
-const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange: (d: number) => void }> = ({
-  data,
-  days,
-  onDaysChange,
-}) => {
+const RevenueBarChart: React.FC<{
+  data: TrendPoint[];
+  days: number;
+  onDaysChange: (d: number) => void;
+}> = ({ data, days, onDaysChange }) => {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   if (data.length === 0) {
     return (
-      <div className="flex h-48 items-center justify-center text-sm text-[#5A5A72]">
+      <div className="flex h-48 items-center justify-center text-sm text-muted">
         No data yet
       </div>
     );
   }
 
-  const n      = data.length;
-  const maxRev = Math.max(...data.map((d) => d.revenue), 1);
-  // Round max up to a neat ceiling for y-axis labels
+  const n         = data.length;
+  const maxRev    = Math.max(...data.map((d) => d.revenue), 1);
   const magnitude = Math.pow(10, Math.floor(Math.log10(maxRev)));
   const ceiling   = Math.ceil(maxRev / magnitude) * magnitude;
 
-  const barGap  = 6;
-  const barW    = Math.max(4, PLOT_W / n - barGap);
-  const slotW   = PLOT_W / n;
+  const barGap = 6;
+  const barW   = Math.max(4, PLOT_W / n - barGap);
+  const slotW  = PLOT_W / n;
 
-  // y-axis ticks (4 steps)
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => ceiling * f);
 
   const barX = (i: number) => PAD_L + i * slotW + slotW / 2 - barW / 2;
@@ -166,16 +141,16 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
             key={d}
             type="button"
             onClick={() => onDaysChange(d)}
-            className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
+            className={`min-h-[44px] rounded-lg px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan ${
               days === d
-                ? 'bg-[#00F0FF]/10 text-[#00F0FF] ring-1 ring-[#00F0FF]/40'
-                : 'text-[#9090A8] hover:text-[#E8E8F0]'
+                ? 'bg-cyan/20 text-cyan border border-cyan/40'
+                : 'text-secondary hover:text-primary border border-transparent'
             }`}
           >
             {d}D
           </button>
         ))}
-        <span className="ml-auto font-mono text-xs text-[#5A5A72]">Revenue (MYR)</span>
+        <span className="ml-auto text-xs text-muted">Revenue (MYR)</span>
       </div>
 
       {/* SVG chart */}
@@ -188,25 +163,18 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
           style={{ minWidth: Math.max(320, n * 20) }}
           onMouseLeave={() => setHoveredIdx(null)}
         >
-          {/* Y-axis grid lines + labels */}
           {yTicks.map((tick) => {
             const y = PAD_T + PLOT_H - (tick / ceiling) * PLOT_H;
             return (
               <g key={tick}>
                 <line
-                  x1={PAD_L}
-                  y1={y}
-                  x2={CHART_W - PAD_R}
-                  y2={y}
-                  stroke="rgba(255,255,255,0.06)"
-                  strokeWidth={1}
+                  x1={PAD_L} y1={y} x2={CHART_W - PAD_R} y2={y}
+                  stroke="rgba(42,42,61,0.8)" strokeWidth={1}
                 />
                 <text
-                  x={PAD_L - 6}
-                  y={y + 4}
-                  textAnchor="end"
-                  fontSize={9}
-                  fill="rgba(255,255,255,0.30)"
+                  x={PAD_L - 6} y={y + 4}
+                  textAnchor="end" fontSize={9}
+                  fill="#5A5A72"
                   fontFamily="JetBrains Mono, monospace"
                 >
                   {tick >= 1000 ? `${(tick / 1000).toFixed(1)}k` : tick.toFixed(0)}
@@ -215,34 +183,21 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
             );
           })}
 
-          {/* Bars */}
           {data.map((point, i) => {
-            const x  = barX(i);
-            const h  = Math.max(barH(point.revenue), point.revenue > 0 ? 2 : 0);
-            const y  = barY(point.revenue);
+            const x     = barX(i);
+            const h     = Math.max(barH(point.revenue), point.revenue > 0 ? 2 : 0);
+            const y     = barY(point.revenue);
             const isHov = hoveredIdx === i;
 
             return (
-              <g
-                key={point.date}
-                onMouseEnter={() => setHoveredIdx(i)}
-                style={{ cursor: 'pointer' }}
-              >
-                {/* Invisible wider hit area */}
+              <g key={point.date} onMouseEnter={() => setHoveredIdx(i)} style={{ cursor: 'pointer' }}>
                 <rect
-                  x={PAD_L + i * slotW}
-                  y={PAD_T}
-                  width={slotW}
-                  height={PLOT_H}
+                  x={PAD_L + i * slotW} y={PAD_T}
+                  width={slotW} height={PLOT_H}
                   fill="transparent"
                 />
-                {/* Bar */}
                 <rect
-                  x={x}
-                  y={y}
-                  width={barW}
-                  height={h}
-                  rx={3}
+                  x={x} y={y} width={barW} height={h} rx={3}
                   fill={isHov ? '#00F0FF' : 'rgba(0,240,255,0.35)'}
                   style={{ transition: 'fill 0.15s' }}
                 />
@@ -250,7 +205,6 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
             );
           })}
 
-          {/* X-axis labels — show every Nth to avoid crowding */}
           {data.map((point, i) => {
             const step = n <= 7 ? 1 : n <= 14 ? 2 : 5;
             if (i % step !== 0 && i !== n - 1) return null;
@@ -259,9 +213,8 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
                 key={`lbl-${point.date}`}
                 x={PAD_L + i * slotW + slotW / 2}
                 y={CHART_H - 8}
-                textAnchor="middle"
-                fontSize={9}
-                fill="rgba(255,255,255,0.30)"
+                textAnchor="middle" fontSize={9}
+                fill="#5A5A72"
                 fontFamily="Inter, sans-serif"
               >
                 {shortDay(point.date)}
@@ -270,15 +223,14 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
           })}
         </svg>
 
-        {/* Hover tooltip */}
         {hovered && (
           <div
             aria-live="polite"
-            className="pointer-events-none absolute right-0 top-0 rounded-xl border border-[#00F0FF]/30 bg-[#0D0D11]/90 px-3 py-2 text-xs shadow-xl backdrop-blur-sm"
+            className="pointer-events-none absolute right-0 top-0 hex-grid-subtle hex-border rounded-xl px-3 py-2 text-xs"
           >
-            <p className="font-medium text-[#E8E8F0]">{shortDay(hovered.date)}</p>
-            <p className="mt-0.5 font-mono text-[#00F0FF]">{fmtMyr(hovered.revenue)}</p>
-            <p className="text-[#9090A8]">{hovered.bookingCount} bookings</p>
+            <p className="font-medium text-primary">{shortDay(hovered.date)}</p>
+            <p className="mt-0.5 font-mono text-cyan">{fmtMyr(hovered.revenue)}</p>
+            <p className="text-secondary">{hovered.bookingCount} bookings</p>
           </div>
         )}
       </div>
@@ -286,13 +238,13 @@ const RevenueBarChart: React.FC<{ data: TrendPoint[]; days: number; onDaysChange
   );
 };
 
-// ─── Skeleton ────────────────────────────────────────────────────────────────
+// ─── Skeleton ─────────────────────────────────────────────────
 
 const Skeleton: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`animate-pulse rounded-lg bg-[#1A1A24] ${className}`} />
+  <div className={`animate-pulse rounded-lg bg-surface-raised ${className}`} />
 );
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// ─── Main Page ────────────────────────────────────────────────
 
 export const OwnerAnalytics: React.FC = () => {
   const [date, setDate]         = useState<string>(todayStr());
@@ -305,56 +257,42 @@ export const OwnerAnalytics: React.FC = () => {
   const [errorT, setErrorT]     = useState<string | null>(null);
 
   const fetchSummary = useCallback(async (d: string) => {
-    setLoadingS(true);
-    setErrorS(null);
+    setLoadingS(true); setErrorS(null);
     try {
-      const res = await axios.get<SalesSummary>('/api/v1/owner/analytics/summary', {
-        params: { date: d },
-      });
+      const res = await axios.get<SalesSummary>('/api/v1/owner/analytics/summary', { params: { date: d } });
       setSummary(res.data);
-    } catch {
-      setErrorS('Failed to load daily summary.');
-    } finally {
-      setLoadingS(false);
-    }
+    } catch { setErrorS('Failed to load daily summary.'); }
+    finally { setLoadingS(false); }
   }, []);
 
   const fetchTrend = useCallback(async (n: number) => {
-    setLoadingT(true);
-    setErrorT(null);
+    setLoadingT(true); setErrorT(null);
     try {
-      const res = await axios.get<TrendPoint[]>('/api/v1/owner/analytics/trend', {
-        params: { days: n },
-      });
+      const res = await axios.get<TrendPoint[]>('/api/v1/owner/analytics/trend', { params: { days: n } });
       setTrend(res.data);
-    } catch {
-      setErrorT('Failed to load trend data.');
-    } finally {
-      setLoadingT(false);
-    }
+    } catch { setErrorT('Failed to load trend data.'); }
+    finally { setLoadingT(false); }
   }, []);
 
   useEffect(() => { fetchSummary(date); }, [date, fetchSummary]);
   useEffect(() => { fetchTrend(days);   }, [days, fetchTrend]);
 
-  const statusRows = summary
-    ? [
-        { label: 'Completed',  count: summary.completedBookings,  color: '#00E5A0' },
-        { label: 'Confirmed',  count: summary.confirmedBookings,  color: '#00F0FF' },
-        { label: 'Pending',    count: summary.pendingBookings,    color: '#FFB800' },
-        { label: 'Cancelled',  count: summary.cancelledBookings,  color: '#FF4466' },
-        { label: 'No-show',    count: summary.noShowBookings,     color: '#5A5A72' },
-      ]
-    : [];
+  const statusRows = summary ? [
+    { label: 'Completed',  count: summary.completedBookings,  color: '#00E5A0' },
+    { label: 'Confirmed',  count: summary.confirmedBookings,  color: '#00F0FF' },
+    { label: 'Pending',    count: summary.pendingBookings,    color: '#FFB800' },
+    { label: 'Cancelled',  count: summary.cancelledBookings,  color: '#FF4466' },
+    { label: 'No-show',    count: summary.noShowBookings,     color: '#5A5A72' },
+  ] : [];
 
   return (
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
 
-      {/* ── Page header ── */}
+      {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-[#E8E8F0]">Analytics</h1>
-          <p className="mt-1 text-sm text-[#9090A8]">Revenue and booking performance</p>
+          <h1 className="font-display text-2xl font-bold text-primary">Analytics</h1>
+          <p className="mt-1 text-sm text-secondary">Revenue and booking performance</p>
         </div>
         <div className="flex items-center gap-2">
           <label htmlFor="analytics-date" className="sr-only">Select date</label>
@@ -364,111 +302,81 @@ export const OwnerAnalytics: React.FC = () => {
             value={date}
             max={todayStr()}
             onChange={(e) => setDate(e.target.value)}
+            className="min-h-[44px] rounded-lg border border-border bg-surface px-3 py-2 text-sm text-primary transition-all duration-150 focus:outline-none focus-visible:border-cyan focus-visible:shadow-cyan-glow"
             style={{ colorScheme: 'dark' }}
-            className="rounded-lg border border-[#2A2A3D] bg-[#13131A] px-3 py-2 text-sm text-[#E8E8F0] focus:border-[#00F0FF] focus:outline-none focus:ring-1 focus:ring-[#00F0FF]"
           />
           <button
             type="button"
             onClick={() => setDate(todayStr())}
-            className="rounded-lg border border-[#2A2A3D] bg-[#13131A] px-3 py-2 text-xs text-[#9090A8] transition-colors hover:bg-[#1F1F2E] hover:text-[#E8E8F0]"
+            className="min-h-[44px] rounded-lg border border-border bg-surface px-3 py-2 text-xs text-secondary transition-colors hover:border-slate hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate"
           >
             Today
           </button>
         </div>
       </div>
 
-      {/* ── Daily summary error ── */}
       {errorS && (
-        <div role="alert" className="hex-border-danger rounded-xl px-4 py-3 text-sm text-[#FF4466]">
+        <div role="alert" className="hex-border-danger rounded-xl px-4 py-3 text-sm text-danger" style={{ backgroundColor: 'rgba(255,68,102,0.08)' }}>
           {errorS}
         </div>
       )}
 
-      {/* ── KPI cards ── */}
+      {/* KPI cards */}
       <section aria-label="Key performance indicators">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {loadingS ? (
-            <>
-              <Skeleton className="h-28" />
-              <Skeleton className="h-28" />
-              <Skeleton className="h-28" />
-              <Skeleton className="h-28" />
-            </>
+            Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-28" />)
           ) : summary ? (
             <>
-              <KpiCard
-                accent
-                label="Total Revenue"
-                value={fmtMyr(summary.totalRevenue)}
-                sub={`${summary.completedPayments} paid transactions`}
-              />
-              <KpiCard
-                label="Total Bookings"
-                value={String(summary.totalBookings)}
-                sub={`${summary.completedBookings} completed`}
-              />
-              <KpiCard
-                label="Cash"
-                value={fmtMyr(summary.cashRevenue)}
-                sub="walk-in payments"
-              />
-              <KpiCard
-                label="Online (FPX)"
-                value={fmtMyr(summary.onlineRevenue)}
-                sub={`${summary.pendingPayments} pending · ${summary.failedPayments} failed`}
-              />
+              <KpiCard accent label="Total Revenue"  value={fmtMyr(summary.totalRevenue)}   sub={`${summary.completedPayments} paid`} />
+              <KpiCard        label="Total Bookings" value={String(summary.totalBookings)}   sub={`${summary.completedBookings} completed`} />
+              <KpiCard        label="Cash"           value={fmtMyr(summary.cashRevenue)}     sub="walk-in payments" />
+              <KpiCard        label="Online (FPX)"   value={fmtMyr(summary.onlineRevenue)}   sub={`${summary.pendingPayments} pending · ${summary.failedPayments} failed`} />
             </>
           ) : null}
         </div>
       </section>
 
-      {/* ── Trend chart + status breakdown ── */}
+      {/* Trend chart + status breakdown */}
       <section aria-label="Revenue trend and booking breakdown">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 
-          {/* Chart — takes 2/3 */}
-          <div className="hex-border rounded-2xl bg-[#13131A] p-5 lg:col-span-2">
-            <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-widest text-[#9090A8]">
+          {/* Chart */}
+          <div className="hex-grid hex-border hex-corner rounded-2xl p-5 overflow-hidden lg:col-span-2">
+            <h3 className="mb-4 text-xs font-medium uppercase tracking-widest text-muted">
               Revenue Trend
             </h3>
             {loadingT ? (
-              <div className="space-y-2">
+              <div className="space-y-2 animate-pulse" aria-busy="true" aria-label="Loading trend">
                 <Skeleton className="h-40 w-full" />
                 <Skeleton className="h-3 w-1/2" />
               </div>
             ) : errorT ? (
-              <p role="alert" className="text-sm text-[#FF4466]">{errorT}</p>
+              <p role="alert" className="text-sm text-danger">{errorT}</p>
             ) : (
-              <RevenueBarChart
-                data={trend}
-                days={days}
-                onDaysChange={setDays}
-              />
+              <RevenueBarChart data={trend} days={days} onDaysChange={setDays} />
             )}
           </div>
 
-          {/* Status breakdown — takes 1/3 */}
+          {/* Status breakdown */}
           <div>
             {loadingS ? (
-              <div className="hex-border space-y-3 rounded-2xl bg-[#13131A] p-5">
+              <div className="hex-grid hex-border rounded-2xl p-5 space-y-3 animate-pulse" aria-busy="true">
                 <Skeleton className="h-4 w-1/2" />
                 {[1,2,3,4,5].map((k) => <Skeleton key={k} className="h-6 w-full" />)}
               </div>
             ) : summary ? (
-              <StatusBreakdown
-                rows={statusRows}
-                total={summary.totalBookings}
-              />
+              <StatusBreakdown rows={statusRows} total={summary.totalBookings} />
             ) : null}
           </div>
         </div>
       </section>
 
-      {/* ── Payment method split ── */}
+      {/* Payment method split */}
       {!loadingS && summary && (
         <section aria-label="Payment method split">
-          <div className="hex-border rounded-2xl bg-[#13131A] p-5">
-            <h3 className="mb-4 font-mono text-sm font-semibold uppercase tracking-widest text-[#9090A8]">
+          <div className="hex-grid hex-border hex-corner rounded-2xl p-5 overflow-hidden">
+            <h3 className="mb-4 text-xs font-medium uppercase tracking-widest text-muted">
               Payment Method Split
             </h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -476,20 +384,22 @@ export const OwnerAnalytics: React.FC = () => {
                 { label: 'Cash',       value: summary.cashRevenue,   color: '#00E5A0' },
                 { label: 'Online FPX', value: summary.onlineRevenue, color: '#00F0FF' },
               ].map(({ label, value, color }) => {
-                const total = summary.totalRevenue;
-                const pct   = total > 0 ? Math.round((value / total) * 100) : 0;
+                const pct = summary.totalRevenue > 0
+                  ? Math.round((value / summary.totalRevenue) * 100)
+                  : 0;
                 return (
                   <div key={label} className="flex items-center gap-4">
                     <div
                       className="h-10 w-10 flex-shrink-0 rounded-full"
                       style={{ backgroundColor: `${color}22`, border: `2px solid ${color}66` }}
+                      aria-hidden="true"
                     />
                     <div className="flex-1">
                       <div className="flex items-baseline justify-between">
-                        <span className="text-sm text-[#9090A8]">{label}</span>
-                        <span className="font-mono text-sm text-[#9090A8]">{pct}%</span>
+                        <span className="text-sm text-secondary">{label}</span>
+                        <span className="font-mono text-sm text-muted">{pct}%</span>
                       </div>
-                      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[#1A1A24]">
+                      <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-surface-raised">
                         <div
                           className="h-full rounded-full transition-all duration-700"
                           style={{ width: `${pct}%`, backgroundColor: color }}

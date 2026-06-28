@@ -4,6 +4,7 @@ import com.carwash.backend.entity.Location;
 import com.carwash.backend.entity.SlotCapacity;
 import com.carwash.backend.repository.LocationRepository;
 import com.carwash.backend.repository.SlotCapacityRepository;
+import com.carwash.backend.util.SlotConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,12 +30,6 @@ public class SlotReplenishmentCron {
 
     private static final Logger log = LoggerFactory.getLogger(SlotReplenishmentCron.class);
 
-    private static final LocalTime OPEN      = LocalTime.of(9, 0);
-    private static final LocalTime LAST_SLOT = LocalTime.of(17, 30);
-    private static final int SLOT_MINUTES    = 30;
-    private static final int DAYS_AHEAD      = 14;
-    private static final int MAX_PER_SLOT    = 3;
-
     private final LocationRepository locationRepository;
     private final SlotCapacityRepository slotCapacityRepository;
 
@@ -54,7 +49,7 @@ public class SlotReplenishmentCron {
         }
 
         LocalDate today = LocalDate.now();
-        LocalDate horizon = today.plusDays(DAYS_AHEAD);
+        LocalDate horizon = today.plusDays(SlotConstants.DAYS_AHEAD);
 
         List<SlotCapacity> toCreate = new ArrayList<>();
 
@@ -63,13 +58,13 @@ public class SlotReplenishmentCron {
                 if (day.getDayOfWeek() == DayOfWeek.FRIDAY) {
                     continue; // closed on Fridays
                 }
-                for (LocalTime t = OPEN; !t.isAfter(LAST_SLOT); t = t.plusMinutes(SLOT_MINUTES)) {
+                for (LocalTime t = SlotConstants.OPEN; !t.isAfter(SlotConstants.LAST_SLOT); t = t.plusMinutes(SlotConstants.SLOT_MINUTES)) {
                     LocalDateTime slotTime = LocalDateTime.of(day, t);
                     if (slotCapacityRepository.findByLocationIdAndSlotTime(location.getId(), slotTime) == null) {
                         SlotCapacity slot = new SlotCapacity();
                         slot.setLocation(location);
                         slot.setSlotTime(slotTime);
-                        slot.setMaxLimit(MAX_PER_SLOT);
+                        slot.setMaxLimit(SlotConstants.MAX_PER_SLOT);
                         slot.setBookedCount(0);
                         toCreate.add(slot);
                     }

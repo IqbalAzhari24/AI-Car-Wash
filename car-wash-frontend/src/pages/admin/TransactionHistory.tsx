@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import api from '../../api/api';
-import { statusBadge } from '../../components/ui';
 import type { Transaction } from '../../types';
 
 const COLUMN_HEADERS = ['Slot Time', 'Vehicle', 'Booking', 'Amount', 'Payment', 'Txn ID'];
@@ -14,6 +13,16 @@ const formatDateTime = (iso: string): string => {
 
 const formatAmount = (amount: number | null): string =>
   amount == null ? '—' : `RM ${Number(amount).toFixed(2)}`;
+
+const paymentBadgeClass = (status: string | null): string => {
+  switch (status) {
+    case 'COMPLETED': return 'border border-success/40 bg-success/10 text-success';
+    case 'PENDING':   return 'border border-warning/40 bg-warning/10 text-warning';
+    case 'FAILED':    return 'border border-danger/40 bg-danger/10 text-danger';
+    case 'REFUNDED':  return 'border border-info/40 bg-info/10 text-info';
+    default:          return 'border border-border bg-surface-raised text-secondary';
+  }
+};
 
 export const TransactionHistory: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -42,72 +51,78 @@ export const TransactionHistory: React.FC = () => {
       }
     };
     load();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, [id]);
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Link
         to="/admin/users"
-        className="mb-4 inline-flex items-center gap-1 rounded text-sm font-medium text-[#00F0FF] hover:text-[#00B8C4]"
+        className="mb-5 inline-flex min-h-[44px] items-center gap-1.5 rounded-lg text-sm font-medium text-secondary transition-colors hover:text-cyan focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" />
         Back to directory
       </Link>
 
-      <h1 className="mb-1 font-display text-2xl font-semibold tracking-tight text-[#E8E8F0]">Transaction history</h1>
-      <p className="mb-6 font-mono text-sm text-[#9090A8]">Customer ID: {id}</p>
+      <h1 className="mb-1 font-display text-2xl font-bold text-primary">Transaction history</h1>
+      <p className="mb-6 font-mono text-xs text-muted">Customer ID: {id}</p>
 
       {error && (
-        <div className="hex-border-danger mb-4 rounded-lg p-3 text-sm text-[#FF4466]" role="alert">
+        <div
+          role="alert"
+          className="mb-4 hex-border-danger rounded-xl px-4 py-3 text-sm text-danger"
+          style={{ backgroundColor: 'rgba(255,68,102,0.08)' }}
+        >
           {error}
         </div>
       )}
 
-      <div className="hex-border overflow-hidden rounded-xl bg-[#13131A]">
+      <div className="overflow-hidden rounded-xl hex-border bg-surface">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#1E1E2D]">
-            <thead className="bg-[#1A1A24]">
+          <table className="min-w-full divide-y divide-border" aria-label="Transaction history">
+            <thead className="bg-surface-raised">
               <tr>
                 {COLUMN_HEADERS.map((h) => (
-                  <th key={h} scope="col" className="px-4 py-3 text-left font-mono text-xs font-semibold uppercase tracking-wider text-[#9090A8]">
+                  <th
+                    key={h}
+                    scope="col"
+                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted"
+                  >
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1E1E2D] bg-[#13131A]">
+            <tbody className="divide-y divide-border-subtle bg-surface">
               {loading ? (
                 Array.from({ length: 5 }, (_, i) => (
                   <tr key={i}>
                     {COLUMN_HEADERS.map((h) => (
                       <td key={h} className="px-4 py-3.5">
-                        <div className="h-4 animate-pulse rounded bg-[#1A1A24] motion-reduce:animate-none" />
+                        <div className="h-4 animate-pulse rounded bg-surface-raised motion-reduce:animate-none" />
                       </td>
                     ))}
                   </tr>
                 ))
               ) : transactions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-[#5A5A72]">
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm text-muted">
                     No transactions yet — this customer hasn't completed a booking.
                   </td>
                 </tr>
               ) : (
                 transactions.map((tx) => (
-                  <tr key={tx.bookingId} className="transition-colors duration-150 hover:bg-[#1F1F2E]">
-                    <td className="px-4 py-3 text-sm text-[#E8E8F0]">{formatDateTime(tx.slotTime)}</td>
-                    <td className="px-4 py-3 text-sm text-[#E8E8F0]">{tx.vehicleClass ?? '—'}</td>
-                    <td className="px-4 py-3 text-sm text-[#E8E8F0]">{tx.bookingStatus ?? '—'}</td>
-                    <td className="px-4 py-3 font-mono text-sm font-medium tabular-nums text-[#E8E8F0]">{formatAmount(tx.amount)}</td>
+                  <tr key={tx.bookingId} className="transition-colors duration-150 hover:bg-surface-hover">
+                    <td className="px-4 py-3 text-sm text-primary">{formatDateTime(tx.slotTime)}</td>
+                    <td className="px-4 py-3 text-sm text-primary">{tx.vehicleClass ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm text-secondary">{tx.bookingStatus ?? '—'}</td>
+                    <td className="px-4 py-3 text-sm font-medium tabular-nums text-primary">{formatAmount(tx.amount)}</td>
                     <td className="px-4 py-3 text-sm">
-                      <span className={statusBadge(tx.paymentStatus)}>
+                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${paymentBadgeClass(tx.paymentStatus)}`}>
                         {tx.paymentStatus ?? 'N/A'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono text-sm text-[#5A5A72]">{tx.transactionId ?? '—'}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-muted">{tx.transactionId ?? '—'}</td>
                   </tr>
                 ))
               )}

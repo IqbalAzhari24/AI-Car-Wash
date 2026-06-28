@@ -19,17 +19,11 @@ public class BookingEngineService {
     }
 
     public int calculateRequiredBlocks(Booking.VehicleClass vClass) {
-        switch (vClass) {
-            case SUV_LUXURY:
-                return 2; // 60 mins total
-            case MPV_LARGE:
-                return 3; // 90 mins total
-            case MOTORCYCLE:
-            case COMPACT:
-            case SEDAN:
-            default:
-                return 1; // 30 mins total
-        }
+        return switch (vClass) {
+            case SUV_LUXURY -> 2; // 60 mins total
+            case MPV_LARGE  -> 3; // 90 mins total
+            default         -> 1; // 30 mins total
+        };
     }
 
     /**

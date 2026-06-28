@@ -14,33 +14,21 @@ public class RateLimiterService {
         this.redisTemplate = redisTemplate;
     }
 
-    /**
-     * Limit strictly to 20 messages per 5 minutes per authenticated JWT User ID.
-     */
+    /** Limit strictly to 20 messages per 5 minutes per authenticated JWT User ID. */
     public boolean isChatAllowed(String userId) {
-        String key = "rate_limit:chat:" + userId;
-        Long currentCount = redisTemplate.opsForValue().increment(key);
-        
-        // Self-Healing Fallback: Checks if key exists but lacks an active TTL (-1)
-        if (currentCount != null && (currentCount == 1 || redisTemplate.getExpire(key) == -1)) {
-            redisTemplate.expire(key, Duration.ofMinutes(5));
-        }
-        
-        return currentCount != null && currentCount <= 20;
+        return isAllowed("rate_limit:chat:" + userId, 20, Duration.ofMinutes(5));
     }
 
-    /**
-     * Limit strictly to 5 submission attempts per 15 minutes mapped per inbound IP Address.
-     */
+    /** Limit strictly to 5 submission attempts per 15 minutes per inbound IP Address. */
     public boolean isLoginAllowed(String ipAddress) {
-        String key = "rate_limit:login:" + ipAddress;
-        Long currentCount = redisTemplate.opsForValue().increment(key);
-        
-        // Self-Healing Fallback: Handles edge-case connection interruptions seamlessly
-        if (currentCount != null && (currentCount == 1 || redisTemplate.getExpire(key) == -1)) {
-            redisTemplate.expire(key, Duration.ofMinutes(15));
+        return isAllowed("rate_limit:login:" + ipAddress, 5, Duration.ofMinutes(15));
+    }
+
+    private boolean isAllowed(String key, int limit, Duration window) {
+        Long count = redisTemplate.opsForValue().increment(key);
+        if (count != null && (count == 1 || redisTemplate.getExpire(key) == -1)) {
+            redisTemplate.expire(key, window);
         }
-        
-        return currentCount != null && currentCount <= 5;
+        return count != null && count <= limit;
     }
 }
