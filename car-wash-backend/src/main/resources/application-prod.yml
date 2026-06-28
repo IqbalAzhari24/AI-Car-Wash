@@ -3,6 +3,10 @@
 # Override any application.yml defaults that are unsafe or noisy in production.
 
 spring:
+  datasource:
+    # Render sets DATABASE_URL as postgresql://... — prepend jdbc: to satisfy JDBC driver
+    url: "jdbc:${DATABASE_URL:postgresql://localhost/carwashdb}"
+
   jpa:
     show-sql: false               # Never log SQL in production
     properties:
