@@ -14,6 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - backend-net
+      - dev-access
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d carwashdb"]
@@ -30,6 +31,7 @@ services:
       - redis_data:/data
     networks:
       - backend-net
+      - dev-access
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -101,6 +103,7 @@ networks:
   backend-net:
     internal: true
   frontend-net:
+  dev-access:  # non-internal — allows host port publishing for local mvn dev
 
 volumes:
   postgres_data:

@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Selenium end-to-end tests against the Vite dev server (http://localhost:5173).
- * Start the frontend before running: `npm run dev` inside car-wash-frontend/.
+ * Start the frontend before running: `npm run dev -- --host` inside car-wash-frontend/.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FrontendSeleniumTest {
@@ -29,7 +29,6 @@ class FrontendSeleniumTest {
 
     @BeforeAll
     static void setupDriver() throws Exception {
-        // Guard: skip all tests if Vite is not running
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(BASE_URL).openConnection();
             conn.setConnectTimeout(3000);
@@ -142,7 +141,6 @@ class FrontendSeleniumTest {
     void unknown_route_redirects_to_home() {
         requireVite();
         driver.get(BASE_URL + "/this-route-does-not-exist-xyz");
-        // React Router replaces the URL — wait up to 5s for redirect
         new WebDriverWait(driver, Duration.ofSeconds(5))
                 .until(ExpectedConditions.urlToBe(BASE_URL + "/"));
         assertThat(driver.getCurrentUrl()).isEqualTo(BASE_URL + "/");

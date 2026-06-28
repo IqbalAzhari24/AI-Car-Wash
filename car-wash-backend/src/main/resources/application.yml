@@ -1,12 +1,21 @@
 spring:
+  config:
+    import:
+      - optional:file:../.env[.properties]
+      - optional:file:.env[.properties]
+
   application:
     name: car-wash-backend
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/carwashdb}
-    username: ${SPRING_DATASOURCE_USERNAME:carwashuser}
-    password: ${SPRING_DATASOURCE_PASSWORD:carwashpassword}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:${DB_PORT:5433}/${DB_NAME:carwashdb}}
+    username: ${SPRING_DATASOURCE_USERNAME:${DB_USER:carwashuser}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${DB_PASSWORD:carwashpassword}}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      max-lifetime: 1800000       # 30 min — evict connections before PG closes them
+      keepalive-time: 60000       # send keepalive every 60s to prevent server-side close
+      connection-timeout: 30000
 
   jpa:
     hibernate:
