@@ -4,6 +4,7 @@ import com.carwash.backend.config.JwtService;
 import com.carwash.backend.dto.ForgotPasswordRequest;
 import com.carwash.backend.dto.LoginRequest;
 import com.carwash.backend.dto.LoginResponse;
+import com.carwash.backend.dto.RegisterRequest;
 import com.carwash.backend.dto.ResetPasswordRequest;
 import com.carwash.backend.entity.User;
 import com.carwash.backend.repository.UserRepository;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,15 +31,37 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PasswordResetService passwordResetService;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthController(AuthenticationManager authenticationManager,
                           JwtService jwtService,
                           UserRepository userRepository,
-                          PasswordResetService passwordResetService) {
+                          PasswordResetService passwordResetService,
+                          PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.passwordResetService = passwordResetService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<?> registerCustomer(@Valid @RequestBody RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "An account with that email already exists."));
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setRole(User.UserRole.CUSTOMER);
+        userRepository.save(user);
+
+        String jwtToken = jwtService.generateToken(user.getId().toString(), User.UserRole.CUSTOMER.name());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new LoginResponse(jwtToken, User.UserRole.CUSTOMER.name(), user.getId().toString()));
     }
 
     @PostMapping("/login")
