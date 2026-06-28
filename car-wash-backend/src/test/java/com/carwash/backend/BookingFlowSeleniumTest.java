@@ -12,7 +12,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,12 +28,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BookingFlowSeleniumTest {
 
-    private static final String BASE_URL    = "http://localhost:5173";
-    // Spring Boot specific path — guarantees it's actually our backend, not some other service
-    private static final String API_HEALTH  = "http://localhost:8080/api/v1/public/services";
-    private static final String TEST_EMAIL  = "selenium_booking@test.com";
-    private static final String TEST_PASS   = "SeleniumPass123!";
-    private static final String TEST_PHONE  = "0123456789";
+    private static final String BASE_URL   = "http://localhost:5173";
+    private static final String API_HEALTH = "http://localhost:8080/api/v1/public/services";
+    private static final String TEST_EMAIL = "selenium_booking@test.com";
+    private static final String TEST_PASS  = "SeleniumPass123!";
+    private static final String TEST_PHONE = "0123456789";
 
     private static WebDriver driver;
     private static WebDriverWait wait;
@@ -52,8 +50,7 @@ class BookingFlowSeleniumTest {
 
         WebDriverManager.chromedriver().setup();
         ChromeOptions opts = new ChromeOptions();
-        // Remove --headless=new so Chrome window is visible during tests
-        opts.addArguments("--no-sandbox", "--disable-dev-shm-usage",
+        opts.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage",
                 "--window-size=1280,900", "--disable-gpu");
         driver = new ChromeDriver(opts);
         wait   = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -66,10 +63,9 @@ class BookingFlowSeleniumTest {
 
     // ── Guards ───────────────────────────────────────────────────────────────
 
-    private void requireVite()    { Assumptions.assumeTrue(viteUp,    "Vite not running on "    + BASE_URL); }
+    private void requireVite()    { Assumptions.assumeTrue(viteUp,    "Vite not running on " + BASE_URL); }
     private void requireBackend() { Assumptions.assumeTrue(backendUp, "Backend not running — checked " + API_HEALTH); }
 
-    /** Skip the test if login did not succeed (driver still on /login). */
     private void requireLoggedIn() {
         Assumptions.assumeFalse(driver.getCurrentUrl().contains("/login"),
                 "Auth failed — skip: still on login page");
@@ -92,67 +88,43 @@ class BookingFlowSeleniumTest {
         }
     }
 
-    private static void pause() throws InterruptedException { Thread.sleep(2000); }
-
-    /**
-     * Navigate to /login, switch to Sign Up tab, fill the form and submit.
-     * If the email already exists the register attempt returns an error and we
-     * fall back to the Sign In form.
-     */
-    private void loginOrRegister() throws InterruptedException {
-        driver.get(BASE_URL + "/login");
-        pause();
-
-        // Switch to "Sign up" tab (button text is exactly "Sign up")
+    private void clickTab(String label) {
         driver.findElements(By.tagName("button")).stream()
-              .filter(b -> b.getText().equals("Sign up"))
+              .filter(b -> b.getText().equals(label))
               .findFirst()
-              .ifPresent(b -> { try { b.click(); Thread.sleep(800); } catch (InterruptedException ignored) {} });
+              .ifPresent(b -> {
+                  b.click();
+                  wait.until(ExpectedConditions.stalenessOf(b));
+              });
+    }
 
-        // Try registration — use explicit IDs from Login.tsx
+    private void loginOrRegister() {
+        driver.get(BASE_URL + "/login");
+        clickTab("Sign up");
+
         boolean registered = false;
         try {
-            WebElement email = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.id("reg-email")));
+            WebElement email = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("reg-email")));
             email.clear(); email.sendKeys(TEST_EMAIL);
-
-            driver.findElement(By.id("reg-phone")).clear();
             driver.findElement(By.id("reg-phone")).sendKeys(TEST_PHONE);
-
-            driver.findElement(By.id("reg-password")).clear();
             driver.findElement(By.id("reg-password")).sendKeys(TEST_PASS);
-
-            driver.findElement(By.id("reg-confirm")).clear();
             driver.findElement(By.id("reg-confirm")).sendKeys(TEST_PASS);
-
-            ((JavascriptExecutor) driver).executeScript(
-                    "arguments[0].click();",
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
                     driver.findElement(By.cssSelector("form#auth-form button[type='submit']")));
-            pause();
-            registered = !driver.getCurrentUrl().contains("/login");
+            wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
+            registered = true;
         } catch (Exception ignored) {
-            // Register fields not found — fall through to login
+            // email already exists or form not shown — fall through to sign in
         }
 
-        // If registration failed (email already exists → 409) or form wasn't shown → sign in
         if (!registered && driver.getCurrentUrl().contains("/login")) {
-            // Switch to "Sign in" tab
-            driver.findElements(By.tagName("button")).stream()
-                  .filter(b -> b.getText().equals("Sign in"))
-                  .findFirst()
-                  .ifPresent(b -> { try { b.click(); Thread.sleep(800); } catch (InterruptedException ignored) {} });
-
-            WebElement email = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                    By.id("login-email")));
+            clickTab("Sign in");
+            WebElement email = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-email")));
             email.clear(); email.sendKeys(TEST_EMAIL);
-
-            driver.findElement(By.id("login-password")).clear();
             driver.findElement(By.id("login-password")).sendKeys(TEST_PASS);
-
-            ((JavascriptExecutor) driver).executeScript(
-                    "arguments[0].click();",
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();",
                     driver.findElement(By.cssSelector("form#auth-form button[type='submit']")));
-            pause();
+            wait.until(ExpectedConditions.not(ExpectedConditions.urlContains("/login")));
         }
     }
 
@@ -160,20 +132,19 @@ class BookingFlowSeleniumTest {
 
     @Test
     @Order(1)
-    void booking_page_redirects_to_login_when_not_authenticated() throws InterruptedException {
+    void booking_page_redirects_to_login_when_not_authenticated() {
         requireVite();
         driver.get(BASE_URL + "/book");
-        pause();
+        wait.until(ExpectedConditions.urlContains("/login"));
         assertThat(driver.getCurrentUrl()).contains("/login");
     }
 
     @Test
     @Order(2)
-    void login_with_test_account_succeeds() throws InterruptedException {
+    void login_with_test_account_succeeds() {
         requireVite();
         requireBackend();
         loginOrRegister();
-        // If still on /login, backend is up but not our Spring Boot app — skip
         Assumptions.assumeFalse(driver.getCurrentUrl().contains("/login"),
                 "Login failed — backend may not be AI Car Wash (wrong service on port 8080)");
         assertThat(driver.getCurrentUrl()).doesNotContain("/login");
@@ -181,55 +152,46 @@ class BookingFlowSeleniumTest {
 
     @Test
     @Order(3)
-    void booking_page_shows_step1_after_login() throws InterruptedException {
+    void booking_page_shows_step1_after_login() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
         String body = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body"))).getText();
         assertThat(body).containsAnyOf("Pick a slot", "Select Slot", "Date", "slot");
     }
 
     @Test
     @Order(4)
-    void step1_date_input_present_and_accepts_tomorrow() throws InterruptedException {
+    void step1_date_input_present_and_accepts_tomorrow() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
         WebElement dateInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.cssSelector("input#book-date")));
-
         String tomorrow = LocalDate.now().plusDays(1).toString();
         ((JavascriptExecutor) driver).executeScript(
                 "arguments[0].value=arguments[1];" +
                 "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));" +
                 "arguments[0].dispatchEvent(new Event('change',{bubbles:true}));",
                 dateInput, tomorrow);
-        pause();
-
         assertThat(dateInput.getAttribute("value")).isEqualTo(tomorrow);
     }
 
     @Test
     @Order(5)
-    void step1_vehicle_type_buttons_visible() throws InterruptedException {
+    void step1_vehicle_type_buttons_visible() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
         String body = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body"))).getText();
         assertThat(body).contains("Motorcycle");
         assertThat(body).contains("Sedan");
@@ -238,54 +200,45 @@ class BookingFlowSeleniumTest {
 
     @Test
     @Order(6)
-    void step1_selecting_sedan_sets_aria_pressed() throws InterruptedException {
+    void step1_selecting_sedan_sets_aria_pressed() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
         WebElement sedanBtn = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//button[@aria-pressed and contains(., 'Sedan')]")));
         sedanBtn.click();
-        pause();
-
+        wait.until(ExpectedConditions.attributeToBe(sedanBtn, "aria-pressed", "true"));
         assertThat(sedanBtn.getAttribute("aria-pressed")).isEqualTo("true");
     }
 
     @Test
     @Order(7)
-    void step1_vehicle_model_input_accepts_text() throws InterruptedException {
+    void step1_vehicle_model_input_accepts_text() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
         WebElement modelInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.cssSelector("input#vehicle-model")));
         modelInput.clear();
         modelInput.sendKeys("Toyota Vios");
-        pause();
-
         assertThat(modelInput.getAttribute("value")).isEqualTo("Toyota Vios");
     }
 
     @Test
     @Order(8)
-    void step1_slots_load_after_date_selected() throws InterruptedException {
+    void step1_slots_load_after_date_selected() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
         WebElement dateInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.cssSelector("input#book-date")));
         String tomorrow = LocalDate.now().plusDays(1).toString();
@@ -295,14 +248,10 @@ class BookingFlowSeleniumTest {
                 "arguments[0].dispatchEvent(new Event('change',{bubbles:true}));",
                 dateInput, tomorrow);
 
-        // Wait for slots or "no slots" message
         new WebDriverWait(driver, Duration.ofSeconds(8)).until(
                 ExpectedConditions.or(
-                        ExpectedConditions.presenceOfElementLocated(
-                                By.xpath("//button[@aria-pressed]")),
-                        ExpectedConditions.textToBePresentInElementLocated(
-                                By.tagName("body"), "No slots")));
-        pause();
+                        ExpectedConditions.presenceOfElementLocated(By.xpath("//button[@aria-pressed]")),
+                        ExpectedConditions.textToBePresentInElementLocated(By.tagName("body"), "No slots")));
 
         String body = driver.findElement(By.tagName("body")).getText();
         assertThat(body.toLowerCase()).containsAnyOf("slot", "available", "no slot");
@@ -310,15 +259,14 @@ class BookingFlowSeleniumTest {
 
     @Test
     @Order(9)
-    void step1_next_button_exists() throws InterruptedException {
+    void step1_next_button_exists() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
         boolean hasNext = driver.findElements(By.tagName("button")).stream()
                 .anyMatch(b -> b.getText().toLowerCase().matches(".*next.*|.*continue.*|.*proceed.*"));
         assertThat(hasNext).isTrue();
@@ -326,15 +274,13 @@ class BookingFlowSeleniumTest {
 
     @Test
     @Order(10)
-    void progress_bar_shows_all_three_steps() throws InterruptedException {
+    void progress_bar_shows_all_three_steps() {
         requireVite();
         requireBackend();
         loginOrRegister();
         requireLoggedIn();
 
         driver.get(BASE_URL + "/book");
-        pause();
-
         String body = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body"))).getText();
         assertThat(body).contains("Select Slot");
         assertThat(body).contains("Choose Service");

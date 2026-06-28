@@ -13,8 +13,7 @@ interface UseWebSocketOptions {
   userId: string | null;
 }
 
-const _apiBase = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api';
-const WS_URL = _apiBase.replace(/^http/, 'ws').replace(/\/api$/, '') + '/ws/timah/websocket';
+const WS_URL = new URL(import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api').origin + '/ws/timah/websocket';
 const MAX_RECONNECT_DELAY_MS = 30000;
 
 export function useWebSocket({ token, userId }: UseWebSocketOptions) {
