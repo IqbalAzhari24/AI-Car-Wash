@@ -11,6 +11,12 @@ import { BookingFlow } from './pages/customer/book/BookingFlow';
 import { UserDirectory } from './pages/admin/UserDirectory';
 import { TransactionHistory } from './pages/admin/TransactionHistory';
 import { OwnerAnalytics } from './pages/admin/OwnerAnalytics';
+import { ClerkConsole } from './pages/clerk/ClerkConsole';
+import { ValetRequests } from './pages/clerk/ValetRequests';
+import { ValetRequest } from './pages/customer/ValetRequest';
+import { MyBookings } from './pages/customer/MyBookings';
+import { WorkerJobs } from './pages/worker/WorkerJobs';
+
 
 const Dashboard = () => (
   <div className="flex flex-1 items-center justify-center px-4 py-16">
@@ -113,7 +119,33 @@ function App() {
                 <TransactionHistory />
               </ProtectedRoute>
             } />
+            <Route path="/clerk" element={
+              <ProtectedRoute allowedRoles={['CLERK']}>
+                <ClerkConsole />
+              </ProtectedRoute>
+            } />
+            <Route path="/clerk/valet" element={
+              <ProtectedRoute allowedRoles={['CLERK']}>
+                <ValetRequests />
+              </ProtectedRoute>
+            } />
 
+            <Route path="/valet" element={
+              <ProtectedRoute allowedRoles={['CUSTOMER']}>
+                <ValetRequest />
+              </ProtectedRoute>
+            } />
+            <Route path="/bookings" element={
+              <ProtectedRoute allowedRoles={['CUSTOMER']}>
+                <MyBookings />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/worker" element={
+              <ProtectedRoute allowedRoles={['WORKER']}>
+                <WorkerJobs />
+              </ProtectedRoute>
+            } />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
