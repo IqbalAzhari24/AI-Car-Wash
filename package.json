@@ -6,7 +6,8 @@
     "wrangler": "^4.105.0"
   },
   "scripts": {
-    "deploy": "wrangler deploy",
+    "build": "npm run build --prefix car-wash-frontend",
+    "deploy": "npm run build && wrangler deploy",
     "preview": "wrangler dev"
   }
 }
