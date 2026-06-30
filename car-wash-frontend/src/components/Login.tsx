@@ -206,7 +206,7 @@ export const Login: React.FC = () => {
                 <input
                   id="login-email" type="email" autoComplete="email" required
                   value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="you@g.com"
                   className={INPUT_BASE} style={INPUT_STYLE}
                   onFocus={onFocusGlow} onBlur={onBlurGlow}
                 />
@@ -250,7 +250,7 @@ export const Login: React.FC = () => {
                 <input
                   id="reg-email" type="email" autoComplete="email" required
                   value={regEmail} onChange={(e) => setRegEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="you@gmail.com"
                   className={INPUT_BASE} style={INPUT_STYLE}
                   onFocus={onFocusGlow} onBlur={onBlurGlow}
                 />
