@@ -19,10 +19,18 @@ services:
         value: prod
 
       # Injected by Render from the managed DB/Redis below
-      - key: SPRING_DATASOURCE_URL
+      - key: DB_HOST
         fromDatabase:
           name: car-wash-db
-          property: jdbcConnectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: car-wash-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: car-wash-db
+          property: database
       - key: SPRING_DATASOURCE_USERNAME
         fromDatabase:
           name: car-wash-db
