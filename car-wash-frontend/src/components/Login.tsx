@@ -122,19 +122,15 @@ export const Login: React.FC = () => {
       login(res.data.token);
       navigate('/', { replace: true });
     } catch (err: any) {
-      setError(
-        err?.response?.status === 409
-          ? 'An account with that email already exists.'
-          if (!err?.response) {
-        setError('Unable to reach the server. Please try again later.');  // CORS/network
+      if (!err?.response) {
+        setError('Unable to reach the server. Please try again later.');
       } else if (err.response.status === 409) {
         setError('An account with that email already exists.');
       } else {
         const body = err.response.data;
-        const msg = body?.message || body?.detail || body?.error;  // covers Spring Boot 3
+        const msg = body?.message || body?.detail || body?.error;
         setError(msg || 'Registration failed. Please try again.');
       }
-      );
     } finally {
       setLoading(false);
     }
