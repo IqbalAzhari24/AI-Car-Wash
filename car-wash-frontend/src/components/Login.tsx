@@ -125,7 +125,15 @@ export const Login: React.FC = () => {
       setError(
         err?.response?.status === 409
           ? 'An account with that email already exists.'
-          : err?.response?.data?.message ?? 'Registration failed. Please try again.',
+          if (!err?.response) {
+        setError('Unable to reach the server. Please try again later.');  // CORS/network
+      } else if (err.response.status === 409) {
+        setError('An account with that email already exists.');
+      } else {
+        const body = err.response.data;
+        const msg = body?.message || body?.detail || body?.error;  // covers Spring Boot 3
+        setError(msg || 'Registration failed. Please try again.');
+      }
       );
     } finally {
       setLoading(false);
