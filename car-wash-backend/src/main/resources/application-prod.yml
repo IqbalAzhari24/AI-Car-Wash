@@ -5,7 +5,7 @@
 spring:
   datasource:
     # Render sets DATABASE_URL as postgresql://... — prepend jdbc: to satisfy JDBC driver
-    url: "${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost/carwashdb}"
+    url: "jdbc:${SPRING_DATASOURCE_URL:postgresql://localhost/carwashdb}"
 
   jpa:
     show-sql: false               # Never log SQL in production
