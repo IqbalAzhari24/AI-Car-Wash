@@ -245,30 +245,18 @@ export const Landing: React.FC = () => {
               Walk in or book ahead with Timah. Either way, we're ready when you pull up.
             </p>
           </div>
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-2">
-                      </div>
-
-          <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            {/* Map placeholder */}
-            <div className="hex-grid hex-border hex-corner flex h-64 items-center justify-center rounded-xl overflow-hidden lg:h-auto">
-              <div className="flex flex-col items-center gap-3 text-center px-6">
-                <MapPin className="h-8 w-8 text-cyan/50" aria-hidden="true" />
-                <p className="text-sm text-muted">Interactive map coming soon</p>
-                <p className="text-xs text-muted/60">No. 12, Jalan Sultan Ismail,<br />20200 Kuala Terengganu, Terengganu</p>
+          {/* Google Maps embed — Vanduta Car Wash, Kuala Terengganu */}
+          <div className="hex-border hex-corner rounded-xl overflow-hidden h-64 lg:h-auto min-h-[16rem]">
+            <iframe title="Vanduta Car Wash location"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.040859596117!2d103.07249709999999!3d5.4107482!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31b7bb000993c973%3A0xffa0d942be402c3e!2sVanduta%20Carwash!5e0!3m2!1sen!2smy!4v1782848184191!5m2!1sen!2smy" 
+            width="100%" 
+            height="100%" 
+            style={{ border: 0, minHeight: '16rem' }}
+            allowFullScreen
+            loading="lazy" 
+            referrerPolicy="no-referrer-when-downgrade"></iframe>
               </div>
-            {/* Google Maps embed — Vanduta Car Wash, Kuala Terengganu */}
-            <div className="hex-border hex-corner rounded-xl overflow-hidden h-64 lg:h-auto min-h-[16rem]">
-              <iframe
-                title="Vanduta Car Wash location"
-                src="http://google.com/maps/place/Vanduta+Carwash/@5.4107482,103.0724971,17z/data=!3m1!4b1!4m6!3m5!1s0x31b7bb000993c973:0xffa0d942be402c3e!8m2!3d5.4107482!4d103.0724971!16s%2Fg%2F11wh3cdgtv?hl=en-MY&entry=ttu&g_ep=EgoyMDI2MDYyOC4wIKXMDSoASAFQAw%3D%3D"
-                width="100%"
-                height="100%"
-                style={{ border: 0, minHeight: '16rem' }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+
             {/* Contact details */}
             <div className="flex flex-col gap-5">
               <div className="hex-grid hex-border hex-corner rounded-xl p-5">
