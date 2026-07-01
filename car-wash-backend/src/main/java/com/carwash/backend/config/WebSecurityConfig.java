@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -34,6 +35,11 @@ public class WebSecurityConfig {
     }
 
     @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> response.setStatus(HttpStatus.FORBIDDEN.value());
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
@@ -46,6 +52,13 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Spring Boot's error page is reached via an internal Tomcat FORWARD
+                // whenever a handler calls response.sendError(...) (e.g. any
+                // ResponseStatusException). That forwarded request re-enters this same
+                // filter chain without the original Authorization header, so without
+                // this rule every non-2xx sendError response (409, 404, etc.) got its
+                // status clobbered by the 401 entry point on the forwarded dispatch.
+                .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/v1/payments/toyyibpay/callback").permitAll() // gateway server-to-server
                 .requestMatchers("/actuator/health").permitAll()
@@ -53,9 +66,13 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/v1/owner/**").hasRole("OWNER")
                 .anyRequest().authenticated()
             )
-            // Unauthenticated requests -> 401 (default would be 403); access denied for
-            // authenticated-but-unauthorized requests still returns 403 via the default handler.
-            .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+            // Unauthenticated requests -> 401. Authenticated-but-wrong-role requests -> 403,
+            // forced explicitly: without this, ExceptionTranslationFilter was routing
+            // AccessDeniedException to the authenticationEntryPoint (401) instead of a 403
+            // handler for every role mismatch, method-security or URL-matcher alike.
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                    .accessDeniedHandler(accessDeniedHandler()))
             // 1. Enforce Rate Limiting FIRST before anything else processes
             .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
             // 2. Extract JWT parameters next
