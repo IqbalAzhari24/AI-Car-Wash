@@ -251,8 +251,8 @@ export const Landing: React.FC = () => {
             <div className="hex-grid hex-border hex-corner flex h-64 items-center justify-center rounded-xl overflow-hidden lg:h-auto">
               <div className="flex flex-col items-center gap-3 text-center px-6">
                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.0059926782855!2d103.06959629095037!3d5.413319652869992!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31b7bb000993c973%3A0xffa0d942be402c3e!2sVanduta%20Carwash!5e0!3m2!1sen!2smy!4v1782930229894!5m2!1sen!2smy"
-                 width="600"
-                 height="450"
+                 width="100%"
+                 height="100%"
                  style={{ border: 0 }}
                  allowFullScreen
                  loading="lazy"
@@ -269,11 +269,11 @@ export const Landing: React.FC = () => {
                 <ul className="flex flex-col gap-3">
                   <li className="flex items-center gap-3 text-sm text-secondary">
                     <MapPin className="h-4 w-4 flex-shrink-0 text-cyan/60" aria-hidden="true" />
-                    No. 12, Jalan Sultan Ismail, 20200 Kuala Terengganu, Terengganu
+                    PT30125 A, Kampung Gong Pa' Jin, Kampung Wakaf Tengah, 21030 Kuala Terengganu, Terengganu
                   </li>
                   <li className="flex items-center gap-3 text-sm text-secondary">
                     <Phone className="h-4 w-4 flex-shrink-0 text-cyan/60" aria-hidden="true" />
-                    +60 9-123 4567
+                    +6016 922 0499
                   </li>
                   <li className="flex items-center gap-3 text-sm text-secondary">
                     <Mail className="h-4 w-4 flex-shrink-0 text-cyan/60" aria-hidden="true" />
