@@ -23,11 +23,16 @@ export function useWebSocket({ token, userId }: UseWebSocketOptions) {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectDelayRef = useRef(1000);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Guards against the zombie-reconnect bug: closing a socket (unmount, logout)
+  // still fires its onclose handler, which must NOT schedule another reconnect —
+  // otherwise the retry loop outlives the component with no cleanup left to stop it.
+  const shouldReconnectRef = useRef(true);
   const navigate = useNavigate();
 
   const connect = useCallback(() => {
     if (!token || !userId) return;
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
+    shouldReconnectRef.current = true;
 
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
@@ -56,7 +61,13 @@ export function useWebSocket({ token, userId }: UseWebSocketOptions) {
       if (!body) return;
 
       try {
-        const payload = JSON.parse(body) as { type: string; content: string };
+        const payload = JSON.parse(body) as { type: string; content: string; bookingId?: string };
+
+        if (payload.type === 'REDIRECT') {
+          setIsTyping(false);
+          if (payload.bookingId) navigate(`/checkout/${payload.bookingId}`);
+          return;
+        }
 
         if (payload.type === 'TOKEN') {
           setIsTyping(false);
@@ -106,6 +117,7 @@ export function useWebSocket({ token, userId }: UseWebSocketOptions) {
 
     ws.onclose = () => {
       setIsConnected(false);
+      if (!shouldReconnectRef.current) return; // intentional close (unmount/logout) — do not reconnect
       console.log(`[Timah WS] Disconnected — retrying in ${reconnectDelayRef.current}ms`);
       reconnectTimerRef.current = setTimeout(() => {
         reconnectDelayRef.current = Math.min(reconnectDelayRef.current * 2, MAX_RECONNECT_DELAY_MS);
@@ -122,6 +134,7 @@ export function useWebSocket({ token, userId }: UseWebSocketOptions) {
   useEffect(() => {
     connect();
     return () => {
+      shouldReconnectRef.current = false;
       if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
       wsRef.current?.close();
     };

@@ -24,8 +24,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * - {@code search} null/blank matches everyone, otherwise matches email or phone (case-insensitive on email).
      */
     @Query("SELECT u FROM User u WHERE (:roles IS NULL OR COALESCE(:roles) IS NULL OR u.role IN :roles) " +
-       "AND (:search IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
-       "OR u.phoneNumber LIKE CONCAT('%', :search, '%'))")
+       "AND (:search IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+       "OR u.phoneNumber LIKE CONCAT('%', CAST(:search AS string), '%'))")
 Page<User> search(@Param("roles") List<User.UserRole> roles,
                   @Param("search") String search,
                   Pageable pageable);

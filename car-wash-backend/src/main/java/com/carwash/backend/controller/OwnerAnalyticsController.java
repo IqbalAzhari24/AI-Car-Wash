@@ -1,5 +1,6 @@
 package com.carwash.backend.controller;
 
+import com.carwash.backend.dto.AnalyticsInsightDto;
 import com.carwash.backend.dto.RevenueTrendDto;
 import com.carwash.backend.dto.SalesSummaryDto;
 import com.carwash.backend.service.OwnerAnalyticsService;
@@ -53,5 +54,17 @@ public class OwnerAnalyticsController {
     public List<RevenueTrendDto> trend(
             @RequestParam(defaultValue = "7") int days) {
         return analyticsService.getTrend(days);
+    }
+
+    /**
+     * Descriptive-analysis blurb: revenue/bookings vs the trailing 7-day average,
+     * plus Malaysia public holiday context. Defaults to today when {@code date} is
+     * not supplied.
+     */
+    @GetMapping("/insight")
+    public AnalyticsInsightDto insight(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return analyticsService.getInsight(date != null ? date : LocalDate.now());
     }
 }

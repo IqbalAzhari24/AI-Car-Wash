@@ -169,7 +169,7 @@ export const TimahChat: React.FC = () => {
             </button>
           </div>
           <p className="mt-2 text-center text-xs text-muted">
-            Timah operates Mon–Thu, 09:00–17:00. Closed Fridays.
+            Timah operates 09:00–18:00. Closed Fridays.
           </p>
         </div>
       </div>

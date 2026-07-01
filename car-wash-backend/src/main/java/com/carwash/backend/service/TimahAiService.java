@@ -3,8 +3,10 @@ package com.carwash.backend.service;
 import com.carwash.backend.dto.BookingDto;
 import com.carwash.backend.dto.CreateBookingRequest;
 import com.carwash.backend.entity.Booking;
+import com.carwash.backend.entity.Location;
 import com.carwash.backend.entity.ShopClosure;
 import com.carwash.backend.entity.SlotCapacity;
+import com.carwash.backend.repository.LocationRepository;
 import com.carwash.backend.repository.ServiceRepository;
 import com.carwash.backend.repository.ShopClosureRepository;
 import com.carwash.backend.repository.SlotCapacityRepository;
@@ -21,6 +23,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,10 +55,20 @@ public class TimahAiService {
     private static final String GENERATE_URL = BASE_URL + ":generateContent";
     private static final String STREAM_URL    = BASE_URL + ":streamGenerateContent";
 
+    private static final String WEATHER_URL = "https://api.open-meteo.com/v1/forecast";
+    private static final int MAX_SUGGESTION_DAYS = 7; // hard cap — never suggest beyond one week out
+    // Tool execution runs synchronously inside the Reactor Netty response callback, where
+    // Mono/Flux#block() is forbidden. A plain JDK HttpClient call is fine on that thread
+    // (same reasoning as the JPA calls elsewhere in this class) — do NOT swap this for WebClient#block().
+    private static final HttpClient WEATHER_HTTP_CLIENT = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(5))
+            .build();
+
     private final WebClient webClient;
     private final SlotCapacityRepository slotCapacityRepository;
     private final ShopClosureRepository shopClosureRepository;
     private final ServiceRepository serviceRepository;
+    private final LocationRepository locationRepository;
     private final BookingService bookingService;
     private final ObjectMapper om = new ObjectMapper();
 
@@ -61,11 +79,13 @@ public class TimahAiService {
                           SlotCapacityRepository slotCapacityRepository,
                           ShopClosureRepository shopClosureRepository,
                           ServiceRepository serviceRepository,
+                          LocationRepository locationRepository,
                           BookingService bookingService) {
         this.webClient = webClientBuilder.build();
         this.slotCapacityRepository = slotCapacityRepository;
         this.shopClosureRepository = shopClosureRepository;
         this.serviceRepository = serviceRepository;
+        this.locationRepository = locationRepository;
         this.bookingService = bookingService;
     }
 
@@ -166,6 +186,8 @@ public class TimahAiService {
         try {
             switch (name) {
                 case "get_available_slots": return toolGetAvailableSlots(args);
+                case "get_booking_status":  return toolGetBookingStatus(args, userId);
+                case "suggest_wash_time":   return toolSuggestWashTime(args);
                 case "create_booking":      return toolCreateBooking(args, userId);
                 default:
                     return ToolResult.error("Unknown tool: " + name);
@@ -204,6 +226,110 @@ public class TimahAiService {
         resp.set("availableSlots", slots);
         resp.put("totalAvailable", slots.size());
         return ToolResult.ok(resp);
+    }
+
+    /** Read-only lookup of the logged-in customer's own bookings, newest first. */
+    private ToolResult toolGetBookingStatus(JsonNode args, String userId) {
+        if ("anonymous".equals(userId)) {
+            return ToolResult.ok(om.createObjectNode()
+                    .put("success", false)
+                    .put("error", "Customer must be logged in to check booking status."));
+        }
+
+        List<BookingDto> bookings = bookingService.getMyBookings(UUID.fromString(userId));
+        int limit = args.has("limit") ? Math.min(Math.max(args.path("limit").asInt(5), 1), 20) : 5;
+
+        ArrayNode arr = om.createArrayNode();
+        bookings.stream().limit(limit).forEach(b -> arr.addObject()
+                .put("bookingId", b.getId().toString())
+                .put("status", b.getStatus())
+                .put("slotTime", b.getSlotTime() != null ? b.getSlotTime().toString() : null)
+                .put("serviceName", b.getServiceName())
+                .put("vehicleModel", b.getVehicleModel())
+                .put("totalPrice", b.getTotalPrice() != null ? b.getTotalPrice().toPlainString() : null));
+
+        ObjectNode resp = om.createObjectNode();
+        resp.set("bookings", arr);
+        resp.put("count", arr.size());
+        return ToolResult.ok(resp);
+    }
+
+    /**
+     * Recommends the best day(s) within the next 7 days to wash, weighing slot
+     * availability against rain chance. Read-only — combines existing capacity
+     * data with a live Open-Meteo forecast (no API key required).
+     */
+    private ToolResult toolSuggestWashTime(JsonNode args) {
+        int days = args.has("daysAhead")
+                ? Math.min(Math.max(args.path("daysAhead").asInt(MAX_SUGGESTION_DAYS), 1), MAX_SUGGESTION_DAYS)
+                : MAX_SUGGESTION_DAYS;
+        LocalDate today = LocalDate.now();
+
+        Location loc = locationRepository.findAll().stream().findFirst().orElse(null);
+        JsonNode weatherDaily = fetchWeather(loc, days);
+
+        ArrayNode dayNodes = om.createArrayNode();
+        for (int i = 0; i < days; i++) {
+            LocalDate day = today.plusDays(i);
+            if (day.getDayOfWeek() == DayOfWeek.FRIDAY) continue; // shop closed Fridays
+
+            List<SlotCapacity> daySlots = slotCapacityRepository
+                    .findBySlotTimeBetween(day.atStartOfDay(), day.atTime(LocalTime.MAX));
+            int available = daySlots.stream()
+                    .mapToInt(s -> Math.max(s.getMaxLimit() - s.getBookedCount(), 0))
+                    .sum();
+
+            ObjectNode dn = dayNodes.addObject();
+            dn.put("date", day.toString());
+            dn.put("dayOfWeek", day.getDayOfWeek().toString());
+            dn.put("availableSlots", available);
+
+            int rainChance = findRainChance(weatherDaily, day);
+            if (rainChance >= 0) dn.put("rainChancePercent", rainChance);
+        }
+
+        ObjectNode resp = om.createObjectNode();
+        resp.set("days", dayNodes);
+        resp.put("weatherDataAvailable", weatherDaily != null);
+        resp.put("note", "Recommend the day with the most availableSlots and lowest rainChancePercent. "
+                + "Never suggest a date outside this list — the shop cannot plan further than 7 days out.");
+        return ToolResult.ok(resp);
+    }
+
+    private JsonNode fetchWeather(Location loc, int days) {
+        if (loc == null || loc.getLatitude() == null || loc.getLongitude() == null) return null;
+        try {
+            String url = WEATHER_URL
+                    + "?latitude=" + loc.getLatitude()
+                    + "&longitude=" + loc.getLongitude()
+                    + "&daily=precipitation_probability_max,weathercode"
+                    + "&timezone=Asia%2FKuala_Lumpur"
+                    + "&forecast_days=" + days;
+            HttpRequest request = HttpRequest.newBuilder(URI.create(url))
+                    .timeout(Duration.ofSeconds(5))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = WEATHER_HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                log.warn("Weather API returned {}, suggesting on availability only", response.statusCode());
+                return null;
+            }
+            return om.readTree(response.body()).path("daily");
+        } catch (Exception e) {
+            log.warn("Weather lookup failed, suggesting on availability only: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private int findRainChance(JsonNode weatherDaily, LocalDate day) {
+        if (weatherDaily == null) return -1;
+        JsonNode times = weatherDaily.path("time");
+        for (int idx = 0; idx < times.size(); idx++) {
+            if (day.toString().equals(times.get(idx).asText())) {
+                return weatherDaily.path("precipitation_probability_max").path(idx).asInt(-1);
+            }
+        }
+        return -1;
     }
 
     private ToolResult toolCreateBooking(JsonNode args, String userId) {
@@ -333,7 +459,12 @@ public class TimahAiService {
                 + "  2. Call get_available_slots to confirm availability.\n"
                 + "  3. Confirm the exact slot, vehicle class, vehicle model, and which wash service/package "
                 + "the customer wants (use the exact name from the available services list).\n"
-                + "  4. Only then call create_booking, passing serviceName as the chosen service's exact name.\n"
+                + "  4. Only then call create_booking, passing serviceName as the chosen service's exact name.\n\n"
+                + "If a customer asks about an existing booking (status, when it's scheduled, has it been paid), "
+                + "call get_booking_status instead of guessing.\n"
+                + "If a customer asks a vague scheduling question — 'when should I wash my car', 'what's a good "
+                + "day this week' — call suggest_wash_time. It weighs slot availability against rain chance and "
+                + "is hard-capped to the next 7 days; never suggest a date beyond that window.\n"
                 + "Be warm and concise. Respond in the same language the customer uses.";
     }
 
@@ -414,6 +545,35 @@ public class TimahAiService {
         getSlotsProps.putObject("days")
                 .put("type", "INTEGER")
                 .put("description", "Number of days to check starting from 'date'. Defaults to 3, max 7.");
+
+        // --- get_booking_status ---
+        ObjectNode getStatus = decls.addObject();
+        getStatus.put("name", "get_booking_status");
+        getStatus.put("description",
+                "Read-only lookup of the logged-in customer's own bookings and their current status "
+                + "(PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED, NO_SHOW), newest first. "
+                + "Call this when the customer asks about an existing booking instead of guessing.");
+        ObjectNode gsParams = getStatus.putObject("parameters");
+        gsParams.put("type", "OBJECT");
+        ObjectNode gsProps = gsParams.putObject("properties");
+        gsProps.putObject("limit")
+                .put("type", "INTEGER")
+                .put("description", "Max number of bookings to return, newest first. Defaults to 5, max 20.");
+
+        // --- suggest_wash_time ---
+        ObjectNode suggest = decls.addObject();
+        suggest.put("name", "suggest_wash_time");
+        suggest.put("description",
+                "Recommends the best day(s) to bring the car in, within the next 7 days only, based on slot "
+                + "availability and weather forecast (rain chance). Call this for vague scheduling questions like "
+                + "'when should I wash my car' or 'what's a good day this week' — never guess a date yourself.");
+        ObjectNode suggestParams = suggest.putObject("parameters");
+        suggestParams.put("type", "OBJECT");
+        ObjectNode suggestProps = suggestParams.putObject("properties");
+        suggestProps.putObject("daysAhead")
+                .put("type", "INTEGER")
+                .put("description", "How many days ahead to consider. Defaults to 7, hard-capped at 7 — "
+                        + "the shop will never plan further out than one week.");
 
         // --- create_booking ---
         ObjectNode createBook = decls.addObject();

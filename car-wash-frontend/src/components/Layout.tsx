@@ -39,12 +39,15 @@ interface NavItem {
   roles?: Role[];
 }
 
+const ALL_ROLES: Role[] = ['CUSTOMER', 'CLERK', 'WORKER', 'OWNER'];
+
 const NAV_ITEMS: NavItem[] = [
   { to: '/',                label: 'Home' },
   { to: '/book',            label: 'Book a Wash',    roles: ['CUSTOMER'] },
   { to: '/chat',            label: 'Chat with Timah',roles: ['CUSTOMER'] },
   { to: '/admin/analytics', label: 'Analytics',      roles: ['OWNER'] },
   { to: '/admin/users',     label: 'Users',          roles: ['OWNER'] },
+  { to: '/account',         label: 'Account',        roles: ALL_ROLES },
 ];
 
 export const Layout: React.FC = () => {

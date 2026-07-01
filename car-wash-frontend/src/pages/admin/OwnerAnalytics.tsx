@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api/api';
 
 interface SalesSummary {
   date: string;
@@ -21,6 +21,19 @@ interface TrendPoint {
   date: string;
   revenue: number;
   bookingCount: number;
+}
+
+interface UpcomingHoliday {
+  date: string;
+  name: string;
+}
+
+interface AnalyticsInsight {
+  date: string;
+  text: string;
+  publicHoliday: boolean;
+  holidayName: string | null;
+  upcomingHolidays: UpcomingHoliday[];
 }
 
 const todayStr = (): string => new Date().toISOString().slice(0, 10);
@@ -251,15 +264,18 @@ export const OwnerAnalytics: React.FC = () => {
   const [days, setDays]         = useState<number>(7);
   const [summary, setSummary]   = useState<SalesSummary | null>(null);
   const [trend, setTrend]       = useState<TrendPoint[]>([]);
+  const [insight, setInsight]   = useState<AnalyticsInsight | null>(null);
   const [loadingS, setLoadingS] = useState(true);
   const [loadingT, setLoadingT] = useState(true);
+  const [loadingI, setLoadingI] = useState(true);
   const [errorS, setErrorS]     = useState<string | null>(null);
   const [errorT, setErrorT]     = useState<string | null>(null);
+  const [errorI, setErrorI]     = useState<string | null>(null);
 
   const fetchSummary = useCallback(async (d: string) => {
     setLoadingS(true); setErrorS(null);
     try {
-      const res = await axios.get<SalesSummary>('/api/v1/owner/analytics/summary', { params: { date: d } });
+      const res = await api.get<SalesSummary>('/v1/owner/analytics/summary', { params: { date: d } });
       setSummary(res.data);
     } catch { setErrorS('Failed to load daily summary.'); }
     finally { setLoadingS(false); }
@@ -268,14 +284,24 @@ export const OwnerAnalytics: React.FC = () => {
   const fetchTrend = useCallback(async (n: number) => {
     setLoadingT(true); setErrorT(null);
     try {
-      const res = await axios.get<TrendPoint[]>('/api/v1/owner/analytics/trend', { params: { days: n } });
+      const res = await api.get<TrendPoint[]>('/v1/owner/analytics/trend', { params: { days: n } });
       setTrend(res.data);
     } catch { setErrorT('Failed to load trend data.'); }
     finally { setLoadingT(false); }
   }, []);
 
+  const fetchInsight = useCallback(async (d: string) => {
+    setLoadingI(true); setErrorI(null);
+    try {
+      const res = await api.get<AnalyticsInsight>('/v1/owner/analytics/insight', { params: { date: d } });
+      setInsight(res.data);
+    } catch { setErrorI('Failed to load descriptive analysis.'); }
+    finally { setLoadingI(false); }
+  }, []);
+
   useEffect(() => { fetchSummary(date); }, [date, fetchSummary]);
   useEffect(() => { fetchTrend(days);   }, [days, fetchTrend]);
+  useEffect(() => { fetchInsight(date); }, [date, fetchInsight]);
 
   const statusRows = summary ? [
     { label: 'Completed',  count: summary.completedBookings,  color: '#00E5A0' },
@@ -320,6 +346,30 @@ export const OwnerAnalytics: React.FC = () => {
           {errorS}
         </div>
       )}
+
+      {/* Descriptive analysis */}
+      <section aria-label="Descriptive analysis" className="hex-grid hex-border hex-corner rounded-2xl p-5 overflow-hidden">
+        <h3 className="mb-3 text-xs font-medium uppercase tracking-widest text-muted">
+          Descriptive Analysis
+        </h3>
+        {loadingI ? (
+          <div className="space-y-2 animate-pulse" aria-busy="true">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        ) : errorI ? (
+          <p role="alert" className="text-sm text-danger">{errorI}</p>
+        ) : insight ? (
+          <>
+            <p className="text-sm leading-relaxed text-primary">{insight.text}</p>
+            {insight.publicHoliday && (
+              <span className="mt-3 inline-flex items-center rounded-full bg-warning/10 border border-warning/30 px-2.5 py-0.5 text-xs font-medium text-warning">
+                Public holiday — {insight.holidayName}
+              </span>
+            )}
+          </>
+        ) : null}
+      </section>
 
       {/* KPI cards */}
       <section aria-label="Key performance indicators">
