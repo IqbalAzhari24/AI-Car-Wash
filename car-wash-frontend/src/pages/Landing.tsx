@@ -250,7 +250,15 @@ export const Landing: React.FC = () => {
             {/* Map placeholder */}
             <div className="hex-grid hex-border hex-corner flex h-64 items-center justify-center rounded-xl overflow-hidden lg:h-auto">
               <div className="flex flex-col items-center gap-3 text-center px-6">
-               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.0059926782855!2d103.06959629095037!3d5.413319652869992!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31b7bb000993c973%3A0xffa0d942be402c3e!2sVanduta%20Carwash!5e0!3m2!1sen!2smy!4v1782930229894!5m2!1sen!2smy" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d993.0059926782855!2d103.06959629095037!3d5.413319652869992!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31b7bb000993c973%3A0xffa0d942be402c3e!2sVanduta%20Carwash!5e0!3m2!1sen!2smy!4v1782930229894!5m2!1sen!2smy"
+                 width="600"
+                 height="450"
+                 style={{ border: 0 }}
+                 allowFullScreen
+                 loading="lazy"
+                 referrerPolicy="strict-origin-when-cross-origin"
+                 title="AICarWash location map"
+                 ></iframe>
               </div>
             </div>
 
