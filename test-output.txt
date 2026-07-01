@@ -1,0 +1,666 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------------< [0;36mcom.carwash.backend:car-wash-backend[0;1m >----------------[m
+[[1;34mINFO[m] [1mBuilding car-wash-backend 0.0.1-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mcar-wash-backend[0;1m ---[m
+[[1;34mINFO[m] Copying 3 resources from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 13 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:compile[m [1m(default-compile)[m @ [36mcar-wash-backend[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1madded or removed source files[m.
+[[1;34mINFO[m] Compiling 81 source files with javac [debug parameters release 21] to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mcar-wash-backend[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/test/resources to target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:testCompile[m [1m(default-testCompile)[m @ [36mcar-wash-backend[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
+[[1;34mINFO[m] Compiling 14 source files with javac [debug parameters release 21] to target/test-classes
+[[1;33mWARNING[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/AuthControllerTest.java:[34,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[[1;33mWARNING[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/AuthControllerTest.java:[35,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[[1;33mWARNING[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/AuthControllerTest.java:[36,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[[1;33mWARNING[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/AuthControllerTest.java:[37,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[[1;33mWARNING[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/BookingControllerTest.java:[37,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[[1;33mWARNING[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/BookingServiceIntegrationTest.java:[50,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[[1;33mWARNING[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/OwnerAnalyticsControllerTest.java:[26,6] org.springframework.boot.test.mock.mockito.MockBean in org.springframework.boot.test.mock.mockito has been deprecated and marked for removal
+[[1;34mINFO[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/BookingFlowSeleniumTest.java: Some input files use or override a deprecated API.
+[[1;34mINFO[m] /mnt/a/AI Car Wash/car-wash-backend/src/test/java/com/carwash/backend/BookingFlowSeleniumTest.java: Recompile with -Xlint:deprecation for details.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-surefire-plugin:3.5.2:test[m [1m(default-test)[m @ [36mcar-wash-backend[0;1m ---[m
+[[1;34mINFO[m] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[[1;33mWARNING[m] The system property net.bytebuddy.experimental is configured twice! The property appears in <argLine/> and any of <systemPropertyVariables/>, <systemProperties/> or user property.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m]  T E S T S
+[[1;34mINFO[m] -------------------------------------------------------
+[[1;34mINFO[m] Running com.carwash.backend.[1mAuthControllerTest[m
+00:33:18.254 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.carwash.backend.AuthControllerTest]: AuthControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+00:33:19.346 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.carwash.backend.CarWashBackendApplication for test class com.carwash.backend.AuthControllerTest
+00:33:20.489 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+00:33:20.523 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+00:33:20.625 [main] INFO org.testcontainers.DockerClientFactory -- Testcontainers version: 1.20.4
+00:33:24.904 [main] INFO org.testcontainers.dockerclient.DockerClientProviderStrategy -- Found Docker environment with Environment variables, system properties and defaults. Resolved dockerHost=tcp://localhost:2377
+00:33:24.909 [main] INFO org.testcontainers.DockerClientFactory -- Docker host IP address is localhost
+00:33:25.007 [main] INFO org.testcontainers.DockerClientFactory -- Connected to docker: 
+  Server Version: 29.5.3
+  API Version: 1.54
+  Operating System: Docker Desktop
+  Total Memory: 15854 MB
+  Labels: 
+    com.docker.desktop.address=unix:///var/run/docker-cli.sock
+00:33:25.132 [main] INFO tc.testcontainers/ryuk:0.11.0 -- Creating container for image: testcontainers/ryuk:0.11.0
+00:33:25.970 [main] INFO tc.testcontainers/ryuk:0.11.0 -- Container testcontainers/ryuk:0.11.0 is starting: 42277c446e2dd5c18ed5b9caff23605a5b4745b499160da6f9de7b71bdb5d556
+00:33:56.821 [main] INFO tc.testcontainers/ryuk:0.11.0 -- Container testcontainers/ryuk:0.11.0 started in PT31.688727022S
+00:33:56.834 [main] INFO org.testcontainers.utility.RyukResourceReaper -- Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+00:33:56.835 [main] INFO org.testcontainers.DockerClientFactory -- Checking the system...
+00:33:56.838 [main] INFO org.testcontainers.DockerClientFactory -- ✔︎ Docker server version should be at least 1.6.0
+00:33:56.839 [main] INFO tc.redis:7-alpine -- Creating container for image: redis:7-alpine
+00:33:56.929 [main] INFO tc.redis:7-alpine -- Container redis:7-alpine is starting: 98125bc8a3774c9342bdf446a20c55b56800492775c43ff95eab1023682f80cf
+00:33:57.492 [main] INFO tc.redis:7-alpine -- Container redis:7-alpine started in PT0.652295984S
+00:33:57.493 [main] INFO tc.postgres:15-alpine -- Creating container for image: postgres:15-alpine
+00:33:57.570 [main] INFO tc.postgres:15-alpine -- Container postgres:15-alpine is starting: df3f5361353abdf669325fe827960382f22b3df37f7afb85048bba6518da0226
+00:34:30.021 [main] INFO tc.postgres:15-alpine -- Container postgres:15-alpine started in PT32.528793796S
+00:34:30.023 [main] INFO tc.postgres:15-alpine -- Container is started (JDBC URL: jdbc:postgresql://localhost:56595/testdb?loggerLevel=OFF)
+00:34:30.511 [main] INFO org.springframework.boot.devtools.restart.RestartApplicationListener -- Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-07-01T00:34:32.851+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.AuthControllerTest   : Starting AuthControllerTest using Java 21.0.11 with PID 11335 (started by iqbal24 in /mnt/a/AI Car Wash/car-wash-backend)
+2026-07-01T00:34:32.857+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.AuthControllerTest   : The following 1 profile is active: "test"
+2026-07-01T00:34:42.065+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:34:42.084+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-01T00:34:44.315+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 2175 ms. Found 11 JPA repository interfaces.
+2026-07-01T00:34:44.418+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:34:44.425+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-01T00:34:44.696+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.BookingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.697+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.LocationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.697+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.698+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.698+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.698+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ServiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.699+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ShopClosureRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.699+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SlotCapacityRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.699+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SystemLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.699+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.700+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ValetRequestRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:34:44.700+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 212 ms. Found 0 Redis repository interfaces.
+Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+WARNING: A Java agent has been loaded dynamically (/home/iqbal24/.m2/repository/net/bytebuddy/byte-buddy-agent/1.15.11/byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+2026-07-01T00:34:55.843+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-07-01T00:34:56.672+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@14f1545c
+2026-07-01T00:34:56.691+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-07-01T00:34:56.842+08:00  INFO 11335 --- [car-wash-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:56595/testdb?loggerLevel=OFF (PostgreSQL 15.18)
+2026-07-01T00:34:57.325+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-07-01T00:34:57.342+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 13 migrations (execution time 00:00.362s)
+2026-07-01T00:34:57.388+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-07-01T00:34:57.514+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-07-01T00:34:57.646+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - init schema"
+2026-07-01T00:34:57.883+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - make phone optional"
+2026-07-01T00:34:57.949+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - add service to bookings"
+2026-07-01T00:34:58.060+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - create password reset tokens"
+2026-07-01T00:34:58.129+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - fix slot concurrency"
+2026-07-01T00:34:58.195+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - add updated at"
+2026-07-01T00:34:58.259+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - add soft delete"
+2026-07-01T00:34:58.345+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - seed catalog"
+2026-07-01T00:34:58.408+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - fix token hash type"
+2026-07-01T00:34:58.481+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - add booked count to slot capacities"
+2026-07-01T00:34:58.535+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - add lat lng to locations"
+2026-07-01T00:34:58.753+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - create valet requests"
+2026-07-01T00:34:58.863+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - backfill location coordinates"
+2026-07-01T00:34:58.887+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 13 migrations to schema "public", now at version v13 (execution time 00:00.230s)
+2026-07-01T00:34:59.873+08:00  INFO 11335 --- [car-wash-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-01T00:35:00.540+08:00  INFO 11335 --- [car-wash-backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.4.Final
+2026-07-01T00:35:00.874+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-01T00:35:02.204+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-01T00:35:02.875+08:00  INFO 11335 --- [car-wash-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 15.18
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-01T00:35:09.449+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-01T00:35:09.687+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:35:11.733+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-07-01T00:35:20.388+08:00  INFO 11335 --- [car-wash-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-01T00:35:24.797+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-01T00:35:29.942+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-07-01T00:35:29.943+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-07-01T00:35:29.946+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 3 ms
+2026-07-01T00:35:30.338+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-07-01T00:35:30.338+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@5bf56604]]
+2026-07-01T00:35:30.343+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-07-01T00:35:30.971+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.AuthControllerTest   : Started AuthControllerTest in 60.582 seconds (process running for 136.022)
+2026-07-01T00:35:31.074+08:00  INFO 11335 --- [car-wash-backend] [MessageBroker-2] c.c.b.service.NoShowAutomationCron       : Running NoShow Automation Cron
+2026-07-01T00:35:32.202+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.service.CatalogSeeder  : Seeded 216 bookable slots for location 'Timah Wash - Main'.
+2026-07-01T00:35:32.336+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Users table is empty. Seeding local environment staffing roster...
+2026-07-01T00:35:33.269+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Successfully seeded 9 default users into the environment with phone profiles.
+2026-07-01T00:35:34.875+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-07-01T00:35:34.875+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@5bf56604]]
+2026-07-01T00:35:34.875+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-07-01T00:35:36.992+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:35:36.998+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-07-01T00:35:37.010+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m4[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 140.6 s -- in com.carwash.backend.[1mAuthControllerTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mBookingControllerTest[m
+2026-07-01T00:35:37.923+08:00  INFO 11335 --- [car-wash-backend] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.carwash.backend.BookingControllerTest]: BookingControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-07-01T00:35:37.945+08:00  INFO 11335 --- [car-wash-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.carwash.backend.CarWashBackendApplication for test class com.carwash.backend.BookingControllerTest
+2026-07-01T00:35:37.950+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Creating container for image: redis:7-alpine
+2026-07-01T00:35:38.117+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine is starting: 4fc2b503d82e42f20731a7f27a5f4e5d813ec0192b3e303509d4cb47e2c2fc5b
+2026-07-01T00:35:38.667+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine started in PT0.717371325S
+2026-07-01T00:35:38.668+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Creating container for image: postgres:15-alpine
+2026-07-01T00:35:38.747+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine is starting: fcfb617fefeda4f012402a6b05e6a2bf7c2b5860edf5eebe931ba325f0fd03fb
+2026-07-01T00:36:10.911+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine started in PT32.242757137S
+2026-07-01T00:36:10.911+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container is started (JDBC URL: jdbc:postgresql://localhost:60195/testdb?loggerLevel=OFF)
+2026-07-01T00:36:10.920+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-07-01T00:36:11.219+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.BookingControllerTest  : Starting BookingControllerTest using Java 21.0.11 with PID 11335 (started by iqbal24 in /mnt/a/AI Car Wash/car-wash-backend)
+2026-07-01T00:36:11.220+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.BookingControllerTest  : The following 1 profile is active: "test"
+2026-07-01T00:36:15.398+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:36:15.399+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-01T00:36:16.042+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 639 ms. Found 11 JPA repository interfaces.
+2026-07-01T00:36:16.046+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:36:16.047+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-01T00:36:16.321+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.BookingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.321+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.LocationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.321+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ServiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ShopClosureRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SlotCapacityRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SystemLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ValetRequestRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:36:16.322+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 182 ms. Found 0 Redis repository interfaces.
+2026-07-01T00:36:16.953+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-07-01T00:36:16.979+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@17e7f4a0
+2026-07-01T00:36:16.980+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-07-01T00:36:16.983+08:00  INFO 11335 --- [car-wash-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:60195/testdb?loggerLevel=OFF (PostgreSQL 15.18)
+2026-07-01T00:36:17.294+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-07-01T00:36:17.296+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 13 migrations (execution time 00:00.297s)
+2026-07-01T00:36:17.313+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-07-01T00:36:17.349+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-07-01T00:36:17.452+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - init schema"
+2026-07-01T00:36:17.616+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - make phone optional"
+2026-07-01T00:36:17.668+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - add service to bookings"
+2026-07-01T00:36:17.763+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - create password reset tokens"
+2026-07-01T00:36:17.830+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - fix slot concurrency"
+2026-07-01T00:36:17.899+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - add updated at"
+2026-07-01T00:36:17.977+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - add soft delete"
+2026-07-01T00:36:18.073+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - seed catalog"
+2026-07-01T00:36:18.171+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - fix token hash type"
+2026-07-01T00:36:18.260+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - add booked count to slot capacities"
+2026-07-01T00:36:18.309+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - add lat lng to locations"
+2026-07-01T00:36:18.385+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - create valet requests"
+2026-07-01T00:36:18.482+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - backfill location coordinates"
+2026-07-01T00:36:18.497+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 13 migrations to schema "public", now at version v13 (execution time 00:00.205s)
+2026-07-01T00:36:18.879+08:00  INFO 11335 --- [car-wash-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-01T00:36:18.952+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-01T00:36:19.145+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-01T00:36:19.168+08:00  INFO 11335 --- [car-wash-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-2)']
+	Database driver: undefined/unknown
+	Database version: 15.18
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-01T00:36:20.082+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-01T00:36:20.112+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:36:21.860+08:00  INFO 11335 --- [car-wash-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-01T00:36:24.196+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-01T00:36:25.724+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-07-01T00:36:25.724+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-07-01T00:36:25.726+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-07-01T00:36:25.802+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-07-01T00:36:25.802+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@23b8a609]]
+2026-07-01T00:36:25.803+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-07-01T00:36:25.817+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.BookingControllerTest  : Started BookingControllerTest in 14.897 seconds (process running for 190.678)
+2026-07-01T00:36:25.818+08:00  INFO 11335 --- [car-wash-backend] [MessageBroker-1] c.c.b.service.NoShowAutomationCron       : Running NoShow Automation Cron
+2026-07-01T00:36:26.068+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.service.CatalogSeeder  : Seeded 216 bookable slots for location 'Timah Wash - Main'.
+2026-07-01T00:36:26.075+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Users table is empty. Seeding local environment staffing roster...
+2026-07-01T00:36:26.962+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Successfully seeded 9 default users into the environment with phone profiles.
+2026-07-01T00:36:27.251+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-07-01T00:36:27.251+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@23b8a609]]
+2026-07-01T00:36:27.251+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-07-01T00:36:29.266+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:36:29.267+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-07-01T00:36:29.273+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m4[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 52.21 s -- in com.carwash.backend.[1mBookingControllerTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mBookingEngineServiceTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m11[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.832 s -- in com.carwash.backend.[1mBookingEngineServiceTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mBookingFlowSeleniumTest[m
+[[1;33mWARNING[m] [1;33mTests [0;1mrun: [0;1m10[m, Failures: 0, Errors: 0, [1;33mSkipped: [0;1;33m10[m, Time elapsed: 0.082 s -- in com.carwash.backend.[1mBookingFlowSeleniumTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mBookingServiceIntegrationTest[m
+2026-07-01T00:36:31.077+08:00  INFO 11335 --- [car-wash-backend] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.carwash.backend.BookingServiceIntegrationTest]: BookingServiceIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-07-01T00:36:31.084+08:00  INFO 11335 --- [car-wash-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.carwash.backend.CarWashBackendApplication for test class com.carwash.backend.BookingServiceIntegrationTest
+2026-07-01T00:36:31.087+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Creating container for image: redis:7-alpine
+2026-07-01T00:36:31.163+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine is starting: eeae3f03cc47b48182072856b942791b48498d28da345ec9a0d910432086910c
+2026-07-01T00:36:31.734+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine started in PT0.64779711S
+2026-07-01T00:36:31.735+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Creating container for image: postgres:15-alpine
+2026-07-01T00:36:31.819+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine is starting: ec0ae1cbbc6e44fa85905dcf79d2a502b5a4b98552f165cf7955744575b071fb
+2026-07-01T00:37:04.286+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine started in PT32.550513597S
+2026-07-01T00:37:04.286+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container is started (JDBC URL: jdbc:postgresql://localhost:51535/testdb?loggerLevel=OFF)
+2026-07-01T00:37:04.296+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-07-01T00:37:04.568+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.BookingServiceIntegrationTest      : Starting BookingServiceIntegrationTest using Java 21.0.11 with PID 11335 (started by iqbal24 in /mnt/a/AI Car Wash/car-wash-backend)
+2026-07-01T00:37:04.568+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.BookingServiceIntegrationTest      : The following 1 profile is active: "test"
+2026-07-01T00:37:08.347+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:37:08.348+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-01T00:37:09.101+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 748 ms. Found 11 JPA repository interfaces.
+2026-07-01T00:37:09.106+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:37:09.106+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-01T00:37:09.291+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.BookingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.291+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.LocationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.291+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.291+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.291+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.292+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ServiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.292+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ShopClosureRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.292+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SlotCapacityRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.292+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SystemLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.292+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.292+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ValetRequestRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:37:09.292+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 182 ms. Found 0 Redis repository interfaces.
+2026-07-01T00:37:09.808+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-07-01T00:37:09.835+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@708cd640
+2026-07-01T00:37:09.835+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-07-01T00:37:09.838+08:00  INFO 11335 --- [car-wash-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:51535/testdb?loggerLevel=OFF (PostgreSQL 15.18)
+2026-07-01T00:37:10.112+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-07-01T00:37:10.114+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 13 migrations (execution time 00:00.261s)
+2026-07-01T00:37:10.129+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-07-01T00:37:10.161+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-07-01T00:37:10.248+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - init schema"
+2026-07-01T00:37:10.402+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - make phone optional"
+2026-07-01T00:37:10.449+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - add service to bookings"
+2026-07-01T00:37:10.531+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - create password reset tokens"
+2026-07-01T00:37:10.592+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - fix slot concurrency"
+2026-07-01T00:37:10.652+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - add updated at"
+2026-07-01T00:37:10.721+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - add soft delete"
+2026-07-01T00:37:10.814+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - seed catalog"
+2026-07-01T00:37:10.892+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - fix token hash type"
+2026-07-01T00:37:10.992+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - add booked count to slot capacities"
+2026-07-01T00:37:11.047+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - add lat lng to locations"
+2026-07-01T00:37:11.113+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - create valet requests"
+2026-07-01T00:37:11.197+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - backfill location coordinates"
+2026-07-01T00:37:11.210+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 13 migrations to schema "public", now at version v13 (execution time 00:00.184s)
+2026-07-01T00:37:11.537+08:00  INFO 11335 --- [car-wash-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-01T00:37:11.634+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-01T00:37:11.850+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-01T00:37:11.870+08:00  INFO 11335 --- [car-wash-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-3)']
+	Database driver: undefined/unknown
+	Database version: 15.18
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-01T00:37:12.811+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-01T00:37:12.854+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:37:13.763+08:00  INFO 11335 --- [car-wash-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-01T00:37:15.886+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-01T00:37:17.454+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-07-01T00:37:17.454+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@4e7532bb]]
+2026-07-01T00:37:17.455+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-07-01T00:37:17.470+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.BookingServiceIntegrationTest      : Started BookingServiceIntegrationTest in 13.175 seconds (process running for 242.146)
+2026-07-01T00:37:17.471+08:00  INFO 11335 --- [car-wash-backend] [MessageBroker-1] c.c.b.service.NoShowAutomationCron       : Running NoShow Automation Cron
+2026-07-01T00:37:17.705+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.service.CatalogSeeder  : Seeded 216 bookable slots for location 'Timah Wash - Main'.
+2026-07-01T00:37:17.714+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Users table is empty. Seeding local environment staffing roster...
+2026-07-01T00:37:18.618+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Successfully seeded 9 default users into the environment with phone profiles.
+2026-07-01T00:37:19.254+08:00  INFO 11335 --- [car-wash-backend] [pool-7-thread-4] c.c.backend.service.BookingService       : Created booking c656b0b6-e9b2-43de-92d7-feeeb22a201a for customer c57b2288-4c93-4f12-85f1-06d8153dc0a2 at 2026-07-01T05:00 (1 block(s))
+2026-07-01T00:37:19.259+08:00  INFO 11335 --- [car-wash-backend] [pool-7-thread-2] c.c.backend.service.BookingService       : Created booking da181f1c-4b2f-4af2-a636-86d48ddb57c9 for customer eb6b4da9-d88e-4801-af2f-3504fb8480f9 at 2026-07-01T05:00 (1 block(s))
+2026-07-01T00:37:19.264+08:00  INFO 11335 --- [car-wash-backend] [pool-7-thread-3] c.c.backend.service.BookingService       : Created booking aabf30e3-fbf9-4ab4-97f9-8921de92b51a for customer 1220c10c-d124-4093-a917-9f436a47a034 at 2026-07-01T05:00 (1 block(s))
+2026-07-01T00:37:19.378+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Created booking ba982084-0f90-462c-b6dc-9110314197d9 for customer 3301f7f3-c682-414f-bef6-8d1be0a39a7c at 2026-07-01T06:00 (1 block(s))
+2026-07-01T00:37:19.424+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Booking ba982084-0f90-462c-b6dc-9110314197d9 advanced CONFIRMED -> IN_PROGRESS
+2026-07-01T00:37:19.444+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Booking ba982084-0f90-462c-b6dc-9110314197d9 advanced IN_PROGRESS -> COMPLETED
+2026-07-01T00:37:19.568+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Created booking cae16672-d008-43af-994f-9421917a767a for customer a11f25ff-6f96-47ec-8c4f-a49bff2fa0e3 at 2026-07-01T07:00 (1 block(s))
+2026-07-01T00:37:19.836+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Created booking 070d8ae1-1995-49bd-873a-9547dd734146 for customer 46cfbfaa-e92c-41a4-a532-3dbe9081a972 at 2026-07-01T03:00 (1 block(s))
+2026-07-01T00:37:19.937+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Created booking df5a7dd6-7816-461d-8d4d-d4c40ae91cc2 for customer 3fac2ba5-0ffe-423c-a925-98f2bec89975 at 2026-07-01T09:00 (1 block(s))
+2026-07-01T00:37:20.042+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Created booking 8d160ffd-8495-4d08-8582-5b0605ac9615 for customer 8a504939-d759-4549-9688-a2670caf9e47 at 2026-07-01T08:00 (1 block(s))
+2026-07-01T00:37:20.123+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.service.BookingService       : Booking 8d160ffd-8495-4d08-8582-5b0605ac9615 cancelled by 8a504939-d759-4549-9688-a2670caf9e47 (was PENDING), freed 1 block(s)
+2026-07-01T00:37:20.185+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-07-01T00:37:20.185+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@4e7532bb]]
+2026-07-01T00:37:20.186+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-07-01T00:37:22.211+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:37:22.212+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2026-07-01T00:37:22.217+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m8[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 52.00 s -- in com.carwash.backend.[1mBookingServiceIntegrationTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mCarWashBackendApplicationTests[m
+2026-07-01T00:37:23.085+08:00  INFO 11335 --- [car-wash-backend] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.carwash.backend.CarWashBackendApplicationTests]: CarWashBackendApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-07-01T00:37:23.094+08:00  INFO 11335 --- [car-wash-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.carwash.backend.CarWashBackendApplication for test class com.carwash.backend.CarWashBackendApplicationTests
+2026-07-01T00:37:23.096+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Creating container for image: redis:7-alpine
+2026-07-01T00:37:23.190+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine is starting: 86a0442a61c6a3f39e18040dedf97da66257c0646901df1e4eb32af9299e25a0
+2026-07-01T00:37:23.755+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine started in PT0.65923989S
+2026-07-01T00:37:23.756+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Creating container for image: postgres:15-alpine
+2026-07-01T00:37:23.840+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine is starting: 82341b1554c08118d3023bf54302cdc318db85ce690c2b739e9a4ede7401feac
+2026-07-01T00:37:56.041+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine started in PT32.285235835S
+2026-07-01T00:37:56.041+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container is started (JDBC URL: jdbc:postgresql://localhost:53329/testdb?loggerLevel=OFF)
+2026-07-01T00:37:56.050+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-07-01T00:37:56.255+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.CarWashBackendApplicationTests     : Starting CarWashBackendApplicationTests using Java 21.0.11 with PID 11335 (started by iqbal24 in /mnt/a/AI Car Wash/car-wash-backend)
+2026-07-01T00:37:56.256+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.CarWashBackendApplicationTests     : The following 1 profile is active: "test"
+2026-07-01T00:38:00.010+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:38:00.011+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-01T00:38:00.658+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 643 ms. Found 11 JPA repository interfaces.
+2026-07-01T00:38:00.661+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:38:00.661+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-01T00:38:00.852+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.BookingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.LocationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ServiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ShopClosureRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SlotCapacityRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SystemLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.853+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ValetRequestRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:00.854+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 189 ms. Found 0 Redis repository interfaces.
+2026-07-01T00:38:01.228+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2026-07-01T00:38:01.252+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection org.postgresql.jdbc.PgConnection@180f3fc8
+2026-07-01T00:38:01.253+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2026-07-01T00:38:01.259+08:00  INFO 11335 --- [car-wash-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:53329/testdb?loggerLevel=OFF (PostgreSQL 15.18)
+2026-07-01T00:38:01.507+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-07-01T00:38:01.508+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 13 migrations (execution time 00:00.236s)
+2026-07-01T00:38:01.524+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-07-01T00:38:01.555+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-07-01T00:38:01.652+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - init schema"
+2026-07-01T00:38:01.827+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - make phone optional"
+2026-07-01T00:38:01.880+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - add service to bookings"
+2026-07-01T00:38:01.993+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - create password reset tokens"
+2026-07-01T00:38:02.087+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - fix slot concurrency"
+2026-07-01T00:38:02.157+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - add updated at"
+2026-07-01T00:38:02.219+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - add soft delete"
+2026-07-01T00:38:02.309+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - seed catalog"
+2026-07-01T00:38:02.390+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - fix token hash type"
+2026-07-01T00:38:02.484+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - add booked count to slot capacities"
+2026-07-01T00:38:02.536+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - add lat lng to locations"
+2026-07-01T00:38:02.609+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - create valet requests"
+2026-07-01T00:38:02.735+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - backfill location coordinates"
+2026-07-01T00:38:02.751+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 13 migrations to schema "public", now at version v13 (execution time 00:00.221s)
+2026-07-01T00:38:03.198+08:00  INFO 11335 --- [car-wash-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-01T00:38:03.287+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-01T00:38:03.535+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-01T00:38:03.558+08:00  INFO 11335 --- [car-wash-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-4)']
+	Database driver: undefined/unknown
+	Database version: 15.18
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-01T00:38:04.593+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-01T00:38:04.626+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:38:05.428+08:00  INFO 11335 --- [car-wash-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-01T00:38:07.489+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-01T00:38:08.989+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-07-01T00:38:08.989+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@69b7d41f]]
+2026-07-01T00:38:08.990+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-07-01T00:38:09.017+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.CarWashBackendApplicationTests     : Started CarWashBackendApplicationTests in 12.967 seconds (process running for 293.599)
+2026-07-01T00:38:09.018+08:00  INFO 11335 --- [car-wash-backend] [MessageBroker-1] c.c.b.service.NoShowAutomationCron       : Running NoShow Automation Cron
+2026-07-01T00:38:09.218+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.service.CatalogSeeder  : Seeded 216 bookable slots for location 'Timah Wash - Main'.
+2026-07-01T00:38:09.224+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Users table is empty. Seeding local environment staffing roster...
+2026-07-01T00:38:10.083+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Successfully seeded 9 default users into the environment with phone profiles.
+2026-07-01T00:38:10.173+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-07-01T00:38:10.173+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@69b7d41f]]
+2026-07-01T00:38:10.174+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-07-01T00:38:12.187+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:38:12.187+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2026-07-01T00:38:12.191+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 49.97 s -- in com.carwash.backend.[1mCarWashBackendApplicationTests[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mFrontendSeleniumTest[m
+[[1;33mWARNING[m] [1;33mTests [0;1mrun: [0;1m11[m, Failures: 0, Errors: 0, [1;33mSkipped: [0;1;33m11[m, Time elapsed: 0.036 s -- in com.carwash.backend.[1mFrontendSeleniumTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mJwtServiceTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.453 s -- in com.carwash.backend.[1mJwtServiceTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mOwnerAnalyticsControllerTest[m
+2026-07-01T00:38:13.549+08:00  INFO 11335 --- [car-wash-backend] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.carwash.backend.OwnerAnalyticsControllerTest]: OwnerAnalyticsControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-07-01T00:38:13.563+08:00  INFO 11335 --- [car-wash-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.carwash.backend.CarWashBackendApplication for test class com.carwash.backend.OwnerAnalyticsControllerTest
+2026-07-01T00:38:13.565+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Creating container for image: redis:7-alpine
+2026-07-01T00:38:13.649+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine is starting: 51291980bc997b17cb57da2a97dc42aa305836d7ad090125b3e8b28b54b1f56f
+2026-07-01T00:38:14.128+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine started in PT0.562108361S
+2026-07-01T00:38:14.128+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Creating container for image: postgres:15-alpine
+2026-07-01T00:38:14.208+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine is starting: 0adb4073b9cba331d19754309ab12bb36f7561d5f1a32530da743bafbaf342f4
+2026-07-01T00:38:46.372+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine started in PT32.244559423S
+2026-07-01T00:38:46.376+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container is started (JDBC URL: jdbc:postgresql://localhost:56953/testdb?loggerLevel=OFF)
+2026-07-01T00:38:46.390+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-07-01T00:38:46.649+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.OwnerAnalyticsControllerTest       : Starting OwnerAnalyticsControllerTest using Java 21.0.11 with PID 11335 (started by iqbal24 in /mnt/a/AI Car Wash/car-wash-backend)
+2026-07-01T00:38:46.650+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.OwnerAnalyticsControllerTest       : The following 1 profile is active: "test"
+2026-07-01T00:38:50.714+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:38:50.715+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-01T00:38:51.399+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 680 ms. Found 11 JPA repository interfaces.
+2026-07-01T00:38:51.402+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:38:51.403+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-01T00:38:51.575+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.BookingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.575+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.LocationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.575+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.575+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.575+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.575+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ServiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.575+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ShopClosureRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.576+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SlotCapacityRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.576+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SystemLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.576+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.576+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ValetRequestRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:38:51.576+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 168 ms. Found 0 Redis repository interfaces.
+2026-07-01T00:38:52.084+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Starting...
+2026-07-01T00:38:52.109+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-5 - Added connection org.postgresql.jdbc.PgConnection@6abe9167
+2026-07-01T00:38:52.110+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Start completed.
+2026-07-01T00:38:52.113+08:00  INFO 11335 --- [car-wash-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:56953/testdb?loggerLevel=OFF (PostgreSQL 15.18)
+2026-07-01T00:38:52.384+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-07-01T00:38:52.385+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 13 migrations (execution time 00:00.256s)
+2026-07-01T00:38:52.404+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-07-01T00:38:52.433+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-07-01T00:38:52.546+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - init schema"
+2026-07-01T00:38:52.732+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - make phone optional"
+2026-07-01T00:38:52.780+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - add service to bookings"
+2026-07-01T00:38:52.862+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - create password reset tokens"
+2026-07-01T00:38:52.934+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - fix slot concurrency"
+2026-07-01T00:38:53.030+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - add updated at"
+2026-07-01T00:38:53.116+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - add soft delete"
+2026-07-01T00:38:53.230+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - seed catalog"
+2026-07-01T00:38:53.309+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - fix token hash type"
+2026-07-01T00:38:53.399+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - add booked count to slot capacities"
+2026-07-01T00:38:53.449+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - add lat lng to locations"
+2026-07-01T00:38:53.518+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - create valet requests"
+2026-07-01T00:38:53.627+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - backfill location coordinates"
+2026-07-01T00:38:53.644+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 13 migrations to schema "public", now at version v13 (execution time 00:00.226s)
+2026-07-01T00:38:54.034+08:00  INFO 11335 --- [car-wash-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-01T00:38:54.099+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-01T00:38:54.301+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-01T00:38:54.323+08:00  INFO 11335 --- [car-wash-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-5)']
+	Database driver: undefined/unknown
+	Database version: 15.18
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-01T00:38:55.189+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-01T00:38:55.218+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:38:56.190+08:00  INFO 11335 --- [car-wash-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-01T00:38:58.349+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-01T00:38:59.730+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-07-01T00:38:59.730+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-07-01T00:38:59.732+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-07-01T00:38:59.796+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-07-01T00:38:59.796+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@18bce3be]]
+2026-07-01T00:38:59.796+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-07-01T00:38:59.809+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.OwnerAnalyticsControllerTest       : Started OwnerAnalyticsControllerTest in 13.42 seconds (process running for 344.214)
+2026-07-01T00:38:59.810+08:00  INFO 11335 --- [car-wash-backend] [MessageBroker-2] c.c.b.service.NoShowAutomationCron       : Running NoShow Automation Cron
+2026-07-01T00:38:59.990+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.service.CatalogSeeder  : Seeded 216 bookable slots for location 'Timah Wash - Main'.
+2026-07-01T00:38:59.995+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Users table is empty. Seeding local environment staffing roster...
+2026-07-01T00:39:00.860+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Successfully seeded 9 default users into the environment with phone profiles.
+2026-07-01T00:39:01.183+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-07-01T00:39:01.184+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@18bce3be]]
+2026-07-01T00:39:01.184+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-07-01T00:39:03.208+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:39:03.209+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown initiated...
+2026-07-01T00:39:03.218+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown completed.
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m4[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 50.54 s -- in com.carwash.backend.[1mOwnerAnalyticsControllerTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mPasswordResetServiceTest[m
+2026-07-01T00:39:04.526+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.service.PasswordResetService       : Invalidated 2 existing reset token(s) for user 8dc389b5-5a91-4da3-aaab-5b268d3540c7
+2026-07-01T00:39:04.529+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.service.PasswordResetService       : Password reset email dispatched for user 8dc389b5-5a91-4da3-aaab-5b268d3540c7
+2026-07-01T00:39:04.781+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.service.PasswordResetService       : Password successfully reset for user eff76050-a86b-4d2a-a13c-0871fc4d662f
+2026-07-01T00:39:04.983+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.service.PasswordResetService       : Password reset email dispatched for user 67e57fe6-607c-4d26-87f9-1f7ca178adca
+2026-07-01T00:39:05.175+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.b.service.PasswordResetService       : Password successfully reset for user 71d12b0a-4816-4e06-9e98-b15a00a6d6ab
+2026-07-01T00:39:05.179+08:00  WARN 11335 --- [car-wash-backend] [           main] c.c.b.service.PasswordResetService       : Password reset attempted with invalid or expired token
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.108 s -- in com.carwash.backend.[1mPasswordResetServiceTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mRateLimiterServiceTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.491 s -- in com.carwash.backend.[1mRateLimiterServiceTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mReviewServiceTest[m
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.379 s -- in com.carwash.backend.[1mReviewServiceTest[m
+[[1;34mINFO[m] Running com.carwash.backend.[1mSlotCapacityRepositoryTest[m
+2026-07-01T00:39:06.080+08:00  INFO 11335 --- [car-wash-backend] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.carwash.backend.SlotCapacityRepositoryTest]: SlotCapacityRepositoryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-07-01T00:39:06.088+08:00  INFO 11335 --- [car-wash-backend] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.carwash.backend.CarWashBackendApplication for test class com.carwash.backend.SlotCapacityRepositoryTest
+2026-07-01T00:39:06.091+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Creating container for image: redis:7-alpine
+2026-07-01T00:39:06.171+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine is starting: 495e55e8fda67621a9beea5bdcb90bac40f5638fa78d063da1982a76a640794c
+2026-07-01T00:39:06.662+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.redis:7-alpine                        : Container redis:7-alpine started in PT0.571289685S
+2026-07-01T00:39:06.662+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Creating container for image: postgres:15-alpine
+2026-07-01T00:39:06.735+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine is starting: bff7acac8db623ed52ef7d5469982b38a18b6318753ddefd2c22273584037cfe
+2026-07-01T00:39:39.231+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container postgres:15-alpine started in PT32.568748511S
+2026-07-01T00:39:39.231+08:00  INFO 11335 --- [car-wash-backend] [           main] tc.postgres:15-alpine                    : Container is started (JDBC URL: jdbc:postgresql://localhost:61976/testdb?loggerLevel=OFF)
+2026-07-01T00:39:39.241+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.d.r.RestartApplicationListener     : Restart disabled due to context in which it is running
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2026-07-01T00:39:39.462+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.SlotCapacityRepositoryTest   : Starting SlotCapacityRepositoryTest using Java 21.0.11 with PID 11335 (started by iqbal24 in /mnt/a/AI Car Wash/car-wash-backend)
+2026-07-01T00:39:39.462+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.SlotCapacityRepositoryTest   : The following 1 profile is active: "test"
+2026-07-01T00:39:43.200+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:39:43.200+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-07-01T00:39:43.854+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 650 ms. Found 11 JPA repository interfaces.
+2026-07-01T00:39:43.858+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-07-01T00:39:43.858+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-07-01T00:39:44.052+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.BookingRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.052+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.LocationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.052+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PasswordResetTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.052+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.PaymentRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ServiceRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ShopClosureRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SlotCapacityRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.SystemLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.carwash.backend.repository.ValetRequestRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-07-01T00:39:44.053+08:00  INFO 11335 --- [car-wash-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 189 ms. Found 0 Redis repository interfaces.
+2026-07-01T00:39:44.398+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Starting...
+2026-07-01T00:39:44.422+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-6 - Added connection org.postgresql.jdbc.PgConnection@4a57d841
+2026-07-01T00:39:44.423+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Start completed.
+2026-07-01T00:39:44.425+08:00  INFO 11335 --- [car-wash-backend] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:61976/testdb?loggerLevel=OFF (PostgreSQL 15.18)
+2026-07-01T00:39:44.675+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-07-01T00:39:44.677+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 13 migrations (execution time 00:00.237s)
+2026-07-01T00:39:44.692+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-07-01T00:39:44.717+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-07-01T00:39:44.795+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - init schema"
+2026-07-01T00:39:44.945+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - make phone optional"
+2026-07-01T00:39:44.993+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - add service to bookings"
+2026-07-01T00:39:45.077+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "4 - create password reset tokens"
+2026-07-01T00:39:45.139+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "5 - fix slot concurrency"
+2026-07-01T00:39:45.200+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "6 - add updated at"
+2026-07-01T00:39:45.257+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "7 - add soft delete"
+2026-07-01T00:39:45.338+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "8 - seed catalog"
+2026-07-01T00:39:45.402+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "9 - fix token hash type"
+2026-07-01T00:39:45.469+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "10 - add booked count to slot capacities"
+2026-07-01T00:39:45.507+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "11 - add lat lng to locations"
+2026-07-01T00:39:45.563+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "12 - create valet requests"
+2026-07-01T00:39:45.648+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "13 - backfill location coordinates"
+2026-07-01T00:39:45.660+08:00  INFO 11335 --- [car-wash-backend] [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 13 migrations to schema "public", now at version v13 (execution time 00:00.178s)
+2026-07-01T00:39:45.969+08:00  INFO 11335 --- [car-wash-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-07-01T00:39:46.034+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-07-01T00:39:46.228+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-07-01T00:39:46.251+08:00  INFO 11335 --- [car-wash-backend] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-6)']
+	Database driver: undefined/unknown
+	Database version: 15.18
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-07-01T00:39:47.172+08:00  INFO 11335 --- [car-wash-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-07-01T00:39:47.199+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:39:47.885+08:00  INFO 11335 --- [car-wash-backend] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-07-01T00:39:50.398+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-07-01T00:39:51.773+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-07-01T00:39:51.774+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@c126600]]
+2026-07-01T00:39:51.774+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-07-01T00:39:51.785+08:00  INFO 11335 --- [car-wash-backend] [           main] c.c.backend.SlotCapacityRepositoryTest   : Started SlotCapacityRepositoryTest in 12.544 seconds (process running for 395.999)
+2026-07-01T00:39:51.786+08:00  INFO 11335 --- [car-wash-backend] [MessageBroker-1] c.c.b.service.NoShowAutomationCron       : Running NoShow Automation Cron
+2026-07-01T00:39:51.969+08:00  INFO 11335 --- [car-wash-backend] [           main] c.carwash.backend.service.CatalogSeeder  : Seeded 216 bookable slots for location 'Timah Wash - Main'.
+2026-07-01T00:39:51.975+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Users table is empty. Seeding local environment staffing roster...
+2026-07-01T00:39:52.834+08:00  INFO 11335 --- [car-wash-backend] [           main] com.carwash.backend.service.UserSeeder   : Successfully seeded 9 default users into the environment with phone profiles.
+2026-07-01T00:39:53.294+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-07-01T00:39:53.295+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@c126600]]
+2026-07-01T00:39:53.295+08:00  INFO 11335 --- [car-wash-backend] [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2026-07-01T00:39:55.316+08:00  INFO 11335 --- [car-wash-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-07-01T00:39:55.317+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown initiated...
+2026-07-01T00:39:55.324+08:00  INFO 11335 --- [car-wash-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown completed.
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m4[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 50.14 s -- in com.carwash.backend.[1mSlotCapacityRepositoryTest[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] Results:
+[[1;34mINFO[m] 
+[[1;33mWARNING[m] [1;33mTests run: 81, Failures: 0, Errors: 0, Skipped: 21[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  07:12 min
+[[1;34mINFO[m] Finished at: 2026-07-01T00:39:56+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

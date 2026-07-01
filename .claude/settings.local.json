@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xxd)",
+      "Bash(git add *)",
+      "Bash(mvn -q test)",
+      "Bash(gh run *)",
+      "PowerShell(cd \"A:\\\\AI Car Wash\"; $g=\\(Get-Command gh -ErrorAction SilentlyContinue\\); if\\($g\\){ gh run list --workflow=test.yml --limit 5 } else { \"gh NOT installed\" })",
+      "Bash(curl -s --max-time 15 \"https://api.github.com/repos/IqbalAzhari24/AI-Car-Wash/actions/workflows/test.yml/runs?per_page=5\")"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
+}

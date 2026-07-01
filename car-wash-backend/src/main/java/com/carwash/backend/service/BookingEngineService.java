@@ -2,7 +2,6 @@ package com.carwash.backend.service;
 
 import com.carwash.backend.entity.Booking;
 import com.carwash.backend.entity.Service;
-import com.carwash.backend.repository.SlotCapacityRepository;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -11,12 +10,6 @@ import java.util.Map;
 
 @Component
 public class BookingEngineService {
-
-    private final SlotCapacityRepository slotCapacityRepository;
-
-    public BookingEngineService(SlotCapacityRepository slotCapacityRepository) {
-        this.slotCapacityRepository = slotCapacityRepository;
-    }
 
     public int calculateRequiredBlocks(Booking.VehicleClass vClass) {
         return switch (vClass) {

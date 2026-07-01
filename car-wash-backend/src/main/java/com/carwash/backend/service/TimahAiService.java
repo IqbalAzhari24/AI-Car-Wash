@@ -3,10 +3,8 @@ package com.carwash.backend.service;
 import com.carwash.backend.dto.BookingDto;
 import com.carwash.backend.dto.CreateBookingRequest;
 import com.carwash.backend.entity.Booking;
-import com.carwash.backend.entity.ShopClosure;
 import com.carwash.backend.entity.SlotCapacity;
 import com.carwash.backend.repository.ServiceRepository;
-import com.carwash.backend.repository.ShopClosureRepository;
 import com.carwash.backend.repository.SlotCapacityRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,22 +47,19 @@ public class TimahAiService {
 
     private final WebClient webClient;
     private final SlotCapacityRepository slotCapacityRepository;
-    private final ShopClosureRepository shopClosureRepository;
     private final ServiceRepository serviceRepository;
     private final BookingService bookingService;
-    private final ObjectMapper om = new ObjectMapper();
+    private static final ObjectMapper om = new ObjectMapper();
 
     @Value("${gemini.api.key:GEMINI_API_KEY_NOT_SET}")
     private String geminiApiKey;
 
     public TimahAiService(WebClient.Builder webClientBuilder,
                           SlotCapacityRepository slotCapacityRepository,
-                          ShopClosureRepository shopClosureRepository,
                           ServiceRepository serviceRepository,
                           BookingService bookingService) {
         this.webClient = webClientBuilder.build();
         this.slotCapacityRepository = slotCapacityRepository;
-        this.shopClosureRepository = shopClosureRepository;
         this.serviceRepository = serviceRepository;
         this.bookingService = bookingService;
     }
@@ -165,8 +160,10 @@ public class TimahAiService {
     private ToolResult executeTool(String name, JsonNode args, String userId) {
         try {
             switch (name) {
-                case "get_available_slots": return toolGetAvailableSlots(args);
-                case "create_booking":      return toolCreateBooking(args, userId);
+                case "get_available_slots":  return toolGetAvailableSlots(args);
+                case "get_services":         return toolGetServices();
+                case "get_booking_status":   return toolGetBookingStatus(args, userId);
+                case "create_booking":       return toolCreateBooking(args, userId);
                 default:
                     return ToolResult.error("Unknown tool: " + name);
             }
@@ -204,6 +201,60 @@ public class TimahAiService {
         resp.set("availableSlots", slots);
         resp.put("totalAvailable", slots.size());
         return ToolResult.ok(resp);
+    }
+
+    private ToolResult toolGetServices() {
+        List<com.carwash.backend.entity.Service> activeServices = serviceRepository.findActive();
+        ArrayNode list = om.createArrayNode();
+        for (com.carwash.backend.entity.Service s : activeServices) {
+            list.addObject()
+                    .put("id", s.getId().toString())
+                    .put("name", s.getName())
+                    .put("description", s.getDescription() != null ? s.getDescription() : "")
+                    .put("basePrice", s.getPrice().toPlainString())
+                    .put("currency", "MYR");
+        }
+        ObjectNode resp = om.createObjectNode();
+        resp.set("services", list);
+        resp.put("count", list.size());
+        return ToolResult.ok(resp);
+    }
+
+    private ToolResult toolGetBookingStatus(JsonNode args, String userId) {
+        String bookingIdStr = args.path("bookingId").asText("");
+        if (bookingIdStr.isBlank()) {
+            return ToolResult.ok(om.createObjectNode()
+                    .put("success", false)
+                    .put("error", "bookingId is required."));
+        }
+        UUID bookingId;
+        try {
+            bookingId = UUID.fromString(bookingIdStr);
+        } catch (IllegalArgumentException e) {
+            return ToolResult.ok(om.createObjectNode()
+                    .put("success", false)
+                    .put("error", "Invalid bookingId format: " + bookingIdStr));
+        }
+
+        boolean isAnon = "anonymous".equals(userId);
+        UUID actingUserId = isAnon ? null : UUID.fromString(userId);
+        try {
+            BookingDto dto = bookingService.getBooking(bookingId, actingUserId, false);
+            ObjectNode resp = om.createObjectNode()
+                    .put("bookingId", dto.getId().toString())
+                    .put("status", dto.getStatus())
+                    .put("slotTime", dto.getSlotTime().toString())
+                    .put("serviceName", dto.getServiceName())
+                    .put("vehicleClass", dto.getVehicleClass())
+                    .put("vehicleModel", dto.getVehicleModel())
+                    .put("totalPrice", dto.getTotalPrice().toPlainString())
+                    .put("currency", "MYR");
+            return ToolResult.ok(resp);
+        } catch (ResponseStatusException e) {
+            return ToolResult.ok(om.createObjectNode()
+                    .put("success", false)
+                    .put("error", e.getReason() != null ? e.getReason() : "Booking not found or access denied."));
+        }
     }
 
     private ToolResult toolCreateBooking(JsonNode args, String userId) {
@@ -299,15 +350,10 @@ public class TimahAiService {
 
         List<SlotCapacity> todaySlots = slotCapacityRepository
                 .findBySlotTimeBetween(sod, today.atTime(LocalTime.MAX));
-        List<ShopClosure> closures = shopClosureRepository.findByEndTimeAfter(sod);
 
         String capacityCtx = todaySlots.stream()
                 .map(s -> "  " + s.getSlotTime() + " — "
                         + (s.getMaxLimit() - s.getBookedCount()) + " of " + s.getMaxLimit() + " free")
-                .collect(Collectors.joining("\n"));
-
-        String closureCtx = closures.stream()
-                .map(c -> "  " + c.getStartTime() + " to " + c.getEndTime() + ": " + c.getReason())
                 .collect(Collectors.joining("\n"));
 
         List<com.carwash.backend.entity.Service> activeServices = serviceRepository.findActive();
@@ -319,7 +365,6 @@ public class TimahAiService {
         return "You are Timah, the friendly AI booking assistant for Timah Car Wash.\n"
                 + "Today is " + today + ". Operating hours: 09:00–18:00, closed on Fridays.\n\n"
                 + "Today's availability:\n" + (capacityCtx.isEmpty() ? "  No slots today." : capacityCtx) + "\n\n"
-                + "Upcoming closures:\n" + (closureCtx.isEmpty() ? "  None — fully operational." : closureCtx) + "\n\n"
                 + "Available wash services/packages:\n"
                 + (servicesCtx.isEmpty() ? "  No services currently available." : servicesCtx) + "\n\n"
                 + "Vehicle class price multipliers (applied on top of the service's base price):\n"
@@ -415,6 +460,28 @@ public class TimahAiService {
                 .put("type", "INTEGER")
                 .put("description", "Number of days to check starting from 'date'. Defaults to 3, max 7.");
 
+        // --- get_services ---
+        ObjectNode getSvcs = decls.addObject();
+        getSvcs.put("name", "get_services");
+        getSvcs.put("description",
+                "Returns the active wash service catalogue with names, descriptions, and base prices. "
+                + "Call this when the customer asks about available packages, pricing, or services.");
+        // No required parameters — takes none
+        getSvcs.putObject("parameters").put("type", "OBJECT").putObject("properties");
+
+        // --- get_booking_status ---
+        ObjectNode getStatus = decls.addObject();
+        getStatus.put("name", "get_booking_status");
+        getStatus.put("description",
+                "Looks up the status and details of an existing booking by its ID. "
+                + "Only returns bookings that belong to the logged-in customer.");
+        ObjectNode gsParams = getStatus.putObject("parameters");
+        gsParams.put("type", "OBJECT");
+        gsParams.putObject("properties").putObject("bookingId")
+                .put("type", "STRING")
+                .put("description", "The UUID of the booking to look up.");
+        gsParams.putArray("required").add("bookingId");
+
         // --- create_booking ---
         ObjectNode createBook = decls.addObject();
         createBook.put("name", "create_booking");
@@ -476,8 +543,6 @@ public class TimahAiService {
     }
 
     private static class ToolResult {
-        private static final ObjectMapper MAPPER = new ObjectMapper();
-
         final UUID bookingId;      // non-null only when create_booking succeeded
         final JsonNode responseNode;
 
@@ -488,7 +553,7 @@ public class TimahAiService {
 
         static ToolResult ok(JsonNode node) { return new ToolResult(null, node); }
         static ToolResult error(String msg) {
-            return new ToolResult(null, MAPPER.createObjectNode().put("error", msg));
+            return new ToolResult(null, om.createObjectNode().put("error", msg));
         }
     }
 }

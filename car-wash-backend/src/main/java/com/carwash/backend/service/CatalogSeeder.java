@@ -4,6 +4,7 @@ import com.carwash.backend.entity.Location;
 import com.carwash.backend.entity.SlotCapacity;
 import com.carwash.backend.repository.LocationRepository;
 import com.carwash.backend.repository.SlotCapacityRepository;
+import com.carwash.backend.util.MalaysiaCalendarService;
 import com.carwash.backend.util.SlotConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,7 +22,7 @@ import java.util.List;
  * Seeds the bookable 30-minute slot inventory on first boot.
  * Location and services are seeded by V8__seed_catalog.sql (Flyway).
  *
- * Operating window: 09:00–17:30. Fridays are skipped (shop closed).
+ * Operating window: 09:00–17:30. Fridays and Malaysian public holidays are skipped.
  */
 @Component
 @Order(20) // after UserSeeder
@@ -32,11 +32,14 @@ public class CatalogSeeder implements CommandLineRunner {
 
     private final LocationRepository locationRepository;
     private final SlotCapacityRepository slotCapacityRepository;
+    private final MalaysiaCalendarService malaysiaCalendarService;
 
     public CatalogSeeder(LocationRepository locationRepository,
-                         SlotCapacityRepository slotCapacityRepository) {
+                         SlotCapacityRepository slotCapacityRepository,
+                         MalaysiaCalendarService malaysiaCalendarService) {
         this.locationRepository = locationRepository;
         this.slotCapacityRepository = slotCapacityRepository;
+        this.malaysiaCalendarService = malaysiaCalendarService;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class CatalogSeeder implements CommandLineRunner {
         List<SlotCapacity> slots = new ArrayList<>();
         LocalDate day = LocalDate.now();
         for (int d = 0; d < SlotConstants.DAYS_AHEAD; d++, day = day.plusDays(1)) {
-            if (day.getDayOfWeek() == DayOfWeek.FRIDAY) continue;
+            if (!malaysiaCalendarService.isOperatingDay(day)) continue;
             for (LocalTime t = SlotConstants.OPEN; !t.isAfter(SlotConstants.LAST_SLOT); t = t.plusMinutes(SlotConstants.SLOT_MINUTES)) {
                 SlotCapacity slot = new SlotCapacity();
                 slot.setLocation(main);

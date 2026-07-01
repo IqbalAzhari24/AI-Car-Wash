@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackgroundAgentGlobalSettings">
+    <option name="selectedModelId" value="auto" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7b101451-f9b8-47d3-8ca0-2d1970d3131c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/car-wash-backend/src/test/java/com/carwash/backend/AbstractIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/car-wash-backend/src/test/java/com/carwash/backend/AbstractIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/car-wash-frontend/src/pages/Landing.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/car-wash-frontend/src/pages/Landing.tsx" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="a79c8720-dbd9-4323-a146-16719562c62b" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="a79c8720-dbd9-4323-a146-16719562c62b" />
+            <option name="modeId" value="Agent" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
+  </component>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_A:/AI Car Wash" value="3FTaTA32vVgOm3pxJGyJk0OF3oa" />
+    </persistenceIdMap>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;IqbalAzhari24&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/IqbalAzhari24/AI-Car-Wash.git&quot;,
+    &quot;accountId&quot;: &quot;58547343-9be5-4641-a10e-ae9647ab24df&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.3552290181875343E-7" />
+      <entry key="MS500" value="0.07653942754962904" />
+      <entry key="S2" value="1.3590893821266283" />
+      <entry key="S5" value="2.971270741080753" />
+      <entry key="S10" value="4.4321362879494695" />
+      <entry key="S30" value="6.393682427589029" />
+      <entry key="S60" value="7.125350970347942" />
+      <entry key="M2" value="7.542881174654393" />
+      <entry key="M5" value="7.812130756003618" />
+      <entry key="M10" value="7.905228061488629" />
+      <entry key="M15" value="7.939189737523025" />
+      <entry key="M30" value="8.328804422064804" />
+      <entry key="H1" value="13.580194388064845" />
+      <entry key="H2" value="33.04157904030335" />
+      <entry key="H4" value="65.41038220463652" />
+      <entry key="D1" value="146.17701710875195" />
+      <entry key="W1" value="175.2937013943587" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0" />
+      <entry key="M2" value="1.0" />
+      <entry key="M5" value="1.0000000000015798" />
+      <entry key="M10" value="1.0000017834773216" />
+      <entry key="M15" value="1.0001882432253153" />
+      <entry key="M30" value="1.02106897792809" />
+      <entry key="H1" value="1.239012319687214" />
+      <entry key="H2" value="1.8334129253096518" />
+      <entry key="H4" value="2.5743018547389243" />
+      <entry key="D1" value="3.6925954513026196" />
+      <entry key="W1" value="3.953977060136451" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="7.299960581881417E-6" />
+      <entry key="MS500" value="0.1696654413323994" />
+      <entry key="S2" value="1.8879190605719645" />
+      <entry key="S5" value="3.6211473878937213" />
+      <entry key="S10" value="5.139574274731216" />
+      <entry key="S30" value="7.239183376983154" />
+      <entry key="S60" value="8.03751488604331" />
+      <entry key="M2" value="8.495964750288605" />
+      <entry key="M5" value="8.792594624409361" />
+      <entry key="M10" value="8.895329130184786" />
+      <entry key="M15" value="8.932747494782815" />
+      <entry key="M30" value="9.346531243911464" />
+      <entry key="H1" value="14.817463536153053" />
+      <entry key="H2" value="34.87401813075904" />
+      <entry key="H4" value="67.984128910007" />
+      <entry key="D1" value="149.8695002030725" />
+      <entry key="W1" value="179.24766162107693" />
+    </decayedShown>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3FTaTA32vVgOm3pxJGyJk0OF3oa" />
+  <component name="ProjectSessionTemplates">
+    <option name="inlineTemplate">
+      <template>
+        <option name="modeId" value="InlineAgent" />
+        <option name="model">
+          <model>
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+          </model>
+        </option>
+        <option name="targetType" value="LOCAL" />
+      </template>
+    </option>
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Unnamed.executor": "Debug",
+    "Git.Working.Tree.Tab.closed.by.user": "closed",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
+    "git-widget-placeholder": "claude/landing-vanduta-map-pin-7iixzy",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "A:/AI Car Wash",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "project.propDebugger",
+    "ts.external.directory.path": "A:\\AI Car Wash\\.claude\\worktrees\\zen-curie-d5191b\\car-wash-frontend\\node_modules\\typescript\\lib"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="aicarwash" type="Application" factoryName="Application" singleton="false">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <extension name="net.ashald.envfile">
+        <option name="IS_ENABLED" value="true" />
+        <option name="IS_SUBST" value="false" />
+        <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+        <option name="IS_IGNORE_MISSING_FILES" value="false" />
+        <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+        <ENTRIES>
+          <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+        </ENTRIES>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.25134.95" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.25134.95" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7b101451-f9b8-47d3-8ca0-2d1970d3131c" name="Changes" comment="" />
+      <created>1782101517602</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1782101517602</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UpdateCopyrightCheckinHandler">
+    <option name="UPDATE_COPYRIGHT" value="true" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="feat/uat-functional-completeness" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_LOCALLY_CHANGED_CONFLICTS_IN_BACKGROUND" value="true" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>
