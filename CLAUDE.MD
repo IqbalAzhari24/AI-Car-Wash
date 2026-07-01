@@ -43,7 +43,7 @@ MUST use these exact versions. Do NOT upgrade, suggest alternatives, or assume n
 | Security | Spring Security 6 + JWT (stateless) |
 | ORM | Spring Data JPA / Hibernate |
 | Build | Maven |
-| AI Chatbot | Spring AI + Google Gemini (chatbot named **Timah**) |
+| AI Chatbot | Google Gemini REST API via `WebClient` (chatbot named **Timah**) — not Spring AI |
 | Scheduler | Spring `@Scheduled` (no-show sweeper) |
 
 ### Frontend
@@ -142,10 +142,10 @@ IN_PROGRESS → NO_SHOW  ← (triggered by scheduler only)
 ## 🤖 AI Chatbot — Timah
 
 - Name: **Timah**
-- Backend: Google Gemini via Spring AI
+- Backend: Google Gemini 2.5 Flash via raw REST API (`WebClient` + manual SSE parsing) — no Spring AI dependency
 - Scope: customer-facing Q&A about bookings, services, and wash packages
-- Tool-calling enabled for booking status lookups
-- Do NOT give Timah write access to booking mutations — read-only tool calls only
+- Tool-calling: `get_available_slots` (read), `get_booking_status` (read, customer's own bookings), `create_booking` (write — Timah automates booking creation end-to-end for the customer)
+- Timah has write access for booking automation only — no other mutation (cancel, payment, status advance) is exposed as a tool
 
 ---
 
@@ -173,7 +173,7 @@ azurewash/
 │   │   ├── dto/                # Request/Response DTOs (no entity leakage)
 │   │   ├── security/           # JWT filter, UserDetails, RBAC
 │   │   ├── scheduler/          # @Scheduled jobs
-│   │   ├── chatbot/            # Timah — Spring AI integration
+│   │   ├── chatbot/            # Timah — Gemini REST integration (no Spring AI)
 │   │   └── util/               # Haversine, calendar utilities
 │   └── src/main/resources/
 │       ├── db/migration/       # Flyway SQL migrations
@@ -229,7 +229,7 @@ azurewash/
 | Do NOT add CoT scaffolding to reasoning-native models | Degrades output |
 | Do NOT upgrade dependency versions without instruction | FYP stack is locked |
 | Do NOT merge Valet and Booking entities | Separate domain objects |
-| Do NOT give Timah write permissions | Read-only chatbot |
+| Do NOT add new write tools to Timah beyond `create_booking` | Booking automation only — no cancel/payment/status tools |
 | Do NOT hard delete user or booking records | Soft delete only |
 | Do NOT use `@Autowired` on fields | Constructor injection only |
 
@@ -284,7 +284,7 @@ Before delivering any code or document, confirm:
 - [ ] Role boundaries respected (Customer / Clerk / Worker / Owner)
 - [ ] Booking state transitions valid per state machine
 - [ ] Payment callbacks are server-side only
-- [ ] Timah has no write permissions
+- [ ] Timah's only write tool is `create_booking` (booking automation) — no other mutation tools added
 - [ ] Soft deletes used (not hard deletes) for user/booking records
 - [ ] Flyway migration file created for any schema change
 - [ ] Constructor injection used (not field `@Autowired`)
@@ -323,7 +323,7 @@ Carry this context forward in every session:
 ```
 ## AI Car Wash — Persistent Decisions
 - Payment gateway: ToyyibPay (FPX) — locked for FYP phase
-- AI chatbot: Timah, powered by Google Gemini via Spring AI
+- AI chatbot: Timah, powered by Google Gemini 2.5 Flash via raw REST API (WebClient, no Spring AI) — automates booking creation end-to-end
 - Geofencing: Haversine formula (no third-party SDK)
 - Calendar compliance: Islamic calendar + Malaysia public holidays
 - Schema management: Flyway only (ddl-auto=validate in prod)

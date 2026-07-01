@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
 import { Login } from './components/Login';
+import { Account } from './pages/Account';
 import { Landing } from './pages/Landing';
 import { TimahChat } from './pages/customer/TimahChat';
 import { CheckoutPage } from './pages/customer/Checkout';
@@ -86,6 +87,12 @@ function App() {
             <Route path="/login"        element={<Login />} />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="/"             element={<Home />} />
+
+            <Route path="/account" element={
+              <ProtectedRoute>
+                <Account />
+              </ProtectedRoute>
+            } />
 
             <Route path="/book" element={
               <ProtectedRoute allowedRoles={['CUSTOMER']}>

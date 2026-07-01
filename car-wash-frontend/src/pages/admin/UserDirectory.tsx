@@ -1,15 +1,128 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Receipt } from 'lucide-react';
+import { Search, Receipt, PlusCircle } from 'lucide-react';
 import api from '../../api/api';
 import { DataTable, type Column } from '../../components/DataTable';
+import { btnPrimary, btnGhost, inputBase, cardPanel } from '../../components/ui';
 import type { Page, Role, SortState, UserRow } from '../../types';
 
 type Tab = 'customers' | 'staff';
 type StaffFilter = 'ALL' | 'OWNER' | 'CLERK' | 'WORKER';
+type StaffRole = 'CLERK' | 'WORKER' | 'OWNER';
 
 const PAGE_SIZE   = 10;
 const STAFF_ROLES: Role[] = ['OWNER', 'CLERK', 'WORKER'];
+
+interface StaffCreated {
+  userId: string;
+  email: string;
+  role: string;
+  tempPassword: string;
+}
+
+// ─── New staff account form ────────────────────────────────────────────────
+
+const CreateStaffForm: React.FC<{ onCreated: () => void }> = ({ onCreated }) => {
+  const [open, setOpen]           = useState(false);
+  const [email, setEmail]         = useState('');
+  const [phoneNumber, setPhone]   = useState('');
+  const [role, setRole]           = useState<StaffRole>('CLERK');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError]         = useState<string | null>(null);
+  const [created, setCreated]     = useState<StaffCreated | null>(null);
+
+  const reset = () => {
+    setEmail(''); setPhone(''); setRole('CLERK'); setError(null);
+  };
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (submitting || !email.trim()) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await api.post<StaffCreated>('/v1/owner/users/staff', {
+        email: email.trim(),
+        phoneNumber: phoneNumber.trim() || undefined,
+        role,
+      });
+      setCreated(res.data);
+      onCreated();
+    } catch (err: unknown) {
+      const ax = err as { response?: { status?: number; data?: { message?: string } } };
+      setError(
+        ax.response?.status === 409
+          ? 'An account with that email already exists.'
+          : ax.response?.data?.message ?? 'Could not create the staff account.'
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (created) {
+    return (
+      <div className={`${cardPanel} mb-6 space-y-3 p-4`}>
+        <p className="text-sm font-semibold text-success">Staff account created</p>
+        <p className="text-sm text-secondary">
+          Share this one-time password with <span className="text-primary">{created.email}</span> now —
+          it will not be shown again.
+        </p>
+        <div className="rounded-lg border border-border bg-surface-raised px-4 py-3 font-mono text-sm text-primary">
+          {created.tempPassword}
+        </div>
+        <button
+          type="button"
+          onClick={() => { setCreated(null); setOpen(false); reset(); }}
+          className={`${btnGhost} w-full`}
+        >
+          Done
+        </button>
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <button type="button" onClick={() => setOpen(true)} className={`${btnPrimary} mb-6`}>
+        <PlusCircle className="h-4 w-4" /> New staff account
+      </button>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className={`${cardPanel} mb-6 space-y-3 p-4`}>
+      <p className="text-sm font-semibold text-primary">New staff account</p>
+
+      <input
+        type="email" placeholder="Staff email" value={email}
+        onChange={(e) => setEmail(e.target.value)} className={inputBase}
+      />
+      <input
+        type="tel" placeholder="Phone number (optional)" value={phoneNumber}
+        onChange={(e) => setPhone(e.target.value)} className={inputBase}
+      />
+      <select
+        value={role} onChange={(e) => setRole(e.target.value as StaffRole)} className={inputBase}
+      >
+        <option value="CLERK">Clerk</option>
+        <option value="WORKER">Worker</option>
+        <option value="OWNER">Owner</option>
+      </select>
+
+      {error && <p role="alert" className="text-sm text-danger">{error}</p>}
+
+      <div className="flex gap-2 pt-1">
+        <button type="button" onClick={() => { setOpen(false); reset(); }} className={`${btnGhost} flex-1`}>
+          Cancel
+        </button>
+        <button type="submit" disabled={submitting || !email.trim()} className={`${btnPrimary} flex-1`}>
+          {submitting ? 'Creating…' : 'Create account'}
+        </button>
+      </div>
+    </form>
+  );
+};
 
 const roleBadgeClass: Record<Role, string> = {
   OWNER:    'border border-cyan/40 bg-cyan/10 text-cyan',
@@ -150,6 +263,8 @@ export const UserDirectory: React.FC = () => {
           ))}
         </nav>
       </div>
+
+      {tab === 'staff' && <CreateStaffForm onCreated={fetchUsers} />}
 
       {/* Toolbar */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">

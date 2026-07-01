@@ -1,6 +1,8 @@
 package com.carwash.backend.controller;
 
 import com.carwash.backend.service.TimahAiService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -15,8 +17,11 @@ public class TimahChatController {
 
     private static final Logger log = LoggerFactory.getLogger(TimahChatController.class);
 
+    private static final String REDIRECT_PREFIX = "{\"action\":\"REDIRECT_CHECKOUT\"";
+
     private final TimahAiService timahAiService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public TimahChatController(TimahAiService timahAiService, SimpMessagingTemplate messagingTemplate) {
         this.timahAiService = timahAiService;
@@ -38,11 +43,15 @@ public class TimahChatController {
         timahAiService.streamChat(userMessage, userId)
             .subscribe(
                 token -> {
-                    messagingTemplate.convertAndSendToUser(
-                        userId,
-                        "/queue/timah-reply",
-                        Map.of("type", "TOKEN", "content", token)
-                    );
+                    if (token.startsWith(REDIRECT_PREFIX)) {
+                        sendRedirect(userId, token);
+                    } else {
+                        messagingTemplate.convertAndSendToUser(
+                            userId,
+                            "/queue/timah-reply",
+                            Map.of("type", "TOKEN", "content", token)
+                        );
+                    }
                 },
                 error -> {
                     log.error("Error streaming from Gemini: ", error);
@@ -62,5 +71,20 @@ public class TimahChatController {
                     log.info("Stream complete for user [{}]", userId);
                 }
             );
+    }
+
+    /** Parses the internal REDIRECT_CHECKOUT marker and forwards it as its own message
+     *  type so the frontend navigates instead of rendering the raw JSON as chat text. */
+    private void sendRedirect(String userId, String redirectMarker) {
+        try {
+            JsonNode node = objectMapper.readTree(redirectMarker);
+            messagingTemplate.convertAndSendToUser(
+                userId,
+                "/queue/timah-reply",
+                Map.of("type", "REDIRECT", "bookingId", node.path("bookingId").asText(""))
+            );
+        } catch (Exception e) {
+            log.error("Could not parse redirect marker: {}", redirectMarker, e);
+        }
     }
 }
