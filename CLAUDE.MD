@@ -1,7 +1,7 @@
 # CLAUDE.md — AI Car Wash Project Master Guide
 > **Scope:** This file is the single source of truth for all AI-assisted work on the AzureWash project.
 > **Target:** Claude Code, Claude.ai Projects, Claude API
-> **Version:** 1.0.0 | Author: Ahmad Iqbal bin Azhari | Updated: 2026-06-18
+> **Version:** 1.1.0 | Author: Ahmad Iqbal bin Azhari | Updated: 2026-07-01
 
 ---
 
@@ -139,13 +139,27 @@ IN_PROGRESS → NO_SHOW  ← (triggered by scheduler only)
 
 ---
 
-## 🤖 AI Chatbot — Timah
+## 🤖 AI Agent — Timah
 
 - Name: **Timah**
-- Backend: Google Gemini via Spring AI
-- Scope: customer-facing Q&A about bookings, services, and wash packages
-- Tool-calling enabled for booking status lookups
-- Do NOT give Timah write access to booking mutations — read-only tool calls only
+- Backend: Google Gemini 2.5 Flash via WebClient (streaming + function-calling)
+- Scope: customer-facing **agentic booking assistant** — Q&A, slot lookup, service recommendations, and end-to-end booking creation
+- Tool-calling enabled for the following actions:
+
+| Tool | Access | Description |
+|---|---|---|
+| `get_available_slots` | Read | List open 30-min slots for a given date |
+| `get_services` | Read | Return the wash service catalogue |
+| `get_booking_status` | Read | Look up an existing booking by ID |
+| `create_booking` | **Write** | Create a PENDING booking on behalf of the authenticated customer |
+
+- **Agentic flow:** Timah must follow a strict Read → Confirm → Book sequence:
+  1. Read available slots and services first
+  2. Present options and ask for explicit customer confirmation before booking
+  3. Only call `create_booking` after confirmation; redirect to `/checkout/:bookingId`
+- `create_booking` is **scoped to the authenticated customer only** — Timah MUST pass the JWT subject (`userId`) as the customer ID; it CANNOT book on behalf of other users or staff
+- Timah MUST NOT call any mutation other than `create_booking` (no cancellations, no status changes, no payment mutations)
+- All tool-call results MUST be presented to the customer before any follow-up action
 
 ---
 
@@ -229,7 +243,8 @@ azurewash/
 | Do NOT add CoT scaffolding to reasoning-native models | Degrades output |
 | Do NOT upgrade dependency versions without instruction | FYP stack is locked |
 | Do NOT merge Valet and Booking entities | Separate domain objects |
-| Do NOT give Timah write permissions | Read-only chatbot |
+| Do NOT give Timah mutations beyond `create_booking` | Only the agentic booking tool is permitted |
+| Do NOT let Timah book on behalf of other users | Always use JWT subject as customer ID |
 | Do NOT hard delete user or booking records | Soft delete only |
 | Do NOT use `@Autowired` on fields | Constructor injection only |
 
@@ -284,7 +299,7 @@ Before delivering any code or document, confirm:
 - [ ] Role boundaries respected (Customer / Clerk / Worker / Owner)
 - [ ] Booking state transitions valid per state machine
 - [ ] Payment callbacks are server-side only
-- [ ] Timah has no write permissions
+- [ ] Timah only calls `create_booking` (no other mutations) and scopes it to the JWT subject
 - [ ] Soft deletes used (not hard deletes) for user/booking records
 - [ ] Flyway migration file created for any schema change
 - [ ] Constructor injection used (not field `@Autowired`)
@@ -323,7 +338,7 @@ Carry this context forward in every session:
 ```
 ## AI Car Wash — Persistent Decisions
 - Payment gateway: ToyyibPay (FPX) — locked for FYP phase
-- AI chatbot: Timah, powered by Google Gemini via Spring AI
+- AI agent: Timah, powered by Google Gemini 2.5 Flash (WebClient streaming + function-calling); agentic booking allowed with Read→Confirm→Book guardrails
 - Geofencing: Haversine formula (no third-party SDK)
 - Calendar compliance: Islamic calendar + Malaysia public holidays
 - Schema management: Flyway only (ddl-auto=validate in prod)

@@ -27,6 +27,19 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    /** Auto-maintained by {@link #onUpdate()}. */
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    /** Null means active. Set via {@link #softDelete()} — NEVER hard-delete. */
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public enum UserRole {
         CUSTOMER, CLERK, WORKER, OWNER
     }
@@ -44,4 +57,18 @@ public class User {
     public void setRole(UserRole role) { this.role = role; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+
+    /**
+     * Soft-deletes this user. Sets {@code deleted_at} to now.
+     * NEVER call {@code EntityManager.remove()} — use this method instead.
+     */
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() { return deletedAt != null; }
 }

@@ -11,8 +11,10 @@ import com.carwash.backend.repository.ValetRequestRepository;
 import com.carwash.backend.util.HaversineUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -66,18 +68,21 @@ public class ValetService {
      * @param customerId id of the authenticated customer (JWT subject)
      * @param dto        request body containing customer GPS coordinates
      * @return the persisted valet request as a DTO (status ACCEPTED or REJECTED)
-     * @throws IllegalArgumentException if the location is not found or has no coordinates set
+     * @throws ResponseStatusException 400 if the customer or location is not found;
+     *                                   422 if the branch has no GPS coordinates configured
      */
     @Transactional
     public ValetRequestDto submitRequest(String customerId, CreateValetRequestDto dto) {
         User customer = userRepository.findById(UUID.fromString(customerId))
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Customer not found: " + customerId));
 
         Location location = locationRepository.findById(UUID.fromString(dto.getLocationId()))
-                .orElseThrow(() -> new IllegalArgumentException("Location not found: " + dto.getLocationId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Location not found: " + dto.getLocationId()));
 
         if (location.getLatitude() == null || location.getLongitude() == null) {
-            throw new IllegalStateException(
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
                     "Branch '" + location.getName() + "' does not have GPS coordinates configured. "
                     + "Please ask the owner to set the branch location.");
         }
@@ -126,7 +131,8 @@ public class ValetService {
     @Transactional(readOnly = true)
     public List<ValetRequestDto> getMyRequests(String customerId) {
         User customer = userRepository.findById(UUID.fromString(customerId))
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found: " + customerId));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Customer not found: " + customerId));
 
         return valetRepository.findByCustomer_IdOrderByCreatedAtDesc(customer.getId())
                 .stream()

@@ -130,10 +130,12 @@ public class PasswordResetService {
     // Helpers
     // -------------------------------------------------------------------------
 
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
     /** Generates a 32-byte cryptographically secure URL-safe Base64 token. */
     private String generateSecureToken() {
         byte[] bytes = new byte[32];
-        new SecureRandom().nextBytes(bytes);
+        SECURE_RANDOM.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 

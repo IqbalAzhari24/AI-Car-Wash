@@ -17,6 +17,7 @@ import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 
 /**
  * Thin client for the toyyibPay payment gateway (https://toyyibpay.com).
@@ -30,7 +31,7 @@ public class ToyyibPayService {
     private static final Logger log = LoggerFactory.getLogger(ToyyibPayService.class);
 
     private final WebClient webClient;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Value("${toyyibpay.base-url:https://dev.toyyibpay.com}")
     private String baseUrl;
@@ -43,8 +44,9 @@ public class ToyyibPayService {
     @Value("${toyyibpay.callback-url:http://localhost:8080/api/v1/payments/toyyibpay/callback}")
     private String callbackUrl;
 
-    public ToyyibPayService(WebClient.Builder webClientBuilder) {
+    public ToyyibPayService(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
         this.webClient = webClientBuilder.build();
+        this.objectMapper = objectMapper;
     }
 
     public boolean isConfigured() {
@@ -128,12 +130,8 @@ public class ToyyibPayService {
         String raw = billCode + categoryCode + amountCents + status + secretKey;
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] digest = md.digest(raw.getBytes(StandardCharsets.UTF_8));
-            StringBuilder sb = new StringBuilder(32);
-            for (byte b : digest) {
-                sb.append(String.format("%02x", b));
-            }
-            return checksum.equalsIgnoreCase(sb.toString());
+            String hex = HexFormat.of().formatHex(md.digest(raw.getBytes(StandardCharsets.UTF_8)));
+            return checksum.equalsIgnoreCase(hex);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("MD5 not available", e);
         }

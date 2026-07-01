@@ -54,6 +54,19 @@ public class Booking {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    /** Auto-maintained by {@link #onUpdate()}. */
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    /** Null means active. Set via {@link #softDelete()} — NEVER hard-delete. */
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public enum VehicleClass {
         MOTORCYCLE, COMPACT, SEDAN, SUV_LUXURY, MPV_LARGE
     }
@@ -89,4 +102,18 @@ public class Booking {
     public void setTotalPrice(java.math.BigDecimal totalPrice) { this.totalPrice = totalPrice; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public LocalDateTime getDeletedAt() { return deletedAt; }
+
+    /**
+     * Soft-deletes this booking. Sets {@code deleted_at} to now.
+     * NEVER call {@code EntityManager.remove()} — use this method instead.
+     */
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() { return deletedAt != null; }
 }

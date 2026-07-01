@@ -68,13 +68,13 @@ public class UserDirectoryService {
             return List.of();
         }
 
-        List<UUID> bookingIds = bookings.stream().map(Booking::getId).collect(Collectors.toList());
+        List<UUID> bookingIds = bookings.stream().map(Booking::getId).toList();
         Map<UUID, Payment> paymentsByBookingId = paymentRepository.findByBooking_IdIn(bookingIds).stream()
                 .collect(Collectors.toMap(p -> p.getBooking().getId(), Function.identity(), (a, b) -> a));
 
         return bookings.stream()
                 .map(booking -> toTransactionDto(booking, paymentsByBookingId.get(booking.getId())))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

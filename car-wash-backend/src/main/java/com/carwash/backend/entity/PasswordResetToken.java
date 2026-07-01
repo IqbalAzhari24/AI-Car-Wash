@@ -57,11 +57,6 @@ public class PasswordResetToken {
         this.expiresAt = expiresAt;
     }
 
-    /** Returns true when the token has not been used and has not expired. */
-    public boolean isValid() {
-        return !used && LocalDateTime.now().isBefore(expiresAt);
-    }
-
     /** Consumes the token so it cannot be reused. */
     public void markUsed() {
         this.used = true;
