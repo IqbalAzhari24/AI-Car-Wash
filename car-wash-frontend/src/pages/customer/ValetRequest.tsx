@@ -45,6 +45,16 @@ function getPosition(): Promise<GeolocationPosition> {
   });
 }
 
+/** Reverse-geocode via OSM Nominatim — free, no API key. */
+async function reverseGeocode(lat: number, lng: number): Promise<string> {
+  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+  const res = await fetch(url, { headers: { Accept: 'application/json' } });
+  if (!res.ok) throw new Error('Reverse geocoding failed.');
+  const data = await res.json();
+  if (!data?.display_name) throw new Error('No address found for this location.');
+  return data.display_name as string;
+}
+
 export const ValetRequest: React.FC = () => {
   const [locations, setLocations] = useState<LocationDto[]>([]);
   const [requests, setRequests] = useState<ValetRequest[]>([]);
@@ -58,8 +68,24 @@ export const ValetRequest: React.FC = () => {
   const [notes, setNotes] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  async function useMyLocation() {
+    setLocating(true);
+    setError(null);
+    try {
+      const pos = await getPosition();
+      const addr = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+      setAddress(addr);
+    } catch (e: unknown) {
+      const geo = e as { code?: number; message?: string };
+      setError(geo.code === 1 ? 'Location permission denied. Allow location access to pin your address.' : geo.message ?? 'Could not detect your address.');
+    } finally {
+      setLocating(false);
+    }
+  }
 
   const loadMine = useCallback(() => {
     api.get('/v1/valet/requests/mine')
@@ -151,8 +177,20 @@ export const ValetRequest: React.FC = () => {
             onChange={e => setVehicleModel(e.target.value)} className={inputBase} />
         </div>
 
-        <input type="text" placeholder="Pick-up address (optional)" value={address}
-          onChange={e => setAddress(e.target.value)} className={inputBase} />
+        <div className="flex gap-2">
+          <input type="text" placeholder="Pick-up address (optional)" value={address}
+            onChange={e => setAddress(e.target.value)} className={`${inputBase} flex-1`} />
+          <button
+            type="button"
+            onClick={useMyLocation}
+            disabled={locating}
+            title="Use my current location"
+            aria-label="Use my current location"
+            className="flex shrink-0 items-center justify-center rounded-lg border border-[#1E1E2D] bg-[#1A1A24] px-3 text-[#9090A8] transition-colors hover:bg-[#1F1F2E] disabled:opacity-40"
+          >
+            {locating ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}
+          </button>
+        </div>
         <input type="text" placeholder="Notes (optional)" value={notes}
           onChange={e => setNotes(e.target.value)} className={inputBase} />
 
