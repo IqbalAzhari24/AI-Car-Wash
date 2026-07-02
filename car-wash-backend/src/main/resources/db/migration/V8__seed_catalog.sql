@@ -3,7 +3,7 @@
 -- Slot inventory is generated on boot by CatalogSeeder (date-relative).
 
 INSERT INTO locations (id, name, address, is_active)
-VALUES (uuid_generate_v4(), 'Timah Wash - Main', 'PT30125 A, Kampung Gong Pa'' Jin, Kampung Wakaf Tengah, 21030 Kuala Terengganu, Terengganu', TRUE)
+VALUES (uuid_generate_v4(), 'Timah Wash - Main', 'Jalan Utama, Kuala Lumpur', TRUE)
 ON CONFLICT DO NOTHING;
 
 INSERT INTO services (id, name, description, price, duration_minutes, vehicle_size_multiplier, is_active)
