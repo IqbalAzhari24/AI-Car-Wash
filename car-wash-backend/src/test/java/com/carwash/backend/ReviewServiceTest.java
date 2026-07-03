@@ -6,6 +6,7 @@ import com.carwash.backend.entity.User;
 import com.carwash.backend.repository.BookingRepository;
 import com.carwash.backend.repository.ReviewRepository;
 import com.carwash.backend.service.ReviewService;
+import com.carwash.backend.service.SentimentAnalysisService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,6 +26,7 @@ class ReviewServiceTest {
 
     @Mock ReviewRepository reviewRepository;
     @Mock BookingRepository bookingRepository;
+    @Mock SentimentAnalysisService sentimentAnalysisService;
     @InjectMocks ReviewService service;
 
     @Test
