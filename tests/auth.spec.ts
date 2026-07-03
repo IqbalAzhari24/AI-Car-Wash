@@ -3,7 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('Authentication', () => {
   test('login page loads', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();
+    // Scope to the form: the mode-toggle tab is also named "Sign in".
+    await expect(
+      page.locator('#auth-form').getByRole('button', { name: /sign in/i })
+    ).toBeVisible();
   });
 
   test('invalid credentials shows error message', async ({ page }) => {
@@ -20,7 +23,7 @@ test.describe('Authentication', () => {
     await page.getByLabel(/email/i).fill('nobody@example.com');
     // exact: the show/hide toggle's aria-label ("Show password") also matches /password/i
     await page.getByLabel('Password', { exact: true }).fill('wrongpassword');
-    await page.getByRole('button', { name: /sign in/i }).click();
+    await page.locator('#auth-form').getByRole('button', { name: /sign in/i }).click();
     await expect(page.getByText(/invalid email or password/i)).toBeVisible({ timeout: 8_000 });
   });
 
