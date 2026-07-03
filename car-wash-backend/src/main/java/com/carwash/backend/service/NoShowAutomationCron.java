@@ -21,13 +21,16 @@ public class NoShowAutomationCron {
     private final BookingRepository bookingRepository;
     private final SlotCapacityRepository slotCapacityRepository;
     private final BookingEngineService bookingEngineService;
+    private final NotificationService notificationService;
 
-    public NoShowAutomationCron(BookingRepository bookingRepository, 
+    public NoShowAutomationCron(BookingRepository bookingRepository,
                                 SlotCapacityRepository slotCapacityRepository,
-                                BookingEngineService bookingEngineService) {
+                                BookingEngineService bookingEngineService,
+                                NotificationService notificationService) {
         this.bookingRepository = bookingRepository;
         this.slotCapacityRepository = slotCapacityRepository;
         this.bookingEngineService = bookingEngineService;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -54,6 +57,7 @@ public class NoShowAutomationCron {
         }
         if (!overdueBookings.isEmpty()) {
             bookingRepository.saveAll(overdueBookings);
+            overdueBookings.forEach(notificationService::notifyBookingUpdate);
         }
     }
 }

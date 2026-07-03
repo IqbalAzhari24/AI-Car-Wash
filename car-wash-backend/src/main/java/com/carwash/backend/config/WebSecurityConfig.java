@@ -60,6 +60,7 @@ public class WebSecurityConfig {
                 // status clobbered by the 401 entry point on the forwarded dispatch.
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/api/v1/public/**").permitAll() // landing page content
                 .requestMatchers(HttpMethod.POST, "/api/v1/payments/toyyibpay/callback").permitAll() // gateway server-to-server
                 .requestMatchers("/actuator/health").permitAll()
                 .requestMatchers("/ws/**").permitAll() // Open for initial handshake only

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CalendarClock, Star } from 'lucide-react';
 import api from '../../api/api';
 import { btnPrimary, btnSecondary, btnGhost, cardPanel, inputBase, statusBadge } from '../../components/ui';
+import { fmtDateTime } from '../../utils/format';
 
 interface Booking {
   id: string;
@@ -13,18 +14,6 @@ interface Booking {
   status: string;
   totalPrice: number;
   createdAt: string;
-}
-
-/** "2024-01-15T09:00:00" → "Mon, 15 Jan 2024, 09:00" */
-function fmtDateTime(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString('en-MY', {
-      weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
 }
 
 // ─── Review block (shown under COMPLETED bookings) ────────────────────────────
@@ -134,7 +123,12 @@ export const MyBookings: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+    // Refresh when a live status push arrives (see useUpdateToasts)
+    window.addEventListener('app-update', load);
+    return () => window.removeEventListener('app-update', load);
+  }, [load]);
 
   async function cancel(id: string) {
     if (busyId) return;

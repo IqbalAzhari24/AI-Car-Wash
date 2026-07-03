@@ -51,6 +51,26 @@ public class Booking {
     @Column(name = "total_price", nullable = false, precision = 10, scale = 2)
     private java.math.BigDecimal totalPrice;
 
+    /** Customer opted for valet pick-up of the vehicle (flat add-on fee). */
+    @Column(name = "pickup_requested", nullable = false)
+    private Boolean pickupRequested = false;
+
+    /** Customer opted for return delivery of the vehicle (flat add-on fee). */
+    @Column(name = "delivery_requested", nullable = false)
+    private Boolean deliveryRequested = false;
+
+    @Column(name = "pickup_address", length = 255)
+    private String pickupAddress;
+
+    @Column(name = "pickup_lat")
+    private Double pickupLat;
+
+    @Column(name = "pickup_lng")
+    private Double pickupLng;
+
+    @Column(name = "pickup_notes", columnDefinition = "TEXT")
+    private String pickupNotes;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -87,6 +107,18 @@ public class Booking {
     public void setOverride(Boolean override) { isOverride = override; }
     public java.math.BigDecimal getTotalPrice() { return totalPrice; }
     public void setTotalPrice(java.math.BigDecimal totalPrice) { this.totalPrice = totalPrice; }
+    public Boolean getPickupRequested() { return pickupRequested; }
+    public void setPickupRequested(Boolean pickupRequested) { this.pickupRequested = pickupRequested; }
+    public Boolean getDeliveryRequested() { return deliveryRequested; }
+    public void setDeliveryRequested(Boolean deliveryRequested) { this.deliveryRequested = deliveryRequested; }
+    public String getPickupAddress() { return pickupAddress; }
+    public void setPickupAddress(String pickupAddress) { this.pickupAddress = pickupAddress; }
+    public Double getPickupLat() { return pickupLat; }
+    public void setPickupLat(Double pickupLat) { this.pickupLat = pickupLat; }
+    public Double getPickupLng() { return pickupLng; }
+    public void setPickupLng(Double pickupLng) { this.pickupLng = pickupLng; }
+    public String getPickupNotes() { return pickupNotes; }
+    public void setPickupNotes(String pickupNotes) { this.pickupNotes = pickupNotes; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

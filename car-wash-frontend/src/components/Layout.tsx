@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Bell } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useUpdateToasts } from '../hooks/useUpdateToasts';
 import type { Role } from '../types';
 
 const Wordmark: React.FC = () => (
@@ -44,7 +45,12 @@ const ALL_ROLES: Role[] = ['CUSTOMER', 'CLERK', 'WORKER', 'OWNER'];
 const NAV_ITEMS: NavItem[] = [
   { to: '/',                label: 'Home' },
   { to: '/book',            label: 'Book a Wash',    roles: ['CUSTOMER'] },
+  { to: '/bookings',        label: 'My Bookings',    roles: ['CUSTOMER'] },
+  { to: '/valet',           label: 'Valet Pick-up',  roles: ['CUSTOMER'] },
   { to: '/chat',            label: 'Chat with Timah',roles: ['CUSTOMER'] },
+  { to: '/clerk',           label: 'Console',        roles: ['CLERK'] },
+  { to: '/clerk/valet',     label: 'Valet Requests', roles: ['CLERK'] },
+  { to: '/worker',          label: 'My Jobs',        roles: ['WORKER'] },
   { to: '/admin/analytics', label: 'Analytics',      roles: ['OWNER'] },
   { to: '/admin/users',     label: 'Users',          roles: ['OWNER'] },
   { to: '/account',         label: 'Account',        roles: ALL_ROLES },
@@ -54,6 +60,7 @@ export const Layout: React.FC = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { toasts, dismiss } = useUpdateToasts();
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => !item.roles || (user && item.roles.includes(user.role as Role))
@@ -184,6 +191,34 @@ export const Layout: React.FC = () => {
       <main className={`flex min-h-0 flex-1 flex-col ${isChat ? 'overflow-hidden' : ''}`}>
         <Outlet />
       </main>
+
+      {/* Live status toasts (STOMP /user/queue/updates) */}
+      {toasts.length > 0 && (
+        <div className="fixed bottom-4 right-4 z-50 flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-2" role="status" aria-live="polite">
+          {toasts.map((t) => (
+            <div
+              key={t.id}
+              className="flex items-start gap-3 rounded-xl border border-cyan/40 bg-surface-raised p-3.5 shadow-cyan-glow"
+            >
+              <Bell className="mt-0.5 h-4 w-4 flex-shrink-0 text-cyan" aria-hidden="true" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-cyan">
+                  {t.kind === 'VALET' ? 'Valet update' : 'Booking update'}
+                </p>
+                <p className="mt-0.5 text-sm text-primary">{t.message}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => dismiss(t.id)}
+                aria-label="Dismiss notification"
+                className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-muted transition-colors hover:text-primary"
+              >
+                <X className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

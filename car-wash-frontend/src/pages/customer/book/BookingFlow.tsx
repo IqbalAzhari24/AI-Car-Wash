@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api/api';
+import { getPosition, reverseGeocode } from '../../../utils/geo';
 
 // ─── Domain types ─────────────────────────────────────────────────────────────
 
@@ -35,6 +36,32 @@ interface WizardState {
   serviceName: string;
   servicePrice: number;
   serviceDuration: number;
+  pickup: boolean;
+  delivery: boolean;
+  pickupAddress: string;
+  pickupLat: number | null;
+  pickupLng: number | null;
+  pickupNotes: string;
+}
+
+/** Add-on fees (RM), fetched from shop_settings via /public/landing; 5 is only the pre-fetch fallback. */
+interface AddonFees { pickup: number; delivery: number; }
+const DEFAULT_FEES: AddonFees = { pickup: 5, delivery: 5 };
+
+function useAddonFees(): AddonFees {
+  const [fees, setFees] = useState<AddonFees>(DEFAULT_FEES);
+  useEffect(() => {
+    api.get<{ data?: { fees?: { pickup?: string; delivery?: string } } }>('/v1/public/landing')
+      .then(r => {
+        const f = r.data?.data?.fees;
+        setFees({
+          pickup: Number(f?.pickup) || DEFAULT_FEES.pickup,
+          delivery: Number(f?.delivery) || DEFAULT_FEES.delivery,
+        });
+      })
+      .catch(() => {}); // keep fallback; backend still charges the authoritative value
+  }, []);
+  return fees;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -363,7 +390,7 @@ const StepService: React.FC<Step2Props> = ({ state, onChange, onNext, onBack }) 
                     <p className="mt-1 text-xs text-[#5A5A72]">{svc.durationMinutes} min</p>
                   </div>
                   <div className="shrink-0 text-right">
-                    <p className={['text-base font-semibold font-mono', isSelected ? 'text-[#00F0FF]' : 'text-[#E8E8F0]'].join(' ')}>
+                    <p className={['text-base font-bold font-mono', isSelected ? 'text-[#00F0FF]' : 'text-white'].join(' ')}>
                       RM {Number(svc.price).toFixed(2)}
                     </p>
                     {isSelected && (
@@ -406,24 +433,102 @@ const StepService: React.FC<Step2Props> = ({ state, onChange, onNext, onBack }) 
 
 interface Step3Props {
   state: WizardState;
+  onChange: (s: WizardState) => void;
   onBack: () => void;
 }
 
-const StepConfirm: React.FC<Step3Props> = ({ state, onBack }) => {
+/** Toggle row for a booking add-on with a flat fee. */
+const AddonToggle: React.FC<{
+  label: string;
+  description: string;
+  fee: number;
+  checked: boolean;
+  onToggle: () => void;
+}> = ({ label, description, fee, checked, onToggle }) => (
+  <button
+    type="button"
+    role="switch"
+    aria-checked={checked}
+    onClick={onToggle}
+    className={[
+      'w-full rounded-xl p-4 text-left transition-all duration-150',
+      checked ? 'hex-border-active bg-[#00F0FF]/5' : 'hex-border bg-[#1A1A24] hover:bg-[#1F1F2E]',
+    ].join(' ')}
+  >
+    <div className="flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <p className={['text-sm font-semibold', checked ? 'text-[#00F0FF]' : 'text-white'].join(' ')}>
+          {label} <span className="font-mono">+RM {fee.toFixed(2)}</span>
+        </p>
+        <p className="mt-0.5 text-xs text-[#9090A8]">{description}</p>
+      </div>
+      <span
+        aria-hidden="true"
+        className={[
+          'flex h-6 w-11 shrink-0 items-center rounded-full px-0.5 transition-colors',
+          checked ? 'bg-[#00F0FF]' : 'bg-[#1E1E2D]',
+        ].join(' ')}
+      >
+        <span
+          className={[
+            'h-5 w-5 rounded-full bg-[#0D0D11] transition-transform',
+            checked ? 'translate-x-5' : 'translate-x-0',
+          ].join(' ')}
+        />
+      </span>
+    </div>
+  </button>
+);
+
+const StepConfirm: React.FC<Step3Props> = ({ state, onChange, onBack }) => {
   const navigate = useNavigate();
+  const fees = useAddonFees();
   const [submitting, setSubmitting] = useState(false);
+  const [locating, setLocating]     = useState(false);
   const [error, setError]           = useState<string | null>(null);
+
+  async function pinMyLocation() {
+    setLocating(true);
+    setError(null);
+    try {
+      const pos = await getPosition();
+      const addr = await reverseGeocode(pos.coords.latitude, pos.coords.longitude).catch(() => '');
+      onChange({
+        ...state,
+        pickupLat: pos.coords.latitude,
+        pickupLng: pos.coords.longitude,
+        pickupAddress: addr || state.pickupAddress,
+      });
+    } catch (e: unknown) {
+      const geo = e as { code?: number; message?: string };
+      setError(geo.code === 1
+        ? 'Location permission denied. Allow location access or type your address instead.'
+        : geo.message ?? 'Could not detect your location.');
+    } finally {
+      setLocating(false);
+    }
+  }
 
   async function handleConfirm() {
     if (submitting) return;
+    if (state.pickup && !state.pickupAddress.trim() && state.pickupLat == null) {
+      setError('Pickup needs a pinned location or an address.');
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
       const res = await api.post<BookingCreatedDto>('/v1/bookings', {
-        serviceId:    state.serviceId,
-        slotTime:     state.slotTime,
-        vehicleClass: state.vehicleClass,
-        vehicleModel: state.vehicleModel,
+        serviceId:         state.serviceId,
+        slotTime:          state.slotTime,
+        vehicleClass:      state.vehicleClass,
+        vehicleModel:      state.vehicleModel,
+        pickupRequested:   state.pickup,
+        deliveryRequested: state.delivery,
+        pickupAddress:     state.pickup ? state.pickupAddress.trim() || null : null,
+        pickupLat:         state.pickup ? state.pickupLat : null,
+        pickupLng:         state.pickup ? state.pickupLng : null,
+        pickupNotes:       state.pickup ? state.pickupNotes.trim() || null : null,
       });
       navigate(`/checkout/${res.data.id}`);
     } catch (e: unknown) {
@@ -433,10 +538,69 @@ const StepConfirm: React.FC<Step3Props> = ({ state, onBack }) => {
     }
   }
 
+  const estTotal = state.servicePrice
+    + (state.pickup ? fees.pickup : 0)
+    + (state.delivery ? fees.delivery : 0);
+
   const vehicleLabel = VEHICLE_CLASSES.find(v => v.value === state.vehicleClass)?.label ?? state.vehicleClass ?? '';
 
   return (
     <div className="space-y-4 px-4 py-2 pb-8">
+      {/* Add-ons: valet pickup & return delivery */}
+      <div className="space-y-3">
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-[#5A5A72]">
+          Add-ons
+        </p>
+        <AddonToggle
+          label="Valet pick-up"
+          description="We collect your car from your location."
+          fee={fees.pickup}
+          checked={state.pickup}
+          onToggle={() => onChange({ ...state, pickup: !state.pickup })}
+        />
+        {state.pickup && (
+          <div className="space-y-2 rounded-xl border border-[#1E1E2D] bg-[#13131A] p-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Pick-up address"
+                value={state.pickupAddress}
+                onChange={e => onChange({ ...state, pickupAddress: e.target.value })}
+                className="min-h-[44px] w-full flex-1 rounded-lg border border-[#1E1E2D] bg-[#1A1A24] px-3 py-2 text-sm text-[#E8E8F0] placeholder:text-[#5A5A72] focus:border-[#00F0FF] focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={pinMyLocation}
+                disabled={locating}
+                title="Pin my current location"
+                className="min-h-[44px] shrink-0 rounded-lg border border-[#1E1E2D] bg-[#1A1A24] px-3 text-xs font-medium text-[#00F0FF] transition-colors hover:bg-[#1F1F2E] disabled:opacity-40"
+              >
+                {locating ? 'Locating…' : '📍 Pin location'}
+              </button>
+            </div>
+            {state.pickupLat != null && (
+              <p className="text-xs text-[#00E5A0]">
+                ✓ Location pinned ({state.pickupLat.toFixed(4)}, {state.pickupLng?.toFixed(4)})
+              </p>
+            )}
+            <input
+              type="text"
+              placeholder="Notes for the driver (gate code, landmark…)"
+              value={state.pickupNotes}
+              onChange={e => onChange({ ...state, pickupNotes: e.target.value })}
+              className="min-h-[44px] w-full rounded-lg border border-[#1E1E2D] bg-[#1A1A24] px-3 py-2 text-sm text-[#E8E8F0] placeholder:text-[#5A5A72] focus:border-[#00F0FF] focus:outline-none"
+            />
+          </div>
+        )}
+        <AddonToggle
+          label="Return delivery"
+          description="We bring your car back after the wash."
+          fee={fees.delivery}
+          checked={state.delivery}
+          onToggle={() => onChange({ ...state, delivery: !state.delivery })}
+        />
+      </div>
+
       {/* Summary card */}
       <div className="hex-corner hex-border rounded-xl bg-[#1A1A24] p-5">
         <p className="mb-3 text-[11px] font-semibold uppercase tracking-widest text-[#5A5A72]">
@@ -477,12 +641,30 @@ const StepConfirm: React.FC<Step3Props> = ({ state, onBack }) => {
             <dd className="text-[#E8E8F0]">{state.serviceDuration} min</dd>
           </div>
 
+          <div className="flex justify-between gap-2">
+            <dt className="text-[#9090A8]">Service price</dt>
+            <dd className="font-mono text-[#E8E8F0]">RM {Number(state.servicePrice).toFixed(2)}</dd>
+          </div>
+
+          {state.pickup && (
+            <div className="flex justify-between gap-2">
+              <dt className="text-[#9090A8]">Valet pick-up</dt>
+              <dd className="font-mono text-[#E8E8F0]">+RM {fees.pickup.toFixed(2)}</dd>
+            </div>
+          )}
+          {state.delivery && (
+            <div className="flex justify-between gap-2">
+              <dt className="text-[#9090A8]">Return delivery</dt>
+              <dd className="font-mono text-[#E8E8F0]">+RM {fees.delivery.toFixed(2)}</dd>
+            </div>
+          )}
+
           <div className="h-px bg-[#1E1E2D]" />
 
           <div className="flex justify-between gap-2 pt-0.5">
-            <dt className="font-semibold text-[#E8E8F0]">Est. price</dt>
-            <dd className="font-bold font-mono text-lg text-[#00F0FF]">
-              RM {Number(state.servicePrice).toFixed(2)}
+            <dt className="font-semibold text-white">Est. total</dt>
+            <dd className="font-bold font-mono text-lg text-white">
+              RM {estTotal.toFixed(2)}
             </dd>
           </div>
         </dl>
@@ -549,6 +731,12 @@ export const BookingFlow: React.FC = () => {
     serviceName:     '',
     servicePrice:    0,
     serviceDuration: 0,
+    pickup:          false,
+    delivery:        false,
+    pickupAddress:   '',
+    pickupLat:       null,
+    pickupLng:       null,
+    pickupNotes:     '',
   });
 
   return (
@@ -604,6 +792,7 @@ export const BookingFlow: React.FC = () => {
         {step === 2 && (
           <StepConfirm
             state={wizard}
+            onChange={setWizard}
             onBack={() => setStep(1)}
           />
         )}

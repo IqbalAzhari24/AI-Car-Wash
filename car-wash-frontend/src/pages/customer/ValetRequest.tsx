@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { MapPin, Loader2 } from 'lucide-react';
 import api from '../../api/api';
 import { btnPrimary, cardPanel, inputBase, statusBadge } from '../../components/ui';
+import { getPosition, reverseGeocode } from '../../utils/geo';
+import { fmtSlot } from '../../utils/format';
 
 interface LocationDto {
   id: string;
@@ -23,38 +25,6 @@ interface ValetRequest {
 type VehicleClass = 'MOTORCYCLE' | 'COMPACT' | 'SEDAN' | 'SUV_LUXURY' | 'MPV_LARGE';
 const VEHICLE_CLASSES: VehicleClass[] = ['MOTORCYCLE', 'COMPACT', 'SEDAN', 'SUV_LUXURY', 'MPV_LARGE'];
 
-function fmtDateTime(iso: string | null): string {
-  if (!iso) return '—';
-  try {
-    return new Date(iso).toLocaleString('en-MY', {
-      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
-}
-
-/** Promisified single-shot geolocation. */
-function getPosition(): Promise<GeolocationPosition> {
-  return new Promise((resolve, reject) => {
-    if (!('geolocation' in navigator)) {
-      reject(new Error('Geolocation is not supported by this browser.'));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
-  });
-}
-
-/** Reverse-geocode via OSM Nominatim — free, no API key. */
-async function reverseGeocode(lat: number, lng: number): Promise<string> {
-  const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
-  const res = await fetch(url, { headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error('Reverse geocoding failed.');
-  const data = await res.json();
-  if (!data?.display_name) throw new Error('No address found for this location.');
-  return data.display_name as string;
-}
-
 export const ValetRequest: React.FC = () => {
   const [locations, setLocations] = useState<LocationDto[]>([]);
   const [requests, setRequests] = useState<ValetRequest[]>([]);
@@ -69,6 +39,7 @@ export const ValetRequest: React.FC = () => {
 
   const [submitting, setSubmitting] = useState(false);
   const [locating, setLocating] = useState(false);
+  const [cancelling, setCancelling] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
 
@@ -93,6 +64,21 @@ export const ValetRequest: React.FC = () => {
       .catch(() => {});
   }, []);
 
+  async function cancelRequest(id: string) {
+    if (cancelling) return;
+    setCancelling(id);
+    setError(null);
+    try {
+      await api.patch(`/v1/valet/requests/${id}/cancel`);
+      loadMine();
+    } catch (e: unknown) {
+      const ax = e as { response?: { data?: { message?: string } } };
+      setError(ax.response?.data?.message ?? 'Could not cancel the request.');
+    } finally {
+      setCancelling(null);
+    }
+  }
+
   useEffect(() => {
     api.get<LocationDto[]>('/v1/locations')
       .then(r => {
@@ -102,6 +88,9 @@ export const ValetRequest: React.FC = () => {
       .catch(() => setError('Could not load branches.'))
       .finally(() => setLoading(false));
     loadMine();
+    // Refresh when a live status push arrives (see useUpdateToasts)
+    window.addEventListener('app-update', loadMine);
+    return () => window.removeEventListener('app-update', loadMine);
   }, [loadMine]);
 
   async function submit(e: React.FormEvent) {
@@ -218,7 +207,7 @@ export const ValetRequest: React.FC = () => {
                 <div className="min-w-0">
                   <p className="font-semibold text-[#E8E8F0]">{r.vehicleModel ?? 'Vehicle'}</p>
                   <p className="mt-0.5 text-sm text-[#9090A8]">{r.locationName}</p>
-                  <p className="mt-1 text-xs text-[#5A5A72]">Pick-up {fmtDateTime(r.pickupTime)}</p>
+                  <p className="mt-1 text-xs text-[#5A5A72]">Pick-up {fmtSlot(r.pickupTime)}</p>
                   {r.distanceKm != null && r.radiusKm != null && (
                     <p className="mt-0.5 text-xs text-[#5A5A72]">
                       {r.distanceKm.toFixed(1)} km away · limit {r.radiusKm.toFixed(0)} km
@@ -227,6 +216,18 @@ export const ValetRequest: React.FC = () => {
                 </div>
                 <span className={statusBadge(r.status)}>{r.status}</span>
               </div>
+              {(r.status === 'PENDING' || r.status === 'ACCEPTED') && (
+                <div className="mt-3 border-t border-[#1E1E2D] pt-3">
+                  <button
+                    type="button"
+                    onClick={() => cancelRequest(r.id)}
+                    disabled={cancelling === r.id}
+                    className="min-h-[40px] rounded-lg border border-[#FF4466]/40 px-4 py-2 text-sm font-medium text-[#FF4466] transition-colors hover:bg-[#FF4466]/10 disabled:opacity-40"
+                  >
+                    {cancelling === r.id ? 'Cancelling…' : 'Cancel request'}
+                  </button>
+                </div>
+              )}
             </li>
           ))}
         </ul>

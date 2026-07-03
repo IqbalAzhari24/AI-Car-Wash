@@ -4,6 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
 import type { Role } from '../types';
 
+// Mirrors backend ValidationUtil: standard email, Malaysian +60 phone
+export const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+export const MY_PHONE_RE = /^\+60(1\d{8,9}|[3-9]\d{7,8})$/;
+/** Strips spaces/dashes/parentheses and converts local 0 / 60 prefixes to +60. */
+export function normalizePhone(raw: string): string {
+  let p = raw.replace(/[\s\-()]/g, '');
+  if (p.startsWith('60')) p = `+${p}`;
+  else if (p.startsWith('0')) p = `+60${p.slice(1)}`;
+  return p;
+}
+
 const ROLE_DESTINATION: Record<Role, string> = {
   OWNER:    '/admin/users',
   CLERK:    '/clerk',
@@ -104,6 +115,15 @@ export const Login: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!EMAIL_RE.test(regEmail.trim())) {
+      setError('Please enter a valid email address (e.g. you@gmail.com).');
+      return;
+    }
+    const phone = regPhone.trim() ? normalizePhone(regPhone) : '';
+    if (phone && !MY_PHONE_RE.test(phone)) {
+      setError('Phone number must be a valid Malaysian number starting with +60 (e.g. +60123456789).');
+      return;
+    }
     if (regPassword !== regConfirm) {
       setError('Passwords do not match.');
       return;
@@ -115,9 +135,9 @@ export const Login: React.FC = () => {
     setLoading(true);
     try {
       const res = await api.post<{ token: string; role: Role }>('/v1/auth/register', {
-        email: regEmail,
+        email: regEmail.trim(),
         password: regPassword,
-        phoneNumber: regPhone || undefined,
+        phoneNumber: phone || undefined,
       });
       login(res.data.token);
       navigate('/', { replace: true });

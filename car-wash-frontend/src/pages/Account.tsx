@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/api';
 import { btnPrimary, btnGhost, cardPanel, inputBase } from '../components/ui';
+import { MY_PHONE_RE, normalizePhone } from '../components/Login';
+import { fmtDate } from '../utils/format';
 
 interface Profile {
   id: string;
@@ -9,14 +11,6 @@ interface Profile {
   phoneNumber: string | null;
   role: string;
   createdAt: string;
-}
-
-function fmtDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' });
-  } catch {
-    return iso;
-  }
 }
 
 export const Account: React.FC = () => {
@@ -46,15 +40,22 @@ export const Account: React.FC = () => {
   async function savePhone(e: React.FormEvent) {
     e.preventDefault();
     if (savingPhone) return;
-    setSavingPhone(true);
     setPhoneErr(null);
     setPhoneMsg(null);
+    const normalized = phone.trim() ? normalizePhone(phone) : '';
+    if (normalized && !MY_PHONE_RE.test(normalized)) {
+      setPhoneErr('Phone number must be a valid Malaysian number starting with +60 (e.g. +60123456789).');
+      return;
+    }
+    setSavingPhone(true);
     try {
-      const res = await api.patch<Profile>('/v1/users/me', { phoneNumber: phone.trim() || null });
+      const res = await api.patch<Profile>('/v1/users/me', { phoneNumber: normalized || null });
       setProfile(res.data);
+      setPhone(res.data.phoneNumber ?? '');
       setPhoneMsg('Phone number updated.');
-    } catch {
-      setPhoneErr('Could not update phone number. Please try again.');
+    } catch (err: unknown) {
+      const ax = err as { response?: { data?: { message?: string } } };
+      setPhoneErr(ax.response?.data?.message ?? 'Could not update phone number. Please try again.');
     } finally {
       setSavingPhone(false);
     }

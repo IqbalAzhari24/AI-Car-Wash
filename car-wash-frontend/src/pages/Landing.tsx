@@ -1,6 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Droplets, Sparkles, Car, ShieldCheck, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import api from '../api/api';
+
+// ─── Dynamic landing content (fetched from /v1/public/landing) ───────────────
+
+interface LandingService {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  durationMinutes: number;
+}
+
+interface LandingLocation {
+  id: string;
+  name: string;
+  address: string;
+}
+
+interface LandingData {
+  services: LandingService[];
+  locations: LandingLocation[];
+  contact: { phone: string; email: string };
+  hours: { monThu: string; fri: string; sat: string; sun: string };
+}
 
 const SERVICES = [
   {
@@ -75,7 +99,52 @@ const TIERS = [
   },
 ] as const;
 
+interface Tier {
+  name: string;
+  price: string;
+  duration: string;
+  highlight: boolean;
+  cta: string;
+  features: readonly string[];
+}
+
+/** DB services → pricing tiers; middle tier is highlighted as "Best Value". */
+function toTiers(services: LandingService[]): Tier[] {
+  return services.map((s, i) => ({
+    name: s.name,
+    price: `RM ${Number(s.price).toFixed(0)}`,
+    duration: `~${s.durationMinutes} min`,
+    highlight: i === Math.min(1, services.length - 1),
+    cta: `Book ${s.name}`,
+    features: s.description
+      ? s.description.split(/(?<=[.;])\s+/).map((f) => f.replace(/[.;]$/, '')).filter(Boolean)
+      : [],
+  }));
+}
+
 export const Landing: React.FC = () => {
+  const [data, setData] = useState<LandingData | null>(null);
+
+  useEffect(() => {
+    api
+      .get<{ data: LandingData }>('/v1/public/landing')
+      .then((r) => setData(r.data.data))
+      .catch(() => setData(null)); // fall back to static copy below
+  }, []);
+
+  const tiers: readonly Tier[] = data?.services?.length ? toTiers(data.services) : TIERS;
+  const contactPhone = data?.contact?.phone || '+6016 922 0499';
+  const contactEmail = data?.contact?.email || 'hello@aicarwash.my';
+  const address =
+    data?.locations?.[0]?.address ??
+    "PT30125 A, Kampung Gong Pa' Jin, Kampung Wakaf Tengah, 21030 Kuala Terengganu, Terengganu";
+  const hours = {
+    monThu: data?.hours?.monThu || '8:00 AM – 6:00 PM',
+    fri:    data?.hours?.fri    || '8:00 AM – 12:00 PM, 2:30 PM – 6:00 PM',
+    sat:    data?.hours?.sat    || '8:00 AM – 4:00 PM',
+    sun:    data?.hours?.sun    || 'Closed',
+  };
+
   return (
     <div className="flex flex-1 flex-col bg-base">
 
@@ -186,7 +255,7 @@ export const Landing: React.FC = () => {
           </div>
 
           <div className="mt-10 grid gap-5 sm:grid-cols-3">
-            {TIERS.map((tier) => (
+            {tiers.map((tier) => (
               <div
                 key={tier.name}
                 className={`relative flex flex-col rounded-xl p-6 overflow-hidden ${
@@ -269,15 +338,15 @@ export const Landing: React.FC = () => {
                 <ul className="flex flex-col gap-3">
                   <li className="flex items-center gap-3 text-sm text-secondary">
                     <MapPin className="h-4 w-4 flex-shrink-0 text-cyan/60" aria-hidden="true" />
-                    PT30125 A, Kampung Gong Pa' Jin, Kampung Wakaf Tengah, 21030 Kuala Terengganu, Terengganu
+                    {address}
                   </li>
                   <li className="flex items-center gap-3 text-sm text-secondary">
                     <Phone className="h-4 w-4 flex-shrink-0 text-cyan/60" aria-hidden="true" />
-                    +6016 922 0499
+                    {contactPhone}
                   </li>
                   <li className="flex items-center gap-3 text-sm text-secondary">
                     <Mail className="h-4 w-4 flex-shrink-0 text-cyan/60" aria-hidden="true" />
-                    hello@aicarwash.my
+                    {contactEmail}
                   </li>
                 </ul>
               </div>
@@ -290,28 +359,28 @@ export const Landing: React.FC = () => {
                       <Clock className="h-3.5 w-3.5 text-cyan/60" aria-hidden="true" />
                       Monday – Thursday
                     </span>
-                    <span className="font-medium text-primary">8:00 AM – 6:00 PM</span>
+                    <span className="font-medium text-primary">{hours.monThu}</span>
                   </li>
                   <li className="flex justify-between text-secondary">
                     <span className="flex items-center gap-2">
                       <Clock className="h-3.5 w-3.5 text-cyan/60" aria-hidden="true" />
                       Friday
                     </span>
-                    <span className="font-medium text-primary">8:00 AM – 12:00 PM, 2:30 PM – 6:00 PM</span>
+                    <span className="font-medium text-primary">{hours.fri}</span>
                   </li>
                   <li className="flex justify-between text-secondary">
                     <span className="flex items-center gap-2">
                       <Clock className="h-3.5 w-3.5 text-cyan/60" aria-hidden="true" />
                       Saturday
                     </span>
-                    <span className="font-medium text-primary">8:00 AM – 4:00 PM</span>
+                    <span className="font-medium text-primary">{hours.sat}</span>
                   </li>
                   <li className="flex justify-between text-muted">
                     <span className="flex items-center gap-2">
                       <Clock className="h-3.5 w-3.5 text-muted/40" aria-hidden="true" />
                       Sunday & Public Holidays
                     </span>
-                    <span className="font-medium">Closed</span>
+                    <span className="font-medium">{hours.sun}</span>
                   </li>
                 </ul>
               </div>

@@ -28,9 +28,6 @@ export const btnGhost =
 /** Honeycomb card surface (textured panel). */
 export const cardPanel = 'hex-grid hex-border rounded-2xl';
 
-/** Raised flat dark card. */
-export const cardRaised = 'rounded-2xl border border-[#1E1E2D] bg-[#1A1A24]';
-
 /** Standard dark form input / select / textarea. */
 export const inputBase =
   'w-full min-h-[44px] rounded-lg border border-[#2A2A3D] bg-[#13131A] px-4 py-2.5 text-sm ' +

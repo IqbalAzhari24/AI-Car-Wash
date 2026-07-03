@@ -3,6 +3,7 @@ package com.carwash.backend.service;
 import com.carwash.backend.dto.UserProfileDto;
 import com.carwash.backend.entity.User;
 import com.carwash.backend.repository.UserRepository;
+import com.carwash.backend.util.ValidationUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,12 @@ public class UserProfileService {
     @Transactional
     public UserProfileDto updatePhone(UUID userId, String phoneNumber) {
         User user = findUser(userId);
-        user.setPhoneNumber(StringUtils.hasText(phoneNumber) ? phoneNumber.trim() : null);
+        String phone = ValidationUtil.normalizePhone(phoneNumber);
+        if (StringUtils.hasText(phone) && !ValidationUtil.isValidMalaysianPhone(phone)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Phone number must be a valid Malaysian number starting with +60 (e.g. +60123456789).");
+        }
+        user.setPhoneNumber(StringUtils.hasText(phone) ? phone : null);
         userRepository.save(user);
         return UserProfileDto.from(user);
     }

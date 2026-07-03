@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 import api from '../../api/api';
 import { btnPrimary, btnSecondary, btnGhost, cardPanel, inputBase, statusBadge } from '../../components/ui';
+import { fmtSlot } from '../../utils/format';
 
 interface Booking {
   id: string;
@@ -30,16 +31,6 @@ const VEHICLE_CLASSES: VehicleClass[] = ['MOTORCYCLE', 'COMPACT', 'SEDAN', 'SUV_
 
 function todayStr(): string {
   return new Date().toISOString().split('T')[0];
-}
-
-function fmtSlot(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString('en-MY', {
-      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
 }
 
 function fmtTime(iso: string): string {

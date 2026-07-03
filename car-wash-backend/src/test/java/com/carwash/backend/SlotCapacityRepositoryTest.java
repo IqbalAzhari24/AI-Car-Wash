@@ -23,9 +23,8 @@ class SlotCapacityRepositoryTest extends AbstractIntegrationTest {
 
     @BeforeEach
     void setup() {
-        slotCapacityRepository.deleteAll();
-        locationRepository.deleteAll();
-
+        // Own location per test — never deleteAll(): the V15 demo-data migration
+        // seeds bookings whose FK to locations makes a global wipe fail (23503).
         location = new Location();
         location.setName("Test Branch");
         location.setAddress("1 Test St");
@@ -36,8 +35,9 @@ class SlotCapacityRepositoryTest extends AbstractIntegrationTest {
 
     @AfterEach
     void cleanup() {
-        slotCapacityRepository.deleteAll();
-        locationRepository.deleteAll();
+        SlotCapacity own = slotCapacityRepository.findByLocationIdAndSlotTime(location.getId(), slotTime);
+        if (own != null) slotCapacityRepository.delete(own);
+        locationRepository.delete(location);
     }
 
     @Test

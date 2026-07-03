@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Loader2, Car } from 'lucide-react';
 import api from '../../api/api';
 import { btnPrimary, btnSecondary, cardPanel, statusBadge } from '../../components/ui';
+import { fmtSlot } from '../../utils/format';
 
 interface Job {
   id: string;
@@ -10,17 +11,10 @@ interface Job {
   vehicleClass: string | null;
   vehicleModel: string;
   status: string; // CONFIRMED | IN_PROGRESS
-}
-
-/** "2024-01-15T09:00:00" → "15 Jan, 09:00" */
-function fmtSlot(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString('en-MY', {
-      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
+  pickupRequested: boolean;
+  deliveryRequested: boolean;
+  pickupAddress: string | null;
+  pickupNotes: string | null;
 }
 
 export const WorkerJobs: React.FC = () => {
@@ -115,6 +109,26 @@ export const WorkerJobs: React.FC = () => {
                       )}
                     </p>
                     <p className="mt-1 text-xs text-[#5A5A72]">Slot {fmtSlot(j.slotTime)}</p>
+                    {(j.pickupRequested || j.deliveryRequested) && (
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {j.pickupRequested && (
+                          <span className="rounded-full border border-[#FFB800]/40 bg-[#FFB800]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#FFB800]">
+                            Pick-up
+                          </span>
+                        )}
+                        {j.deliveryRequested && (
+                          <span className="rounded-full border border-[#7B8CDE]/40 bg-[#7B8CDE]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#7B8CDE]">
+                            Delivery
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {j.pickupRequested && j.pickupAddress && (
+                      <p className="mt-1 text-xs text-[#9090A8]">📍 {j.pickupAddress}</p>
+                    )}
+                    {j.pickupRequested && j.pickupNotes && (
+                      <p className="mt-0.5 text-xs text-[#5A5A72]">Note: {j.pickupNotes}</p>
+                    )}
                   </div>
                   <span className={statusBadge(j.status)}>{j.status.replace('_', ' ')}</span>
                 </div>
