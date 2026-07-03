@@ -13,8 +13,10 @@ import com.carwash.backend.repository.BookingRepository;
 import com.carwash.backend.repository.LocationRepository;
 import com.carwash.backend.repository.PaymentRepository;
 import com.carwash.backend.repository.ServiceRepository;
+import com.carwash.backend.repository.ShopSettingRepository;
 import com.carwash.backend.repository.SlotCapacityRepository;
 import com.carwash.backend.repository.UserRepository;
+import com.carwash.backend.util.HaversineUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -44,6 +46,12 @@ public class BookingService {
     private final PaymentRepository paymentRepository;
     private final BookingEngineService bookingEngine;
     private final ToyyibPayService toyyibPayService;
+    private final ShopSettingRepository shopSettingRepository;
+    private final NotificationService notificationService;
+
+    /** Same fallback radius as ValetService — used to geofence pickup coordinates. */
+    private static final double PICKUP_RADIUS_KM = 10.0;
+    private static final BigDecimal DEFAULT_ADDON_FEE = new BigDecimal("5.00");
 
     public BookingService(BookingRepository bookingRepository,
                           UserRepository userRepository,
@@ -52,7 +60,9 @@ public class BookingService {
                           SlotCapacityRepository slotCapacityRepository,
                           PaymentRepository paymentRepository,
                           BookingEngineService bookingEngine,
-                          ToyyibPayService toyyibPayService) {
+                          ToyyibPayService toyyibPayService,
+                          ShopSettingRepository shopSettingRepository,
+                          NotificationService notificationService) {
         this.bookingRepository = bookingRepository;
         this.userRepository = userRepository;
         this.locationRepository = locationRepository;
@@ -61,6 +71,8 @@ public class BookingService {
         this.paymentRepository = paymentRepository;
         this.bookingEngine = bookingEngine;
         this.toyyibPayService = toyyibPayService;
+        this.shopSettingRepository = shopSettingRepository;
+        this.notificationService = notificationService;
     }
 
     /**
@@ -121,6 +133,30 @@ public class BookingService {
             blockTime = blockTime.plusMinutes(30);
         }
 
+        // --- Pickup / delivery add-ons ---
+        BigDecimal addOnFees = BigDecimal.ZERO;
+        if (req.isPickupRequested()) {
+            boolean hasCoords = req.getPickupLat() != null && req.getPickupLng() != null;
+            if (!hasCoords && !StringUtils.hasText(req.getPickupAddress())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Pickup requires a pinned location or an address.");
+            }
+            if (hasCoords && location.getLatitude() != null && location.getLongitude() != null) {
+                double distanceKm = HaversineUtil.distanceKm(
+                        req.getPickupLat(), req.getPickupLng(),
+                        location.getLatitude(), location.getLongitude());
+                if (distanceKm > PICKUP_RADIUS_KM) {
+                    throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, String.format(
+                            "Pickup location is outside the service area (%.1f km away, limit is %.1f km).",
+                            distanceKm, PICKUP_RADIUS_KM));
+                }
+            }
+            addOnFees = addOnFees.add(addOnFee("pickup_fee"));
+        }
+        if (req.isDeliveryRequested()) {
+            addOnFees = addOnFees.add(addOnFee("delivery_fee"));
+        }
+
         Booking booking = new Booking();
         booking.setCustomer(customer);
         booking.setLocation(location);
@@ -130,11 +166,26 @@ public class BookingService {
         booking.setVehicleModel(req.getVehicleModel().trim());
         booking.setStatus(Booking.BookingStatus.PENDING);
         booking.setOverride(staffOnBehalf);
-        booking.setTotalPrice(bookingEngine.calculatePrice(service, req.getVehicleClass()));
+        booking.setPickupRequested(req.isPickupRequested());
+        booking.setDeliveryRequested(req.isDeliveryRequested());
+        if (req.isPickupRequested()) {
+            booking.setPickupAddress(StringUtils.hasText(req.getPickupAddress()) ? req.getPickupAddress().trim() : null);
+            booking.setPickupLat(req.getPickupLat());
+            booking.setPickupLng(req.getPickupLng());
+            booking.setPickupNotes(StringUtils.hasText(req.getPickupNotes()) ? req.getPickupNotes().trim() : null);
+        }
+        booking.setTotalPrice(bookingEngine.calculatePrice(service, req.getVehicleClass()).add(addOnFees));
 
         Booking saved = bookingRepository.save(booking);
         log.info("Created booking {} for customer {} at {} ({} block(s))", saved.getId(), customerId, slotTime, requiredBlocks);
         return BookingDto.from(saved);
+    }
+
+    /** Flat add-on fee from shop_settings ({@code pickup_fee} / {@code delivery_fee}), defaulting to RM5. */
+    private BigDecimal addOnFee(String settingKey) {
+        return shopSettingRepository.findById(settingKey)
+                .map(s -> new BigDecimal(s.getSettingValue()))
+                .orElse(DEFAULT_ADDON_FEE);
     }
 
     @Transactional(readOnly = true)
@@ -217,6 +268,7 @@ public class BookingService {
 
         booking.setStatus(target);
         bookingRepository.save(booking);
+        notificationService.notifyBookingUpdate(booking);
         log.info("Booking {} advanced {} -> {}", bookingId, current, target);
         return BookingDto.from(booking);
     }
@@ -250,6 +302,7 @@ public class BookingService {
 
         booking.setStatus(Booking.BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+        notificationService.notifyBookingUpdate(booking);
         log.info("Booking {} cancelled by {} (was {}), freed {} block(s)", bookingId, actingUserId, current, blocks);
         return BookingDto.from(booking);
     }
@@ -288,6 +341,7 @@ public class BookingService {
             Payment savedPayment = paymentRepository.save(payment);
             booking.setStatus(Booking.BookingStatus.CONFIRMED);
             bookingRepository.save(booking);
+            notificationService.notifyBookingUpdate(booking);
             log.info("Cash checkout completed for booking {}", bookingId);
             return new CheckoutResponse(bookingId, savedPayment.getId(), "CASH", "COMPLETED", amount, null);
         }
@@ -362,6 +416,7 @@ public class BookingService {
             bookingRepository.findById(bookingId).ifPresent(b -> {
                 b.setStatus(Booking.BookingStatus.CONFIRMED);
                 bookingRepository.save(b);
+                notificationService.notifyBookingUpdate(b);
             });
             log.info("toyyibPay payment confirmed for booking {}", bookingId);
         } else if ("3".equals(status)) {

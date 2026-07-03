@@ -11,8 +11,10 @@ import com.carwash.backend.repository.ValetRequestRepository;
 import com.carwash.backend.util.HaversineUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -47,13 +49,16 @@ public class ValetService {
     private final ValetRequestRepository valetRepository;
     private final LocationRepository locationRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public ValetService(ValetRequestRepository valetRepository,
                         LocationRepository locationRepository,
-                        UserRepository userRepository) {
+                        UserRepository userRepository,
+                        NotificationService notificationService) {
         this.valetRepository = valetRepository;
         this.locationRepository = locationRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     // -------------------------------------------------------------------------
@@ -150,6 +155,89 @@ public class ValetService {
                 .stream()
                 .map(r -> toDto(r, r.getStatus() == ValetRequest.ValetStatus.ACCEPTED))
                 .collect(Collectors.toList());
+    }
+
+    // -------------------------------------------------------------------------
+    // Clerk / Owner — advance or cancel a request
+    // -------------------------------------------------------------------------
+
+    /**
+     * Updates the status of a valet request (Clerk / Owner access).
+     *
+     * <p>Allowed transitions:
+     * PENDING → ACCEPTED | REJECTED | CANCELLED;
+     * ACCEPTED → IN_PROGRESS | CANCELLED;
+     * IN_PROGRESS → COMPLETED | CANCELLED.
+     * REJECTED, COMPLETED and CANCELLED are terminal.
+     *
+     * @param requestId valet request id
+     * @param newStatus target status
+     * @return the updated request as a DTO
+     * @throws ResponseStatusException 404 if not found, 422 on an invalid transition
+     */
+    @Transactional
+    public ValetRequestDto updateStatus(UUID requestId, ValetRequest.ValetStatus newStatus) {
+        ValetRequest request = valetRepository.findById(requestId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Valet request not found: " + requestId));
+
+        if (!isTransitionAllowed(request.getStatus(), newStatus)) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Cannot change valet request from " + request.getStatus() + " to " + newStatus + ".");
+        }
+
+        request.setStatus(newStatus);
+        ValetRequest saved = valetRepository.save(request);
+        notificationService.notifyValetUpdate(saved);
+        log.info("Valet request {} status changed to {}", requestId, newStatus);
+        return toDto(saved, saved.getStatus() == ValetRequest.ValetStatus.ACCEPTED);
+    }
+
+    // -------------------------------------------------------------------------
+    // Customer — cancel own request
+    // -------------------------------------------------------------------------
+
+    /**
+     * Cancels a valet request owned by the authenticated customer.
+     * Only PENDING or ACCEPTED requests can be cancelled.
+     *
+     * @param customerId id of the authenticated customer (JWT subject)
+     * @param requestId  valet request id
+     * @return the cancelled request as a DTO
+     * @throws ResponseStatusException 404 if not found, 403 if owned by someone else,
+     *                                 422 if the request is already in progress or finished
+     */
+    @Transactional
+    public ValetRequestDto cancel(String customerId, UUID requestId) {
+        ValetRequest request = valetRepository.findById(requestId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Valet request not found: " + requestId));
+
+        if (!request.getCustomer().getId().equals(UUID.fromString(customerId))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only cancel your own valet requests.");
+        }
+        if (request.getStatus() != ValetRequest.ValetStatus.PENDING
+                && request.getStatus() != ValetRequest.ValetStatus.ACCEPTED) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Only pending or accepted valet requests can be cancelled.");
+        }
+
+        request.setStatus(ValetRequest.ValetStatus.CANCELLED);
+        ValetRequest saved = valetRepository.save(request);
+        return toDto(saved, false);
+    }
+
+    private boolean isTransitionAllowed(ValetRequest.ValetStatus from, ValetRequest.ValetStatus to) {
+        return switch (from) {
+            case PENDING -> to == ValetRequest.ValetStatus.ACCEPTED
+                    || to == ValetRequest.ValetStatus.REJECTED
+                    || to == ValetRequest.ValetStatus.CANCELLED;
+            case ACCEPTED -> to == ValetRequest.ValetStatus.IN_PROGRESS
+                    || to == ValetRequest.ValetStatus.CANCELLED;
+            case IN_PROGRESS -> to == ValetRequest.ValetStatus.COMPLETED
+                    || to == ValetRequest.ValetStatus.CANCELLED;
+            case REJECTED, COMPLETED, CANCELLED -> false;
+        };
     }
 
     // -------------------------------------------------------------------------

@@ -19,6 +19,14 @@ public class CreateBookingRequest {
     private Booking.VehicleClass vehicleClass;
     private String vehicleModel;
 
+    // Pickup / delivery add-ons (flat fee each; see shop_settings pickup_fee / delivery_fee)
+    private boolean pickupRequested;
+    private boolean deliveryRequested;
+    private String pickupAddress;
+    private Double pickupLat;
+    private Double pickupLng;
+    private String pickupNotes;
+
     public UUID getCustomerId() { return customerId; }
     public void setCustomerId(UUID customerId) { this.customerId = customerId; }
     public String getCustomerEmail() { return customerEmail; }
@@ -33,4 +41,16 @@ public class CreateBookingRequest {
     public void setVehicleClass(Booking.VehicleClass vehicleClass) { this.vehicleClass = vehicleClass; }
     public String getVehicleModel() { return vehicleModel; }
     public void setVehicleModel(String vehicleModel) { this.vehicleModel = vehicleModel; }
+    public boolean isPickupRequested() { return pickupRequested; }
+    public void setPickupRequested(boolean pickupRequested) { this.pickupRequested = pickupRequested; }
+    public boolean isDeliveryRequested() { return deliveryRequested; }
+    public void setDeliveryRequested(boolean deliveryRequested) { this.deliveryRequested = deliveryRequested; }
+    public String getPickupAddress() { return pickupAddress; }
+    public void setPickupAddress(String pickupAddress) { this.pickupAddress = pickupAddress; }
+    public Double getPickupLat() { return pickupLat; }
+    public void setPickupLat(Double pickupLat) { this.pickupLat = pickupLat; }
+    public Double getPickupLng() { return pickupLng; }
+    public void setPickupLng(Double pickupLng) { this.pickupLng = pickupLng; }
+    public String getPickupNotes() { return pickupNotes; }
+    public void setPickupNotes(String pickupNotes) { this.pickupNotes = pickupNotes; }
 }

@@ -10,6 +10,9 @@ interface BookingDetail {
   vehicleModel: string | null;
   status: string;
   totalPrice: number;
+  pickupRequested: boolean;
+  deliveryRequested: boolean;
+  pickupAddress: string | null;
 }
 
 interface CheckoutResponse {
@@ -186,6 +189,16 @@ export const CheckoutPage: React.FC = () => {
               {VEHICLE_LABELS[booking.vehicleClass ?? ''] ?? booking.vehicleClass} — {booking.vehicleModel}
             </dd>
           </div>
+          {(booking.pickupRequested || booking.deliveryRequested) && (
+            <div className="flex items-center justify-between px-5 py-3.5">
+              <dt className="text-sm text-secondary">Add-ons</dt>
+              <dd className="text-sm font-medium text-primary">
+                {[booking.pickupRequested && 'Valet pick-up', booking.deliveryRequested && 'Return delivery']
+                  .filter(Boolean)
+                  .join(' + ')}
+              </dd>
+            </div>
+          )}
           <div className="flex items-center justify-between bg-cyan/5 px-5 py-4">
             <dt className="text-sm font-semibold text-primary">Total</dt>
             <dd className="font-display text-lg font-bold tabular-nums text-cyan">

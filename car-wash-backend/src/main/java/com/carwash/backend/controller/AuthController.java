@@ -9,6 +9,7 @@ import com.carwash.backend.dto.ResetPasswordRequest;
 import com.carwash.backend.entity.User;
 import com.carwash.backend.repository.UserRepository;
 import com.carwash.backend.service.PasswordResetService;
+import com.carwash.backend.util.ValidationUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,17 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerCustomer(@Valid @RequestBody RegisterRequest request) {
+        if (!ValidationUtil.isValidEmail(request.getEmail())) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Please enter a valid email address (e.g. you@gmail.com)."));
+        }
+
+        String phone = ValidationUtil.normalizePhone(request.getPhoneNumber());
+        if (StringUtils.hasText(phone) && !ValidationUtil.isValidMalaysianPhone(phone)) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("message", "Phone number must be a valid Malaysian number starting with +60 (e.g. +60123456789)."));
+        }
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("message", "An account with that email already exists."));
@@ -55,7 +67,7 @@ public class AuthController {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setPhoneNumber(request.getPhoneNumber());
+        user.setPhoneNumber(StringUtils.hasText(phone) ? phone : null);
         user.setRole(User.UserRole.CUSTOMER);
         userRepository.save(user);
 

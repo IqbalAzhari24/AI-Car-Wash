@@ -79,6 +79,10 @@ class BookingControllerTest extends AbstractIntegrationTest {
                 "Toyota Vios",
                 "PENDING",
                 new BigDecimal("30.00"),
+                false,
+                false,
+                null,
+                null,
                 LocalDateTime.now()
         );
         when(bookingService.createBooking(eq(UUID.fromString(CUSTOMER_UUID)), eq(false), any()))

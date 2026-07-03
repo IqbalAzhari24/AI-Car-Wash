@@ -14,6 +14,4 @@ public interface ValetRequestRepository extends JpaRepository<ValetRequest, UUID
     List<ValetRequest> findByCustomer_IdOrderByCreatedAtDesc(UUID customerId);
 
     List<ValetRequest> findByLocation_IdOrderByCreatedAtDesc(UUID locationId);
-
-    List<ValetRequest> findByStatusOrderByPickupTimeAsc(ValetRequest.ValetStatus status);
 }

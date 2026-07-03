@@ -18,10 +18,14 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final BookingRepository bookingRepository;
+    private final SentimentAnalysisService sentimentAnalysisService;
 
-    public ReviewService(ReviewRepository reviewRepository, BookingRepository bookingRepository) {
+    public ReviewService(ReviewRepository reviewRepository,
+                         BookingRepository bookingRepository,
+                         SentimentAnalysisService sentimentAnalysisService) {
         this.reviewRepository = reviewRepository;
         this.bookingRepository = bookingRepository;
+        this.sentimentAnalysisService = sentimentAnalysisService;
     }
 
     /** Returns the existing review for a booking, or empty if none yet. */
@@ -59,7 +63,7 @@ public class ReviewService {
         r.setCustomer(booking.getCustomer());
         r.setRating(rating);
         r.setComment(comment);
-        // ponytail: sentimentScore left null — wire Gemini sentiment analysis when needed
+        r.setSentimentScore(sentimentAnalysisService.score(rating, comment));
 
         return ReviewDto.from(reviewRepository.save(r));
     }

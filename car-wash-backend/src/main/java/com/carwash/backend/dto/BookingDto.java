@@ -17,11 +17,16 @@ public class BookingDto {
     private final String vehicleModel;
     private final String status;
     private final BigDecimal totalPrice;
+    private final boolean pickupRequested;
+    private final boolean deliveryRequested;
+    private final String pickupAddress;
+    private final String pickupNotes;
     private final LocalDateTime createdAt;
 
     public BookingDto(UUID id, UUID customerId, UUID locationId, UUID serviceId, String serviceName,
                       LocalDateTime slotTime, String vehicleClass, String vehicleModel, String status,
-                      BigDecimal totalPrice, LocalDateTime createdAt) {
+                      BigDecimal totalPrice, boolean pickupRequested, boolean deliveryRequested,
+                      String pickupAddress, String pickupNotes, LocalDateTime createdAt) {
         this.id = id;
         this.customerId = customerId;
         this.locationId = locationId;
@@ -32,6 +37,10 @@ public class BookingDto {
         this.vehicleModel = vehicleModel;
         this.status = status;
         this.totalPrice = totalPrice;
+        this.pickupRequested = pickupRequested;
+        this.deliveryRequested = deliveryRequested;
+        this.pickupAddress = pickupAddress;
+        this.pickupNotes = pickupNotes;
         this.createdAt = createdAt;
     }
 
@@ -47,6 +56,10 @@ public class BookingDto {
                 b.getVehicleModel(),
                 b.getStatus() != null ? b.getStatus().name() : null,
                 b.getTotalPrice(),
+                Boolean.TRUE.equals(b.getPickupRequested()),
+                Boolean.TRUE.equals(b.getDeliveryRequested()),
+                b.getPickupAddress(),
+                b.getPickupNotes(),
                 b.getCreatedAt());
     }
 
@@ -60,5 +73,9 @@ public class BookingDto {
     public String getVehicleModel() { return vehicleModel; }
     public String getStatus() { return status; }
     public BigDecimal getTotalPrice() { return totalPrice; }
+    public boolean isPickupRequested() { return pickupRequested; }
+    public boolean isDeliveryRequested() { return deliveryRequested; }
+    public String getPickupAddress() { return pickupAddress; }
+    public String getPickupNotes() { return pickupNotes; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 }

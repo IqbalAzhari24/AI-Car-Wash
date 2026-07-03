@@ -2,10 +2,13 @@ package com.carwash.backend.service;
 
 import com.carwash.backend.dto.AnalyticsInsightDto;
 import com.carwash.backend.dto.RevenueTrendDto;
+import com.carwash.backend.dto.ReviewInsightDto;
 import com.carwash.backend.dto.SalesSummaryDto;
 import com.carwash.backend.entity.Booking;
+import com.carwash.backend.entity.Review;
 import com.carwash.backend.repository.BookingRepository;
 import com.carwash.backend.repository.PaymentRepository;
+import com.carwash.backend.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +30,16 @@ public class OwnerAnalyticsService {
 
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
+    private final ReviewRepository reviewRepository;
     private final MalaysiaCalendarService malaysiaCalendarService;
 
     public OwnerAnalyticsService(PaymentRepository paymentRepository,
                                  BookingRepository bookingRepository,
+                                 ReviewRepository reviewRepository,
                                  MalaysiaCalendarService malaysiaCalendarService) {
         this.paymentRepository = paymentRepository;
         this.bookingRepository = bookingRepository;
+        this.reviewRepository = reviewRepository;
         this.malaysiaCalendarService = malaysiaCalendarService;
     }
 
@@ -164,5 +170,60 @@ public class OwnerAnalyticsService {
 
         return new AnalyticsInsightDto(date, sb.toString().trim(),
                 holidayToday.isPresent(), holidayToday.orElse(null), upcomingDtos);
+    }
+
+    /**
+     * Aggregates customer reviews into a sentiment insight: average rating,
+     * average AI sentiment score, positive/neutral/negative distribution
+     * (thresholds ±0.2), a human-readable summary, and the three most negative
+     * reviews for follow-up.
+     *
+     * @return {@link ReviewInsightDto} for the owner dashboard
+     */
+    @Transactional(readOnly = true)
+    public ReviewInsightDto getReviewInsight() {
+        // ponytail: full-table scan is fine at FYP scale; add a date-window query if reviews grow large
+        List<Review> reviews = reviewRepository.findAll();
+
+        if (reviews.isEmpty()) {
+            return new ReviewInsightDto(0, BigDecimal.ZERO, BigDecimal.ZERO, 0, 0, 0,
+                    "No customer reviews yet.", List.of());
+        }
+
+        BigDecimal avgRating = BigDecimal.valueOf(
+                reviews.stream().mapToInt(Review::getRating).average().orElse(0))
+                .setScale(2, RoundingMode.HALF_UP);
+
+        List<Review> scored = reviews.stream()
+                .filter(r -> r.getSentimentScore() != null)
+                .collect(Collectors.toList());
+
+        BigDecimal avgSentiment = scored.isEmpty() ? BigDecimal.ZERO
+                : BigDecimal.valueOf(scored.stream()
+                        .mapToDouble(r -> r.getSentimentScore().doubleValue()).average().orElse(0))
+                        .setScale(2, RoundingMode.HALF_UP);
+
+        long positive = scored.stream().filter(r -> r.getSentimentScore().doubleValue() > 0.2).count();
+        long negative = scored.stream().filter(r -> r.getSentimentScore().doubleValue() < -0.2).count();
+        long neutral  = scored.size() - positive - negative;
+
+        List<ReviewInsightDto.FlaggedReview> mostNegative = scored.stream()
+                .sorted((a, b) -> a.getSentimentScore().compareTo(b.getSentimentScore()))
+                .limit(3)
+                .filter(r -> r.getSentimentScore().doubleValue() < -0.2)
+                .map(r -> new ReviewInsightDto.FlaggedReview(
+                        r.getRating(), r.getComment(), r.getSentimentScore(), r.getCreatedAt()))
+                .collect(Collectors.toList());
+
+        String mood = avgSentiment.doubleValue() > 0.2 ? "positive"
+                : avgSentiment.doubleValue() < -0.2 ? "negative" : "mixed";
+        String summary = String.format(
+                "%d review%s, average rating %.1f/5. Overall sentiment is %s (%.2f). %d positive, %d neutral, %d negative.%s",
+                reviews.size(), reviews.size() == 1 ? "" : "s", avgRating.doubleValue(), mood,
+                avgSentiment.doubleValue(), positive, neutral, negative,
+                negative > 0 ? " Review the flagged comments below and follow up with those customers." : "");
+
+        return new ReviewInsightDto(reviews.size(), avgRating, avgSentiment,
+                positive, neutral, negative, summary, mostNegative);
     }
 }

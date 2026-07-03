@@ -2,6 +2,7 @@ package com.carwash.backend.controller;
 
 import com.carwash.backend.dto.AnalyticsInsightDto;
 import com.carwash.backend.dto.RevenueTrendDto;
+import com.carwash.backend.dto.ReviewInsightDto;
 import com.carwash.backend.dto.SalesSummaryDto;
 import com.carwash.backend.service.OwnerAnalyticsService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -66,5 +67,15 @@ public class OwnerAnalyticsController {
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return analyticsService.getInsight(date != null ? date : LocalDate.now());
+    }
+
+    /**
+     * Customer-review sentiment insight: average rating, AI sentiment average,
+     * positive/neutral/negative distribution, and the most negative reviews
+     * flagged for follow-up.
+     */
+    @GetMapping("/reviews")
+    public ReviewInsightDto reviewInsight() {
+        return analyticsService.getReviewInsight();
     }
 }
