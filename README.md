@@ -4,6 +4,8 @@ An AI-receptionist booking system for a Malaysian neighborhood car wash. Custome
 
 **Stack:** React 19 + TypeScript + Vite + Tailwind (frontend) · Spring Boot 3.4 + Java 21 + PostgreSQL + Redis (backend) · Google Gemini (Timah) · ToyyibPay (FPX payments)
 
+<img src="docs/screenshots/landing.png" width="800" alt="AI Car Wash landing page">
+
 ---
 
 ## Table of Contents
@@ -129,11 +131,15 @@ The system has four roles, each with its own dashboard and permissions:
 - On **sign in**, you're routed straight to your role's home page: Owner → User Directory, Clerk → Console, Worker → Job board, Customer → Home.
 - The navigation bar (top of every page) only shows the links relevant to your role, plus your role badge and a **Log out** button.
 
+<img src="docs/screenshots/login.png" width="800" alt="Login page with sign-in / sign-up toggle">
+
 ### Pages
 
 #### Public
 
 - **Landing (`/`)** — Marketing homepage shown to signed-out visitors: hero, service cards, pricing, an embedded map, and contact/hours. All call-to-action buttons lead to `/login`. Once logged in, `/` shows a simple "Ready for a wash?" dashboard instead, with shortcuts to booking and chat.
+
+  <img src="docs/screenshots/customer-home.png" width="800" alt="Customer home dashboard after login">
 
 #### Customer
 
@@ -141,26 +147,58 @@ The system has four roles, each with its own dashboard and permissions:
   1. **Select Slot** — pick a date, an available time slot, vehicle class, and model.
   2. **Choose Service** — pick a wash package (price and duration shown).
   3. **Confirm** — optionally add valet pick-up/return-delivery (with fee and location pin), review the total, and submit. You're redirected to Checkout.
+
+  <img src="docs/screenshots/book-a-wash.png" width="800" alt="Booking flow — Select Slot step">
+
 - **Chat with Timah (`/chat`)** — Real-time WebSocket chat with Timah, the AI receptionist, for booking a wash conversationally instead of using the wizard.
+
+  <img src="docs/screenshots/timah-chat.png" width="800" alt="Chat with Timah, the AI receptionist">
+
 - **Checkout (`/checkout/:bookingId`)** — Shows the booking summary and total; pay by cash-at-counter or online via ToyyibPay (FPX). Displays a confirmation once paid, and lets you leave a star rating + review once the wash is completed.
+
+  <img src="docs/screenshots/checkout.png" width="800" alt="Checkout page with payment options">
+
 - **My Bookings (`/bookings`)** — Lists your bookings with live status badges (auto-updates over WebSocket). Pending bookings link to Pay Now; pending/confirmed bookings can be cancelled; completed bookings let you leave a review inline.
+
+  <img src="docs/screenshots/my-bookings.png" width="800" alt="My Bookings list with status badges">
+
 - **Valet Pick-up (`/valet`)** — Request a valet pick-up: choose branch, pickup time, vehicle class/model, and address (with a "use my location" helper). Also lists and lets you cancel your own valet requests.
+
+  <img src="docs/screenshots/valet-pickup.png" width="800" alt="Valet pick-up request form">
+
 - **Account (`/account`)** — Update your phone number and password, and view your profile/join date. Customers get a link to their booking history.
+
+  <img src="docs/screenshots/account.png" width="800" alt="Account page">
 
 #### Clerk
 
 - **Console (`/clerk`)** — The day's bookings needing attention, with actions to confirm cash payment, start a wash, mark it complete, or cancel — plus a form to create walk-in bookings by customer email, service, slot, and vehicle.
+
+  <img src="docs/screenshots/clerk-console.png" width="800" alt="Clerk console with bookings needing attention">
+
 - **Valet Requests (`/clerk/valet`)** — Branch-scoped queue of customer valet requests with status-driven actions (Accept/Reject → Start pick-up/Cancel → Complete/Cancel), showing distance from branch and pickup address.
+
+  <img src="docs/screenshots/clerk-valet-requests.png" width="800" alt="Clerk valet requests queue">
 
 #### Worker
 
 - **My Jobs (`/worker`)** — Job board of confirmed/in-progress washes assigned to you, with pickup/delivery add-on badges, address, and notes. Start a wash and mark it complete; completed jobs drop off the queue.
 
+  <img src="docs/screenshots/worker-jobs.png" width="800" alt="Worker job board">
+
 #### Owner
 
 - **Analytics (`/admin/analytics`)** — AI-generated business insights (with public-holiday flags), daily KPI cards (revenue, bookings, cash vs online), a revenue trend chart (7/14/30-day toggle), booking status breakdown, and cash vs FPX payment split, with a date picker.
+
+  <img src="docs/screenshots/owner-analytics.png" width="800" alt="Owner analytics dashboard">
+
 - **Users (`/admin/users`)** — Directory of customers and staff with search, role filter, and sorting. Create new staff accounts here (issues a one-time temp password); click a customer to view their transaction history.
+
+  <img src="docs/screenshots/owner-users.png" width="800" alt="Owner user directory">
+
 - **Transaction History (`/admin/users/:id/transactions`)** — A specific customer's paginated booking/payment history (slot time, vehicle, amount, payment status, transaction ID).
+
+  <img src="docs/screenshots/owner-transactions.png" width="800" alt="Owner transaction history for a customer">
 
 ---
 
