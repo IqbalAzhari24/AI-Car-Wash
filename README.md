@@ -4,6 +4,8 @@ An AI-receptionist booking system for a Malaysian neighborhood car wash. Custome
 
 **Stack:** React 19 + TypeScript + Vite + Tailwind (frontend) · Spring Boot 3.4 + Java 21 + PostgreSQL + Redis (backend) · Google Gemini (Timah) · ToyyibPay (FPX payments)
 
+**Live demo:** [aicarwash.theahmadiqbal24.workers.dev](https://aicarwash.theahmadiqbal24.workers.dev/)
+
 <img src="docs/screenshots/landing.png" width="800" alt="AI Car Wash landing page">
 
 ---
