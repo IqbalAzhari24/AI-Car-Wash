@@ -1,0 +1,38 @@
+flowchart TD
+    subgraph CUST["Customer"]
+        A1(["Start: open Timah chat"]) --> A2["Type a message\n(WS: /app/timah/chat)"]
+    end
+
+    subgraph TIMAH["Timah (Gemini 2.5 Flash)"]
+        A2 --> B1["Backend builds system prompt:\ntoday's date, open slots, closures,\nactive services, vehicle multipliers"]
+        B1 --> B2["Turn 1: generateContent\n(message + tool declarations)"]
+        B2 --> B3{"Response type?"}
+        B3 -->|Plain text, no tool needed| B4["Emit reply\n(streamed token-by-token)"]
+        B3 -->|functionCall| B5{"Which tool?"}
+    end
+
+    subgraph TOOLS["Backend Tools"]
+        B5 -->|get_available_slots| T1["Query slot_capacities\nfor date range"]
+        B5 -->|suggest_wash_time| T2["Query slot capacity +\nOpen-Meteo rain forecast\n(next 7 days, no Fridays)"]
+        B5 -->|get_booking_status| T3["Query customer's own\nbookings, newest first"]
+        B5 -->|create_booking| T4["BookingService.createBooking:\natomically reserve required\n30-min blocks"]
+        T4 --> T5{"Blocks reserved\nsuccessfully?"}
+        T5 -->|No - slot conflict / invalid input| T6["Return error\n(e.g. 409 Conflict)"]
+        T5 -->|Yes| T7["Booking created,\nstatus = PENDING"]
+    end
+
+    subgraph TIMAH2["Timah (Gemini 2.5 Flash)"]
+        T1 --> B6["Turn 2: streamGenerateContent\nwith tool result appended"]
+        T2 --> B6
+        T3 --> B6
+        T6 --> B6
+        T7 --> B6
+        B6 --> B7["Stream final reply\ntoken-by-token to\n/queue/timah-reply"]
+        B7 --> B8{"Was create_booking\nsuccessful this turn?"}
+    end
+
+    B4 --> A2
+    B8 -->|No| A2
+    B8 -->|Yes| B9["Append REDIRECT_CHECKOUT\n{bookingId}"]
+    B9 --> B10["Frontend navigates to\n/checkout/:bookingId"]
+    B10 --> E(["End: hand off to\nCheckout & Payment process"])
