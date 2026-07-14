@@ -1,0 +1,47 @@
+flowchart TD
+    subgraph CHAT["Customer via Timah AI Chat"]
+        A1(["Start: customer opens chat"]) --> A2["Tell Timah vehicle model & desired time"]
+        A2 --> A3["Timah: checkVehicleClass(model)"]
+        A3 --> A4{"Timah: verifyConsecutiveSlots(dateTime, blocks)\nwithin hours 09:00-18:00, not Friday"}
+        A4 -->|Not available / out of hours| A2
+        A4 -->|Available| A5["Create booking\nstatus = PENDING"]
+        A5 --> A6["Timah replies REDIRECT_CHECKOUT{bookingId}"]
+    end
+
+    subgraph WALKIN["Clerk at Counter (Walk-in)"]
+        B1(["Start: customer arrives at counter"]) --> B2["Clerk opens Console,\nfinds or registers customer"]
+        B2 --> B3["Clerk picks service, vehicle class/model, slot"]
+        B3 --> B4{"Slot capacity available\nfor required blocks?"}
+        B4 -->|No| B3
+        B4 -->|Yes| B5["Create booking on customer's behalf\nstatus = PENDING, is_override = true"]
+    end
+
+    A6 --> C0
+    B5 --> C0
+
+    subgraph CHECKOUT["Checkout & Payment"]
+        C0["Open Checkout"] --> C1{"Payment method?"}
+        C1 -->|Cash at counter| C2["Clerk records CASH payment"]
+        C2 --> C3["Payment COMPLETED\nBooking -> CONFIRMED"]
+        C1 -->|Online| C4["Create toyyibPay hosted bill,\nredirect customer to gateway"]
+        C4 --> C5{"Gateway callback status\n(checksum verified)"}
+        C5 -->|"1 = success"| C3
+        C5 -->|"2 = pending"| C4
+        C5 -->|"3 = fail"| C6["Payment FAILED\nBooking stays PENDING"]
+    end
+
+    C3 --> D0
+    C0 -.->|Customer/staff cancels\nPENDING or CONFIRMED only| X1["Booking -> CANCELLED\nrelease reserved slot blocks"]
+
+    subgraph OPS["Wash Operations"]
+        D0["Booking enters job queue (CONFIRMED)"] --> D1{"No-Show Cron (every 5 min):\n> 15 min past slot_time\nand still CONFIRMED?"}
+        D1 -->|Yes| D2["Booking -> NO_SHOW\nrelease reserved slot blocks"]
+        D1 -->|No| D3["Worker starts wash\nCONFIRMED -> IN_PROGRESS"]
+        D3 --> D4["Worker finishes wash\nIN_PROGRESS -> COMPLETED"]
+        D4 --> D5["Customer may leave a Review\n(rating + AI sentiment score)"]
+    end
+
+    D5 --> E(["End"])
+    D2 --> E
+    C6 --> E
+    X1 --> E
