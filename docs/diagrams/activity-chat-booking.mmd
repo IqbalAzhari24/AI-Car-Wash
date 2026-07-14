@@ -1,51 +1,38 @@
 flowchart TD
     classDef initial fill:#111827,stroke:#111827,stroke-width:2px;
-    classDef final fill:#111827,stroke:#111827,stroke-width:5px;
-    classDef action fill:#eef2ff,stroke:#33415c,stroke-width:1px;
-    classDef decision fill:#fff7ed,stroke:#9a3412,stroke-width:1px;
+    classDef final fill:#111827,stroke:#111827,stroke-width:2px;
+    classDef action fill:#eef2ff,stroke:#33415c,stroke-width:1.5px;
+    classDef decision fill:#fff7ed,stroke:#9a3412,stroke-width:1.5px;
     classDef object fill:#ffffff,stroke:#166534,stroke-width:1.5px;
-
-    subgraph LEGEND["Legend"]
-        direction LR
-        L1((" ")):::initial
-        L2("Action"):::action
-        L3{"Decision / Merge"}:::decision
-        L4["Object Node"]:::object
-        L5((("  "))):::final
-        L1 -->|control flow| L2
-        L2 -.->|object flow| L4
-        L4 --> L3
-        L3 --> L5
-    end
 
     subgraph CUST["Customer"]
         I((" ")):::initial
-        A2("Type a message\n(WS: /app/timah/chat)"):::action
+        A2("Type a message<br/>WS: /app/timah/chat"):::action
     end
 
-    subgraph TIMAH["Timah (Gemini 2.5 Flash)"]
-        B1("Build system prompt:\ndate, open slots, closures,\nservices, vehicle multipliers"):::action
-        B2("Turn 1: generateContent\n(message + tool declarations)"):::action
+    subgraph TIMAH["Timah - Gemini 2.5 Flash"]
+        B1("Build system prompt:<br/>date, open slots, closures,<br/>services, vehicle multipliers"):::action
+        B2("Turn 1: generateContent<br/>message + tool declarations"):::action
         B3{"Response type?"}:::decision
-        B4("Emit reply\n(streamed token-by-token)"):::action
+        B4("Emit reply<br/>streamed token-by-token"):::action
         B5{"Which tool?"}:::decision
         M1{"Merge"}:::decision
-        B6("Turn 2: streamGenerateContent\nwith tool result appended"):::action
-        B7("Stream final reply token-by-token\nto /queue/timah-reply"):::action
-        B8{"create_booking\nsucceeded?"}:::decision
-        B9("Append REDIRECT_CHECKOUT\n{bookingId}"):::action
+        B6("Turn 2: streamGenerateContent<br/>with tool result appended"):::action
+        B7("Stream final reply<br/>to /queue/timah-reply"):::action
+        B8{"create_booking<br/>succeeded?"}:::decision
+        B9("Append REDIRECT_CHECKOUT<br/>bookingId"):::action
         Z((("  "))):::final
     end
 
     subgraph TOOLS["Backend Tools"]
-        T1("Query slot_capacities\nfor date range"):::action
-        T2("Query slot capacity +\nOpen-Meteo rain forecast"):::action
-        T3("Query customer's own\nbookings, newest first"):::action
-        T4("BookingService.createBooking:\nreserve required 30-min blocks"):::action
+        T1("Query slot_capacities<br/>for date range"):::action
+        T2("Query slot capacity +<br/>Open-Meteo rain forecast"):::action
+        T3("Query customer's own<br/>bookings, newest first"):::action
+        T4("BookingService.createBooking:<br/>reserve required 30-min blocks"):::action
         T5{"Blocks reserved?"}:::decision
-        T6("Return error\n(e.g. 409 Conflict)"):::action
-        T7("Persist booking,\nstatus = PENDING"):::action
-        OBJ["Booking\n«PENDING»"]:::object
+        T6("Return error<br/>e.g. 409 Conflict"):::action
+        T7("Persist booking<br/>status = PENDING"):::action
+        OBJ["Booking<br/>state: PENDING"]:::object
     end
 
     I --> A2
@@ -71,4 +58,4 @@ flowchart TD
     B8 -->|No| A2
     B8 -->|Yes| B9
     OBJ -.->|object flow| B9
-    B9 -->|hands off to Checkout & Payment process| Z
+    B9 -->|hand off to Checkout process| Z
