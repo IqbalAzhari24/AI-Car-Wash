@@ -1,0 +1,86 @@
+flowchart TD
+    classDef actor fill:#1e293b,stroke:#1e293b,color:#ffffff;
+    classDef usecase fill:#ecfeff,stroke:#0891b2;
+
+    ACT_CUST["Customer"]:::actor
+    ACT_CLERK["Clerk"]:::actor
+    ACT_WORKER["Worker"]:::actor
+    ACT_OWNER["Owner"]:::actor
+    ACT_GEMINI["Gemini AI (external)"]:::actor
+    ACT_PAY["ToyyibPay (external)"]:::actor
+    ACT_SCHED["Scheduler (automated)"]:::actor
+
+    subgraph ACCOUNT["Account"]
+        UC1(["Register / Log In"]):::usecase
+        UC3(["Reset Password"]):::usecase
+        UC4(["Manage My Profile"]):::usecase
+    end
+
+    subgraph BOOKING["Booking and Payment"]
+        UC5(["Chat with Timah to Book"]):::usecase
+        UC6(["Book a Wash - Wizard / Walk-in"]):::usecase
+        UC8(["View My Bookings"]):::usecase
+        UC10(["Manage Booking Queue"]):::usecase
+        UC11(["Advance Booking Status"]):::usecase
+        UC12(["Cancel Booking"]):::usecase
+        UC13(["Checkout and Pay"]):::usecase
+        UC14(["Process Online Payment"]):::usecase
+    end
+
+    subgraph VALET["Valet"]
+        UC15(["Request Valet Pickup"]):::usecase
+        UC18(["Manage Valet Request"]):::usecase
+        UC20(["Verify Service Area"]):::usecase
+    end
+
+    subgraph REVIEW["Reviews"]
+        UC21(["Leave a Review"]):::usecase
+        UC22(["Analyze Review Sentiment"]):::usecase
+    end
+
+    subgraph STAFF["Staff and Analytics"]
+        UC23(["Provision Staff Account"]):::usecase
+        UC24(["View Customer Directory"]):::usecase
+        UC26(["View Analytics Dashboard"]):::usecase
+        UC27(["Manage Service Catalog"]):::usecase
+    end
+
+    subgraph AUTOMATION["Automation"]
+        UC28(["Auto-Mark No-Show"]):::usecase
+        UC29(["Replenish Slot Capacity"]):::usecase
+    end
+
+    ACT_CUST --- UC1
+    ACT_CUST --- UC3
+    ACT_CUST --- UC4
+    ACT_CUST --- UC5
+    ACT_CUST --- UC6
+    ACT_CUST --- UC8
+    ACT_CUST --- UC12
+    ACT_CUST --- UC13
+    ACT_CUST --- UC15
+    ACT_CUST --- UC21
+
+    ACT_CLERK --- UC6
+    ACT_CLERK --- UC10
+    ACT_CLERK --- UC11
+    ACT_CLERK --- UC12
+    ACT_CLERK --- UC13
+    ACT_CLERK --- UC18
+    ACT_CLERK --- UC27
+
+    ACT_WORKER --- UC11
+
+    ACT_OWNER --- UC23
+    ACT_OWNER --- UC24
+    ACT_OWNER --- UC26
+    ACT_OWNER -.->|generalizes| ACT_CLERK
+
+    ACT_GEMINI --- UC5
+    ACT_PAY --- UC14
+    ACT_SCHED --- UC28
+    ACT_SCHED --- UC29
+
+    UC14 -.->|extend| UC13
+    UC21 -.->|include| UC22
+    UC15 -.->|include| UC20
