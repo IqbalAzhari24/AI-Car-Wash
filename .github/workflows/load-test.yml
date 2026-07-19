@@ -1,0 +1,68 @@
+name: Load Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: 'k6 profile'
+        type: choice
+        options: [smoke, load]
+        default: smoke
+      vus:
+        description: 'Peak virtual users (load profile only)'
+        default: '20'
+      duration:
+        description: 'Steady-state duration, e.g. 1m (load profile only)'
+        default: '1m'
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write .env for docker-compose
+        run: |
+          cat > .env <<EOF
+          DB_USER=carwashuser
+          DB_PASSWORD=$(openssl rand -hex 16)
+          JWT_SECRET=$(openssl rand -base64 48)
+          JWT_EXPIRATION=7200000
+          GEMINI_API_KEY=
+          CORS_ALLOWED_ORIGINS=http://localhost:5173
+          EOF
+
+      - name: Start stack
+        run: docker compose up -d --build postgres redis spring-backend
+
+      - name: Wait for backend health
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:8080/actuator/health | grep -q '"status":"UP"'; then
+              echo "Backend is up"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Backend did not become healthy in time"
+          docker compose logs spring-backend
+          exit 1
+
+      - name: Run k6 ${{ inputs.profile }} test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: tests/load/k6/booking-flow.js
+        env:
+          BASE_URL: http://localhost:8080
+          PROFILE: ${{ inputs.profile }}
+          VUS: ${{ inputs.vus }}
+          DURATION: ${{ inputs.duration }}
+
+      - name: Stack logs
+        if: ${{ !cancelled() }}
+        run: docker compose logs spring-backend --tail=200
+
+      - name: Tear down stack
+        if: always()
+        run: docker compose down -v
