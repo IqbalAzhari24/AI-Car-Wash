@@ -7,6 +7,8 @@
   "scripts": {
     "build": "npm ci --prefix car-wash-frontend && npm run build --prefix car-wash-frontend",
     "deploy": "npm run build && wrangler deploy",
-    "preview": "wrangler dev"
+    "preview": "wrangler dev",
+    "test:load": "k6 run tests/load/k6/booking-flow.js",
+    "test:load:heavy": "PROFILE=load VUS=30 DURATION=2m k6 run tests/load/k6/booking-flow.js"
   }
 }
