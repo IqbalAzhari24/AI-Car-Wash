@@ -87,7 +87,7 @@ export default function () {
     });
     const ok = check(res, {
       'landing: status 200': (r) => r.status === 200,
-      'landing: has services': (r) => r.json('data.services').length > 0,
+      'landing: has services': (r) => r.status === 200 && r.json('data.services').length > 0,
     });
     errorRate.add(!ok);
     if (ok) {
@@ -117,7 +117,7 @@ export default function () {
     });
     const ok = check(res, {
       'register: status 201': (r) => r.status === 201,
-      'register: has token': (r) => !!r.json('token'),
+      'register: has token': (r) => r.status === 201 && !!r.json('token'),
     });
     errorRate.add(!ok);
     if (ok) {
