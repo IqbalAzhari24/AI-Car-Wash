@@ -1,0 +1,61 @@
+flowchart TD
+    classDef initial fill:#111827,stroke:#111827,stroke-width:2px;
+    classDef final fill:#111827,stroke:#111827,stroke-width:2px;
+    classDef action fill:#eef2ff,stroke:#33415c,stroke-width:1.5px;
+    classDef decision fill:#fff7ed,stroke:#9a3412,stroke-width:1.5px;
+    classDef object fill:#ffffff,stroke:#166534,stroke-width:1.5px;
+
+    subgraph CUST["Customer"]
+        I((" ")):::initial
+        A2("Type a message<br/>WS: /app/timah/chat"):::action
+        C1("Receive REDIRECT_CHECKOUT,<br/>navigate to /checkout/:bookingId"):::action
+        Z((("  "))):::final
+    end
+
+    subgraph BACKEND["Timah Backend - TimahAiService"]
+        B1("Build system prompt:<br/>date, open slots, closures,<br/>services, vehicle multipliers"):::action
+        B3{"Response type?"}:::decision
+        B4("Relay reply<br/>streamed token-by-token"):::action
+        B5{"Which tool?"}:::decision
+        T1("Query slot_capacities<br/>for date range"):::action
+        T2("Query slot capacity +<br/>Open-Meteo rain forecast"):::action
+        T3("Query customer's own<br/>bookings, newest first"):::action
+        T4("BookingService.createBooking:<br/>reserve required 30-min blocks"):::action
+        T5{"Blocks reserved?"}:::decision
+        T6("Return error<br/>e.g. 409 Conflict"):::action
+        T7("Persist booking<br/>status = PENDING"):::action
+        OBJ["Booking<br/>state: PENDING"]:::object
+        M1{"Merge"}:::decision
+        B7("Relay streamed reply<br/>to /queue/timah-reply"):::action
+        B8{"create_booking<br/>succeeded?"}:::decision
+        B9("Append REDIRECT_CHECKOUT<br/>bookingId"):::action
+    end
+
+    subgraph GEMINI["Gemini 2.5 Flash - external"]
+        G1("Turn 1: generateContent<br/>message + tool declarations"):::action
+        G2("Turn 2: streamGenerateContent<br/>with tool result appended"):::action
+    end
+
+    I --> A2
+    A2 --> B1 --> G1 --> B3
+    B3 -->|Plain text, no tool needed| B4
+    B3 -->|functionCall| B5
+    B5 -->|get_available_slots| T1
+    B5 -->|suggest_wash_time| T2
+    B5 -->|get_booking_status| T3
+    B5 -->|create_booking| T4
+    T4 --> T5
+    T5 -->|No| T6
+    T5 -->|Yes| T7
+    T7 -.->|object flow| OBJ
+    T1 --> M1
+    T2 --> M1
+    T3 --> M1
+    T6 --> M1
+    T7 --> M1
+    M1 --> G2 --> B7 --> B8
+    B4 --> A2
+    B8 -->|No| A2
+    B8 -->|Yes| B9
+    OBJ -.->|object flow| B9
+    B9 --> C1 --> Z

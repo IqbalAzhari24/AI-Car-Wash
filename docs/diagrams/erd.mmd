@@ -1,0 +1,119 @@
+erDiagram
+    LOCATIONS {
+        uuid id PK
+        varchar name
+        varchar address
+        boolean is_active
+        double latitude
+        double longitude
+    }
+    USERS {
+        uuid id PK
+        varchar email
+        varchar password_hash
+        varchar phone_number
+        varchar role
+        timestamp created_at
+    }
+    SERVICES {
+        uuid id PK
+        varchar name
+        text description
+        decimal price
+        int duration_minutes
+        decimal vehicle_size_multiplier
+        boolean is_active
+    }
+    SLOT_CAPACITIES {
+        uuid id PK
+        uuid location_id FK
+        timestamp slot_time
+        int max_limit
+        int booked_count
+    }
+    BOOKINGS {
+        uuid id PK
+        uuid customer_id FK
+        uuid clerk_id FK
+        uuid worker_id FK
+        uuid location_id FK
+        uuid service_id FK
+        timestamp slot_time
+        varchar vehicle_class
+        varchar vehicle_model
+        varchar status
+        boolean is_override
+        decimal total_price
+        boolean pickup_requested
+        boolean delivery_requested
+        varchar pickup_address
+        double pickup_lat
+        double pickup_lng
+        text pickup_notes
+        timestamp created_at
+    }
+    PAYMENTS {
+        uuid id PK
+        uuid booking_id FK
+        decimal amount
+        varchar payment_status
+        varchar method
+        varchar transaction_id
+        timestamp created_at
+    }
+    SHOP_CLOSURES {
+        uuid id PK
+        uuid location_id FK
+        timestamp start_time
+        timestamp end_time
+        varchar reason
+    }
+    REVIEWS {
+        uuid id PK
+        uuid booking_id FK
+        uuid customer_id FK
+        int rating
+        text comment
+        decimal sentiment_score
+        timestamp created_at
+    }
+    VALET_REQUESTS {
+        uuid id PK
+        uuid customer_id FK
+        uuid location_id FK
+        double customer_lat
+        double customer_lng
+        varchar customer_address
+        double distance_km
+        double radius_km
+        timestamp pickup_time
+        varchar vehicle_class
+        varchar vehicle_model
+        varchar status
+        text notes
+        timestamp created_at
+        timestamp updated_at
+    }
+    PASSWORD_RESET_TOKENS {
+        uuid id PK
+        uuid user_id FK
+        varchar token_hash
+        timestamp expires_at
+        boolean used
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    LOCATIONS ||--o{ SLOT_CAPACITIES : "location_id"
+    LOCATIONS ||--o{ BOOKINGS : "location_id"
+    LOCATIONS ||--o{ SHOP_CLOSURES : "location_id"
+    LOCATIONS ||--o{ VALET_REQUESTS : "location_id"
+    USERS ||--o{ BOOKINGS : "customer_id"
+    USERS ||--o{ BOOKINGS : "clerk_id"
+    USERS ||--o{ BOOKINGS : "worker_id"
+    BOOKINGS ||--|| PAYMENTS : "booking_id"
+    BOOKINGS ||--|| REVIEWS : "booking_id"
+    USERS ||--o{ REVIEWS : "customer_id"
+    USERS ||--o{ VALET_REQUESTS : "customer_id"
+    USERS ||--o{ PASSWORD_RESET_TOKENS : "user_id"
+    SERVICES ||--o{ BOOKINGS : "service_id"
